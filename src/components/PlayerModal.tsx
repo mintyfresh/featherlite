@@ -1,4 +1,4 @@
-import { Modal, Stack, TextInput, Button, Checkbox, Text } from '@mantine/core'
+import { Button, Checkbox, Modal, Stack, Text, TextInput } from '@mantine/core'
 import { Player } from '../db'
 
 interface PlayerModalProps {
@@ -15,7 +15,7 @@ export function PlayerModal({
   opened, 
   onClose, 
   onSubmit, 
-  initialValues = { name: '', paid: false, dropped: false }, 
+  initialValues = { name: '', paid: true, dropped: false }, 
   title, 
   submitLabel,
   error

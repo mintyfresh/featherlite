@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { 
-  Container, 
-  Title, 
-  Button, 
-  Group, 
-  Card, 
-  Text,
+import {
   ActionIcon,
-  Stack
+  Button,
+  Card,
+  Container,
+  Group,
+  Stack,
+  Text,
+  Title
 } from '@mantine/core'
 import { format } from 'date-fns'
-import { getAllEvents, addEvent, updateEvent, Event } from '../db'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { addEvent, Event, getAllEvents, updateEvent } from '../db'
 import { EventModal } from './EventModal'
 
 export function EventsList() {

@@ -1,22 +1,42 @@
-import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
 import {
-  Container,
-  Title,
+  ActionIcon,
+  Badge,
   Button,
+  Container,
   Group,
   Table,
-  ActionIcon,
   Text,
+  Title,
 } from '@mantine/core'
-import { getEvent, getEventPlayers, addPlayer, updatePlayer, deletePlayer, Event, Player } from '../db'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { 
+  addPlayer, 
+  deletePlayer, 
+  Event, 
+  getEvent, 
+  getEventPlayers, 
+  getPlayerStats,
+  Player, 
+  updatePlayer 
+} from '../db'
 import { PlayerModal } from './PlayerModal'
+
+interface PlayerWithStats extends Player {
+  stats: {
+    wins: number
+    draws: number
+    losses: number
+    score: number
+    opponentWinPercentage: number
+  }
+}
 
 export function EventDetails() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [event, setEvent] = useState<Event | null>(null)
-  const [players, setPlayers] = useState<Player[]>([])
+  const [players, setPlayers] = useState<PlayerWithStats[]>([])
   const [modalOpened, setModalOpened] = useState(false)
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -40,7 +60,13 @@ export function EventDetails() {
   async function loadPlayers() {
     if (!id) return
     const loadedPlayers = await getEventPlayers(id)
-    setPlayers(loadedPlayers)
+    const playersWithStats = await Promise.all(
+      loadedPlayers.map(async (player) => ({
+        ...player,
+        stats: await getPlayerStats(id, player.id)
+      }))
+    )
+    setPlayers(playersWithStats)
   }
 
   async function handleAddPlayer(player: Omit<Player, 'id' | 'eventId'>) {
@@ -94,20 +120,32 @@ export function EventDetails() {
       <Table>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>Name</Table.Th>
-            <Table.Th>Paid</Table.Th>
-            <Table.Th>Dropped</Table.Th>
-            <Table.Th></Table.Th>
+            <Table.Th>Player</Table.Th>
+            <Table.Th>Wins</Table.Th>
+            <Table.Th>Draws</Table.Th>
+            <Table.Th>Losses</Table.Th>
+            <Table.Th>Score</Table.Th>
+            <Table.Th>Opp. Win %</Table.Th>
+            <Table.Th style={{ width: '100px' }}></Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
           {players.map((player) => (
             <Table.Tr key={player.id}>
-              <Table.Td>{player.name}</Table.Td>
-              <Table.Td>{player.paid ? '✓' : ''}</Table.Td>
-              <Table.Td>{player.dropped ? '✓' : ''}</Table.Td>
               <Table.Td>
                 <Group gap="xs">
+                  <Text>{player.name}</Text>
+                  {player.paid && <Badge color="green">Paid</Badge>}
+                  {player.dropped && <Badge color="red">Dropped</Badge>}
+                </Group>
+              </Table.Td>
+              <Table.Td>{player.stats.wins}</Table.Td>
+              <Table.Td>{player.stats.draws}</Table.Td>
+              <Table.Td>{player.stats.losses}</Table.Td>
+              <Table.Td>{player.stats.score}</Table.Td>
+              <Table.Td>{player.stats.opponentWinPercentage.toFixed(2)}%</Table.Td>
+              <Table.Td>
+                <Group gap="xs" justify="flex-end">
                   <ActionIcon
                     variant="subtle"
                     onClick={() => {

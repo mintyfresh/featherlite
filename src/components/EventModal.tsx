@@ -1,5 +1,5 @@
+import { Button, Modal, Stack, TextInput } from '@mantine/core'
 import { useState } from 'react'
-import { Modal, Stack, TextInput, Button, Text } from '@mantine/core'
 import { Event } from '../db'
 
 interface EventModalProps {
