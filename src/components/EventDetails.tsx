@@ -1,10 +1,7 @@
 import {
-  ActionIcon,
-  Badge,
   Button,
   Container,
   Group,
-  Table,
   Text,
   Title,
 } from '@mantine/core'
@@ -21,6 +18,7 @@ import {
   updatePlayer 
 } from '../db'
 import { PlayerModal } from './PlayerModal'
+import { PlayersTable } from './PlayersTable'
 
 interface PlayerWithStats extends Player {
   stats: {
@@ -117,57 +115,14 @@ export function EventDetails() {
         <Button onClick={() => setModalOpened(true)}>Add Player</Button>
       </Group>
 
-      <Table>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>Player</Table.Th>
-            <Table.Th>Wins</Table.Th>
-            <Table.Th>Draws</Table.Th>
-            <Table.Th>Losses</Table.Th>
-            <Table.Th>Score</Table.Th>
-            <Table.Th>Opp. Win %</Table.Th>
-            <Table.Th style={{ width: '100px' }}></Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {players.map((player) => (
-            <Table.Tr key={player.id}>
-              <Table.Td>
-                <Group gap="xs">
-                  <Text>{player.name}</Text>
-                  {player.paid && <Badge color="green">Paid</Badge>}
-                  {player.dropped && <Badge color="red">Dropped</Badge>}
-                </Group>
-              </Table.Td>
-              <Table.Td>{player.stats.wins}</Table.Td>
-              <Table.Td>{player.stats.draws}</Table.Td>
-              <Table.Td>{player.stats.losses}</Table.Td>
-              <Table.Td>{player.stats.score}</Table.Td>
-              <Table.Td>{player.stats.opponentWinPercentage.toFixed(2)}%</Table.Td>
-              <Table.Td>
-                <Group gap="xs" justify="flex-end">
-                  <ActionIcon
-                    variant="subtle"
-                    onClick={() => {
-                      setEditingPlayer(player)
-                      setModalOpened(true)
-                    }}
-                  >
-                    ✎
-                  </ActionIcon>
-                  <ActionIcon
-                    color="red"
-                    variant="subtle"
-                    onClick={() => handleDeletePlayer(player.id)}
-                  >
-                    ×
-                  </ActionIcon>
-                </Group>
-              </Table.Td>
-            </Table.Tr>
-          ))}
-        </Table.Tbody>
-      </Table>
+      <PlayersTable
+        players={players}
+        onEditPlayer={(player) => {
+          setEditingPlayer(player)
+          setModalOpened(true)
+        }}
+        onDeletePlayer={handleDeletePlayer}
+      />
 
       <PlayerModal
         opened={modalOpened}
