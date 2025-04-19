@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { 
   Container, 
   Title, 
@@ -14,6 +15,7 @@ import { getAllEvents, addEvent, updateEvent, Event } from '../db'
 import { EventModal } from './EventModal'
 
 export function EventsList() {
+  const navigate = useNavigate()
   const [events, setEvents] = useState<Event[]>([])
   const [modalOpened, setModalOpened] = useState(false)
   const [editingEvent, setEditingEvent] = useState<Event | null>(null)
@@ -54,7 +56,13 @@ export function EventsList() {
 
       <Stack gap="md">
         {events.map((event) => (
-          <Card key={event.id} shadow="sm" padding="lg">
+          <Card 
+            key={event.id} 
+            shadow="sm" 
+            padding="lg"
+            style={{ cursor: 'pointer' }}
+            onClick={() => navigate(`/events/${event.id}`)}
+          >
             <Group justify="space-between">
               <div>
                 <Text fw={500} size="lg">{event.name}</Text>
@@ -64,7 +72,8 @@ export function EventsList() {
               </div>
               <ActionIcon 
                 variant="subtle" 
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation()
                   setEditingEvent(event)
                   setModalOpened(true)
                 }}
