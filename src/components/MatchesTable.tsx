@@ -65,7 +65,7 @@ export function MatchesTable({
               
               return (
                 <Table.Tr key={match.id}>
-                  <Table.Td>{match.tableNumber}</Table.Td>
+                  <Table.Td>{match.table}</Table.Td>
                   <Table.Td>
                     <Group gap="xs">
                       <Text>{player1?.name}</Text>

@@ -2,6 +2,7 @@ import {
   Button,
   Container,
   Group,
+  Loader,
   Tabs,
   Text,
   Title,
@@ -26,91 +27,48 @@ import { PlayerModal } from './PlayerModal'
 import { PlayersTable } from './PlayersTable'
 import { MatchesTable } from './MatchesTable'
 import { generateSwissPairings } from '../utils/swissPairings'
+import { useDBQuery } from '../hooks/use-db-query'
 
-interface PlayerWithStats extends Player {
-  stats: {
-    wins: number
-    draws: number
-    losses: number
-    score: number
-    opponentWinPercentage: number
-  }
+interface PlayerStats {
+  wins: number
+  draws: number
+  losses: number
+  score: number
+  opponentWinPercentage: number
 }
 
 export function EventDetails() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const [event, setEvent] = useState<Event | null>(null)
-  const [players, setPlayers] = useState<PlayerWithStats[]>([])
-  const [matches, setMatches] = useState<Match[]>([])
-  const [currentRound, setCurrentRound] = useState<number | null>(null)
+
+  const [playerStats, setPlayerStats] = useState<Map<string, PlayerStats>>(() => new Map())
   const [modalOpened, setModalOpened] = useState(false)
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null)
-  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (!id) return
-    loadEvent()
-    loadPlayers()
-    determineCurrentRound()
-  }, [id])
+  const { result: event } = useDBQuery(getEvent, {
+    params: [id!],
+    skip: !id,
+  })
 
-  async function loadEvent() {
-    if (!id) return
-    const loadedEvent = await getEvent(id)
-    if (!loadedEvent) {
-      navigate('/')
-      return
-    }
-    setEvent(loadedEvent)
-  }
+  const { result: players } = useDBQuery(getEventPlayers, {
+    params: [id!],
+    skip: !id,
+    onSuccess(players) {
+      Promise.all(
+        players.map(async (player) => [
+          player.id,
+          await getPlayerStats(id!, player.id)
+        ] as [string, PlayerStats])
+      ).then((pairs) => {
+        setPlayerStats(new Map(pairs))
+      })
+    },
+  })
 
-  async function loadPlayers() {
-    if (!id) return
-    const loadedPlayers = await getEventPlayers(id)
-    const playersWithStats = await Promise.all(
-      loadedPlayers.map(async (player) => ({
-        ...player,
-        stats: await getPlayerStats(id, player.id)
-      }))
-    )
-    setPlayers(playersWithStats)
-  }
-
-  async function determineCurrentRound() {
-    if (!id) return
-    
-    // Check if there are any matches
-    const round1Matches = await getRoundMatches(id, 1)
-    
-    if (round1Matches.length === 0) {
-      // No matches yet, tournament hasn't started
-      setCurrentRound(null)
-      setMatches([])
-    } else {
-      // Find the highest round number
-      let highestRound = 1
-      let hasMoreRounds = true
-      
-      while (hasMoreRounds) {
-        const nextRoundMatches = await getRoundMatches(id, highestRound + 1)
-        if (nextRoundMatches.length > 0) {
-          highestRound++
-        } else {
-          hasMoreRounds = false
-        }
-      }
-      
-      setCurrentRound(highestRound)
-      loadMatches(highestRound)
-    }
-  }
-
-  async function loadMatches(round: number) {
-    if (!id) return
-    const roundMatches = await getRoundMatches(id, round)
-    setMatches(roundMatches)
-  }
+  const { result: matches } = useDBQuery(getRoundMatches, {
+    params: [id!, event?.currentRound!],
+    skip: !!event?.currentRound
+  })
 
   async function handleAddPlayer(player: Omit<Player, 'id' | 'eventId'>) {
     if (!id) return
@@ -188,7 +146,13 @@ export function EventDetails() {
     }
   }
 
-  if (!event) return null
+  if (!event || !players) {
+    return (
+      <Container size="md" py="xl">
+        <Loader />
+      </Container>
+    )
+  }
 
   return (
     <Container size="md" py="xl">
@@ -209,24 +173,29 @@ export function EventDetails() {
             <Button onClick={() => setModalOpened(true)}>Add Player</Button>
           </Group>
 
-          <PlayersTable
-            players={players}
-            onEditPlayer={(player) => {
-              setEditingPlayer(player)
-              setModalOpened(true)
-            }}
-            onDeletePlayer={handleDeletePlayer}
-          />
+          {players && playerStats.size > 0 && (
+            <PlayersTable
+              players={players}
+              playerStats={playerStats}
+              onEditPlayer={(player) => {
+                setEditingPlayer(player)
+                setModalOpened(true)
+              }}
+              onDeletePlayer={handleDeletePlayer}
+            />
+          )}
         </Tabs.Panel>
 
         <Tabs.Panel value="matches" pt="xl">
-          <MatchesTable
-            matches={matches}
-            players={players}
-            currentRound={currentRound}
-            onStartNewRound={handleStartNewRound}
-            onUpdateMatch={handleUpdateMatch}
-          />
+          {matches && players && (
+            <MatchesTable
+              matches={matches}
+              players={players}
+              currentRound={event.currentRound}
+              onStartNewRound={handleStartNewRound}
+              onUpdateMatch={handleUpdateMatch}
+            />
+          )}
         </Tabs.Panel>
       </Tabs>
 
@@ -235,13 +204,11 @@ export function EventDetails() {
         onClose={() => {
           setModalOpened(false)
           setEditingPlayer(null)
-          setError(null)
         }}
         onSubmit={editingPlayer ? handleUpdatePlayer : handleAddPlayer}
         initialValues={editingPlayer ?? undefined}
         title={editingPlayer ? 'Edit Player' : 'New Player'}
         submitLabel={editingPlayer ? 'Save Changes' : 'Add Player'}
-        error={error}
       />
     </Container>
   )

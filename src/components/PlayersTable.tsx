@@ -7,23 +7,22 @@ import {
 } from '@mantine/core'
 import { Player } from '../db'
 
-interface PlayerWithStats extends Player {
-  stats: {
-    wins: number
-    draws: number
-    losses: number
-    score: number
-    opponentWinPercentage: number
-  }
+interface PlayerStats {
+  wins: number
+  draws: number
+  losses: number
+  score: number
+  opponentWinPercentage: number
 }
 
 interface PlayersTableProps {
-  players: PlayerWithStats[]
+  players: Player[]
+  playerStats: Map<string, PlayerStats>
   onEditPlayer: (player: Player) => void
   onDeletePlayer: (playerId: string) => void
 }
 
-export function PlayersTable({ players, onEditPlayer, onDeletePlayer }: PlayersTableProps) {
+export function PlayersTable({ players, playerStats, onEditPlayer, onDeletePlayer }: PlayersTableProps) {
   return (
     <Table>
       <Table.Thead>
@@ -51,11 +50,11 @@ export function PlayersTable({ players, onEditPlayer, onDeletePlayer }: PlayersT
                 {player.dropped && <Badge color="red">Dropped</Badge>}
               </Group>
             </Table.Td>
-            <Table.Td>{player.stats.wins}</Table.Td>
-            <Table.Td>{player.stats.draws}</Table.Td>
-            <Table.Td>{player.stats.losses}</Table.Td>
-            <Table.Td>{player.stats.score}</Table.Td>
-            <Table.Td>{player.stats.opponentWinPercentage.toFixed(1)}%</Table.Td>
+            <Table.Td>{playerStats.get(player.id)!.wins}</Table.Td>
+            <Table.Td>{playerStats.get(player.id)!.draws}</Table.Td>
+            <Table.Td>{playerStats.get(player.id)!.losses}</Table.Td>
+            <Table.Td>{playerStats.get(player.id)!.score}</Table.Td>
+            <Table.Td>{playerStats.get(player.id)!.opponentWinPercentage.toFixed(1)}%</Table.Td>
             <Table.Td>
               <Group gap="xs" justify="flex-end">
                 <ActionIcon

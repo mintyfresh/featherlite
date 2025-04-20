@@ -4,47 +4,34 @@ import {
   Card,
   Container,
   Group,
+  Loader,
   Stack,
   Text,
   Title
 } from '@mantine/core'
 import { format } from 'date-fns'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { addEvent, Event, getAllEvents, updateEvent } from '../db'
-import { EventModal } from './EventModal'
+import { Event, getAllEvents } from '../db'
+import { useDBQuery } from '../hooks/use-db-query'
+import EventModal from './EventModal'
 
 export function EventsList() {
   const navigate = useNavigate()
-  const [events, setEvents] = useState<Event[]>([])
+
+  const { result: events, setResult: setEvents } = useDBQuery(getAllEvents, {
+    params: []
+  })
+
   const [modalOpened, setModalOpened] = useState(false)
   const [editingEvent, setEditingEvent] = useState<Event | null>(null)
 
-  useEffect(() => {
-    loadEvents()
-  }, [])
-
-  async function loadEvents() {
-    const loadedEvents = await getAllEvents()
-    setEvents(loadedEvents)
-  }
-
-  async function handleCreateEvent(event: Omit<Event, 'id' | 'createdAt' | 'playerCount'>) {
-    await addEvent({
-      ...event,
-      playerCount: 0,
-      createdAt: new Date(),
-    })
-    setModalOpened(false)
-    loadEvents()
-  }
-
-  async function handleEditEvent(event: Omit<Event, 'id' | 'createdAt' | 'playerCount'>) {
-    if (!editingEvent?.id) return
-    await updateEvent(editingEvent.id, event)
-    setModalOpened(false)
-    setEditingEvent(null)
-    loadEvents()
+  if (events === null) {
+    return (
+      <Container size="md" py="xl">
+        <Loader />
+      </Container>
+    )
   }
 
   return (
@@ -86,15 +73,19 @@ export function EventsList() {
       </Stack>
 
       <EventModal
+        event={editingEvent}
         opened={modalOpened}
         onClose={() => {
           setModalOpened(false)
           setEditingEvent(null)
         }}
-        onSubmit={editingEvent ? handleEditEvent : handleCreateEvent}
-        initialName={editingEvent?.name}
-        title={editingEvent ? 'Edit Event' : 'New Event'}
-        submitLabel={editingEvent ? 'Save Changes' : 'Create Event'}
+        onSubmit={(event) => {
+          if (editingEvent) {
+            setEvents((events) => events?.map((e) => e.id === event.id ? event : e) ?? null)
+          } else {
+            setEvents((events) => [event, ...(events ?? [])])
+          }
+        }}
       />
     </Container>
   )

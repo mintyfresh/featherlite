@@ -1,9 +1,17 @@
 import { openDB, DBSchema } from 'idb'
 
+export class RecordNotFoundError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'RecordNotFoundError'
+  }
+}
+
 interface Event {
   id: string
   name: string
-  playerCount?: number
+  playersCount: number
+  currentRound: number | null
   createdAt: Date
 }
 
@@ -19,10 +27,10 @@ interface Match {
   id: string
   eventId: string
   round: number
-  tableNumber: number
+  table: number
   player1Id: string
-  player2Id?: string
-  winnerId?: string
+  player2Id: string | null
+  winnerId: string | null
   isDraw: boolean
 }
 
@@ -102,7 +110,10 @@ export async function addEvent(event: Omit<Event, 'id'>) {
   if (exists) throw new Error('An event with this name already exists')
   
   const id = crypto.randomUUID()
-  return (await dbPromise).add('events', { ...event, id })
+  const result = { ...event, id }
+  await (await dbPromise).add('events', result)
+
+  return result
 }
 
 export async function updateEvent(id: string, event: Pick<Event, 'name'>) {
@@ -112,7 +123,11 @@ export async function updateEvent(id: string, event: Pick<Event, 'name'>) {
   const db = await dbPromise
   const existingEvent = await db.get('events', id)
   if (!existingEvent) throw new Error('Event not found')
-  return db.put('events', { ...existingEvent, ...event })
+  
+  const result = { ...existingEvent, ...event }
+  await db.put('events', result)
+
+  return result
 }
 
 export async function deleteEvent(id: string) {
@@ -140,8 +155,12 @@ export async function addPlayer(eventId: string, player: Omit<Player, 'id' | 'ev
 export async function updatePlayer(id: string, player: Partial<Omit<Player, 'id' | 'eventId'>>) {
   const db = await dbPromise
   const existingPlayer = await db.get('players', id)
-  if (!existingPlayer) throw new Error('Player not found')
-  return db.put('players', { ...existingPlayer, ...player })
+  if (!existingPlayer) throw new RecordNotFoundError('Player not found')
+
+  const result = { ...existingPlayer, ...player }
+  await db.put('players', result)
+
+  return result
 }
 
 export async function deletePlayer(id: string) {
@@ -157,6 +176,10 @@ export async function deletePlayer(id: string) {
 }
 
 // Match functions
+export async function getAllMatches() {
+  return (await dbPromise).getAll('matches')
+}
+
 export async function getRoundMatches(eventId: string, round: number) {
   return (await dbPromise).getAllFromIndex('matches', 'by-round', [eventId, round])
 }
@@ -169,16 +192,31 @@ export async function getPlayerMatches(eventId: string, playerId: string) {
   )
 }
 
+export async function getMatch(id: string) {
+  return (await dbPromise).get('matches', id)
+}
+
+export async function getMatchByTable(eventId: string, round: number, table: number) {
+  return (await dbPromise).getFromIndex('matches', 'by-table', [eventId, round, table])
+}
+
 export async function addMatch(eventId: string, match: Omit<Match, 'id' | 'eventId'>) {
   const id = crypto.randomUUID()
-  return (await dbPromise).add('matches', { ...match, id, eventId })
+  const result = { ...match, id, eventId }
+  await (await dbPromise).add('matches', result)
+
+  return result
 }
 
 export async function updateMatch(id: string, match: Partial<Omit<Match, 'id' | 'eventId'>>) {
   const db = await dbPromise
   const existingMatch = await db.get('matches', id)
-  if (!existingMatch) throw new Error('Match not found')
-  return db.put('matches', { ...existingMatch, ...match })
+  if (!existingMatch) throw new RecordNotFoundError('Match not found')
+
+  const result = { ...existingMatch, ...match }
+  await db.put('matches', result)
+
+  return result
 }
 
 export async function deleteMatch(id: string) {

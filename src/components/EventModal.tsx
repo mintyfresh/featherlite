@@ -1,57 +1,60 @@
 import { Button, Modal, Stack, TextInput } from '@mantine/core'
-import { useState } from 'react'
-import { Event } from '../db'
+import { addEvent as addEventQuery, Event, updateEvent as updateEventQuery } from '../db'
+import { useLazyDBQuery } from '../hooks/use-db-query'
 
 interface EventModalProps {
+  event?: Event | null
   opened: boolean
-  onClose: () => void
-  onSubmit: (event: Omit<Event, 'id' | 'createdAt' | 'playerCount'>) => void
-  initialName?: string
-  title: string
-  submitLabel: string
+  onClose(): void
+  onSubmit(event: Event): void
 }
 
-export function EventModal({ 
-  opened, 
-  onClose, 
-  onSubmit, 
-  initialName = '', 
-  title, 
-  submitLabel 
+export default function EventModal({
+  event,
+  opened,
+  onClose,
+  onSubmit,
 }: EventModalProps) {
-  const [error, setError] = useState<string | null>(null)
+  const [createEvent] = useLazyDBQuery(addEventQuery, {
+    onSuccess(event) {
+      onSubmit(event)
+      onClose()
+    }
+  })
+  const [updateEvent] = useLazyDBQuery(updateEventQuery, {
+    onSuccess(event) {
+      onSubmit(event)
+      onClose()
+    }
+  })
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setError(null)
-    
-    const form = e.target as HTMLFormElement
+
+    const form = e.currentTarget as HTMLFormElement
     const formData = new FormData(form)
     const name = formData.get('name') as string
-    
-    try {
-      await onSubmit({ name })
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError('An unexpected error occurred')
-      }
+
+    if (event?.id) {
+      updateEvent(event.id, { name })
+    } else {
+      createEvent({ name, createdAt: new Date(), playersCount: 0, currentRound: null })
     }
   }
 
   return (
-    <Modal opened={opened} onClose={onClose} title={title}>
+    <Modal opened={opened} onClose={onClose} title={event ? 'Edit Event' : 'Create Event'}>
       <Stack component="form" onSubmit={handleSubmit}>
         <TextInput
           label="Name"
           name="name"
           placeholder={`e.g. Adventure ${(new Date()).getFullYear()}`}
-          defaultValue={initialName}
+          defaultValue={event?.name}
           required
-          error={error}
         />
-        <Button type="submit">{submitLabel}</Button>
+        <Button type="submit">
+          {event ? 'Update' : 'Create'}
+        </Button>
       </Stack>
     </Modal>
   )
