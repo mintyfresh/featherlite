@@ -35,6 +35,7 @@ export default async function matchUpdate(id: string, match: MatchUpdateInput) {
     // Update the completedness state of the round
     await db.rounds.update(round.id, {
       isComplete: await allMatchesComplete(round),
+      updatedAt: new Date(),
     })
 
     return result

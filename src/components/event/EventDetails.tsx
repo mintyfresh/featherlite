@@ -11,6 +11,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { db } from '../../db'
 import MatchesTab from './matches/MatchesTab'
 import PlayersTab from './players/PlayersTab'
+import TimersTab from './timers/TimersTab'
 
 export function EventDetails() {
   const navigate = useNavigate()
@@ -46,14 +47,19 @@ export function EventDetails() {
         <Tabs.List>
           <Tabs.Tab value="players">Players</Tabs.Tab>
           <Tabs.Tab value="matches">Matches</Tabs.Tab>
+          <Tabs.Tab value="timers">Timers</Tabs.Tab>
         </Tabs.List>
 
-        <Tabs.Panel value="players" pt="xl">
+        <Tabs.Panel value="players" pt="md">
           <PlayersTab event={event} />
         </Tabs.Panel>
 
-        <Tabs.Panel value="matches" pt="xl">
+        <Tabs.Panel value="matches" pt="md">
           <MatchesTab event={event} />
+        </Tabs.Panel>
+
+        <Tabs.Panel value="timers" pt="md">
+          <TimersTab event={event} />
         </Tabs.Panel>
       </Tabs>
     </Container>

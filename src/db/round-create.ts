@@ -21,7 +21,8 @@ export default async function roundCreate(eventId: string, round: RoundCreateInp
       id: crypto.randomUUID(),
       eventId,
       number: (event.currentRound ?? 0) + 1,
-      isComplete: false
+      isComplete: false,
+      updatedAt: new Date(),
     }
 
     await db.rounds.add(result)

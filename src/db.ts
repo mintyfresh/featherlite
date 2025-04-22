@@ -22,6 +22,7 @@ export interface Round {
   eventId: string
   number: number
   isComplete: boolean
+  updatedAt: Date
 }
 
 export interface Match {
@@ -33,11 +34,36 @@ export interface Match {
   isDraw: boolean
 }
 
+export interface Timer {
+  id: string
+  roundId: string
+  matchId: string | null
+  label: string
+  duration: number // millis
+  expiresAt: Date
+  pausedAt: Date | null
+  updatedAt: Date
+}
+
+export interface TimerPhase {
+  id: string
+  timerId: string
+  audioClipId: string | null
+  name: string
+  position: number
+  duration: number // millis
+  offsetFromStart: number // millis
+  offsetFromEnd: number // millis
+  colour: number | null
+}
+
 export const db = new Dexie('featherlight-db') as Dexie & {
   events: EntityTable<Event, 'id'>,
   players: EntityTable<Player, 'id'>,
   rounds: EntityTable<Round, 'id'>,
   matches: EntityTable<Match, 'id'>,
+  timers: EntityTable<Timer, 'id'>,
+  timerPhases: EntityTable<TimerPhase, 'id'>,
 }
 
 db.version(1).stores({
@@ -45,4 +71,6 @@ db.version(1).stores({
   players: 'id, eventId, &[eventId+name]',
   rounds: 'id, eventId, &[eventId+number]',
   matches: 'id, roundId, &[roundId+table], *playerIds',
+  timers: 'id, roundId, &matchId',
+  timerPhases: 'id, timerId, &[timerId+position]',
 })
