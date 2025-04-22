@@ -27,6 +27,7 @@ export default async function roundCreate(eventId: string, round: RoundCreateInp
     await db.rounds.add(result)
     await db.events.update(eventId, {
       currentRound: result.number,
+      updatedAt: new Date(),
     })
 
     round.matches.forEach(async ({ playerIds }, index) => {

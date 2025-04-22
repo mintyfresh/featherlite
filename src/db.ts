@@ -6,6 +6,7 @@ export interface Event {
   playersCount: number
   currentRound: number | null
   createdAt: Date
+  updatedAt: Date
 }
 
 export interface Player {

@@ -21,6 +21,7 @@ export default async function playerCreate(eventId: string, player: PlayerCreate
     db.events.update(eventId, {
       ...event,
       playersCount: event.playersCount + 1,
+      updatedAt: new Date(),
     })
 
     return result

@@ -1,5 +1,6 @@
 import { db, Player } from '../db'
 import { RecordNotFoundError } from './errors'
+import eventTouch from './event-touch'
 
 export type PlayerUpdateInput = Partial<Pick<Player, 'name' | 'paid' | 'dropped'>>
 
@@ -16,6 +17,7 @@ export default async function playerUpdate(id: string, player: PlayerUpdateInput
   }
 
   await db.players.update(id, result)
+  await eventTouch(existingPlayer.eventId)
 
   return result
 }

@@ -12,7 +12,8 @@ export default async function eventUpdate(id: string, event: EventUpdateInput) {
 
   const result: Event = {
     ...existingEvent,
-    ...event
+    ...event,
+    updatedAt: new Date(),
   }
 
   if (!(await isEventNameUnique(id, result.name))) {

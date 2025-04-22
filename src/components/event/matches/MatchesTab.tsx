@@ -14,7 +14,7 @@ export interface MatchesTabProps {
 export default function MatchesTab({ event }: MatchesTabProps) {
   const players = useLiveQuery(
     async () => db.players.where({ eventId: event.id }).toArray(),
-    [event.id]
+    [event.id, event.updatedAt]
   )
 
   const rounds = useLiveQuery(

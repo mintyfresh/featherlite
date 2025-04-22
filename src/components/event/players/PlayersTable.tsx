@@ -13,9 +13,10 @@ import playerBulkCalculateStats from '../../../db/player-bulk-calculate-stats'
 
 interface PlayersTableProps {
   players: Player[]
+  onPlayerEdit(player: Player): void
 }
 
-export function PlayersTable({ players }: PlayersTableProps) {
+export function PlayersTable({ players, onPlayerEdit }: PlayersTableProps) {
   const playerIds = players.map((player) => player.id)
   const playerStats = useLiveQuery(
     async () => playerBulkCalculateStats(playerIds),
@@ -78,20 +79,13 @@ export function PlayersTable({ players }: PlayersTableProps) {
               <Table.Td>{playerStats.get(player.id)?.losses}</Table.Td>
               <Table.Td>{playerStats.get(player.id)?.score}</Table.Td>
               <Table.Td>{playerStats.get(player.id)?.opponentWinPercentage?.toFixed(2)}%</Table.Td>
-              <Table.Td>
-                <Group gap="xs" justify="flex-end">
-                  <ActionIcon
-                    variant="subtle"
-                  >
-                    ✎
-                  </ActionIcon>
-                  <ActionIcon
-                    color="red"
-                    variant="subtle"
-                  >
-                    ×
-                  </ActionIcon>
-                </Group>
+              <Table.Td ta="end">
+                <ActionIcon
+                  variant="subtle"
+                  onClick={() => onPlayerEdit(player)}
+                >
+                  ✎
+                </ActionIcon>
               </Table.Td>
             </Table.Tr>
           ))}

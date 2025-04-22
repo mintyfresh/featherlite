@@ -1,4 +1,4 @@
-import { Button, Group, Text } from '@mantine/core'
+import { Button, Group } from '@mantine/core'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
 import { db, Event, Player } from '../../../db'
@@ -15,7 +15,7 @@ export default function PlayersTab({ event }: PlayersTabProps) {
 
   const players = useLiveQuery(
     async () => db.players.where({ eventId: event.id }).toArray(),
-    [event.id]
+    [event.id, event.updatedAt]
   )
 
   return (
@@ -27,6 +27,10 @@ export default function PlayersTab({ event }: PlayersTabProps) {
       {players && (
         <PlayersTable
           players={players}
+          onPlayerEdit={(player) => {
+            setEditingPlayer(player)
+            setModalOpened(true)
+          }}
         />
       )}
 
