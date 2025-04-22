@@ -42,6 +42,6 @@ export const db = new Dexie('featherlight-db') as Dexie & {
 db.version(1).stores({
   events: 'id, &name, createdAt',
   players: 'id, eventId, &[eventId+name]',
-  rounds: 'id, eventId, &[eventId+round]',
+  rounds: 'id, eventId, &[eventId+number]',
   matches: 'id, roundId, &[roundId+table], *playerIds',
 })

@@ -1,9 +1,9 @@
 import { Button, Checkbox, Modal, Stack, Text, TextInput } from '@mantine/core'
-import { Player } from '../../../db'
-import playerUpdate from '../../../db/player-update'
-import playerCreate from '../../../db/player-create'
 import { useState } from 'react'
+import { Player } from '../../../db'
 import { DatabaseError } from '../../../db/errors'
+import playerCreate from '../../../db/player-create'
+import playerUpdate from '../../../db/player-update'
 
 interface PlayerModalProps {
   eventId: string

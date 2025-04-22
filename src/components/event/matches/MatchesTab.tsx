@@ -1,7 +1,8 @@
-import { Button, Group, Loader, Text } from '@mantine/core'
+import { Button, Group, Loader } from '@mantine/core'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useCallback } from 'react'
 import { db, Event } from '../../../db'
+import eventCurrentRound from '../../../db/event-current-round'
 import roundCreate from '../../../db/round-create'
 import { generateSwissPairings } from '../../../utils/swissPairings'
 import RoundsList from './RoundsList'
@@ -18,7 +19,12 @@ export default function MatchesTab({ event }: MatchesTabProps) {
 
   const rounds = useLiveQuery(
     async () => (await db.rounds.where({ eventId: event.id }).sortBy('number')).reverse(),
-    [event.id]
+    [event.id, event.currentRound]
+  )
+
+  const currentRound = useLiveQuery(
+    async () => eventCurrentRound(event),
+    [event.id, event.currentRound]
   )
 
   const startNextRound = useCallback(
@@ -39,7 +45,7 @@ export default function MatchesTab({ event }: MatchesTabProps) {
   return (
     <>
       <Group justify="end" mb="md">
-        <Button onClick={() => startNextRound()}>
+        <Button onClick={() => startNextRound()} disabled={currentRound ? !currentRound.isComplete : false}>
           {event.currentRound === null ? 'Start Tournament' : `Start Round ${event.currentRound + 1}`}
         </Button>
       </Group>

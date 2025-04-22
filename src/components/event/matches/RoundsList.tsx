@@ -1,6 +1,7 @@
 import { Accordion, Text } from '@mantine/core'
 import { Event, Player, Round } from '../../../db'
 import MatchesTable from './MatchesTable'
+import { useEffect, useState } from 'react'
 
 interface RoundsListProps {
   event: Event
@@ -14,14 +15,21 @@ export default function RoundsList({
   players,
 }: RoundsListProps) {
   const currentRound = event.currentRound
+  const [expanded, setExpanded] = useState<string[]>(currentRound !== null ? [`round-${currentRound}`] : [])
+
+  useEffect(
+    // Expand new rounds by default
+    () => setExpanded((expanded) => [...expanded, `round-${currentRound}`]),
+    [setExpanded, currentRound]
+  )
 
   return (
-    <Accordion defaultValue={currentRound !== null ? `round-${currentRound}` : undefined}>
+    <Accordion multiple value={expanded} onChange={setExpanded}>
       {rounds.map((round) => (
         <Accordion.Item key={round.id} value={`round-${round.number}`}>
           <Accordion.Control>
             Round {round.number}
-            {round.number < (currentRound ?? 0) && (
+            {round.isComplete && (
               <Text size="xs" c="dimmed">
                 Complete
               </Text>
