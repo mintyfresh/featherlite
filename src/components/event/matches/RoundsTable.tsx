@@ -9,27 +9,25 @@ import {
 } from '@mantine/core'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useCallback, useMemo } from 'react'
-import { db, Match, Player, Round } from '../db'
-import { generateSwissPairings } from '../utils/swissPairings'
-import roundCreate from '../db/round-create'
+import { db, Event, Player, Round } from '../../../db'
+import matchUpdate from '../../../db/match-update'
+import roundCreate from '../../../db/round-create'
+import { generateSwissPairings } from '../../../utils/swissPairings'
 
 interface RoundsTableProps {
-  eventId: string
+  event: Event
   rounds: Round[]
   players: Player[]
-  currentRound: number | null
-  onUpdateMatch: (matchId: string, updates: Partial<Match>) => void
 }
 
 export default function RoundsTable({
-  eventId,
+  event,
   rounds,
   players,
-  currentRound,
-  onUpdateMatch
 }: RoundsTableProps) {
   const roundIds = rounds.map((round) => round.id)
   const playerIds = players.map((player) => player.id)
+  const currentRound = event.currentRound
 
   const playerIndex = useMemo(
     () => new Map<string, Player>(players.map((player) => [player.id, player])),
@@ -43,10 +41,10 @@ export default function RoundsTable({
 
   const startNextRound = useCallback(
     async () => {
-      const matches = await generateSwissPairings(eventId)
-      await roundCreate(eventId, { matches })
+      const matches = await generateSwissPairings(event.id)
+      await roundCreate(event.id, { matches })
     },
-    [playerIds.join(',')]
+    [event.id]
   )
 
   if (!roundMatches) {
@@ -117,7 +115,7 @@ export default function RoundsTable({
                         <ActionIcon
                           variant="subtle"
                           color="green"
-                          onClick={() => onUpdateMatch(match.id, { winnerId: match.playerIds[0] })}
+                          onClick={() => matchUpdate(match.id, { winnerId: match.playerIds[0], isDraw: false })}
                         >
                           ✓
                         </ActionIcon>
@@ -125,14 +123,14 @@ export default function RoundsTable({
                           <ActionIcon
                             variant="subtle"
                             color="yellow"
-                            onClick={() => onUpdateMatch(match.id, { isDraw: true })}
+                            onClick={() => matchUpdate(match.id, { winnerId: null, isDraw: true })}
                           >
                             =
                           </ActionIcon>
                           <ActionIcon
                             variant="subtle"
                             color="green"
-                            onClick={() => onUpdateMatch(match.id, { winnerId: match.playerIds[1] })}
+                            onClick={() => matchUpdate(match.id, { winnerId: match.playerIds[1], isDraw: false })}
                           >
                             ✓
                           </ActionIcon>
