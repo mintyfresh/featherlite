@@ -63,6 +63,8 @@ export default function EventModal({
           defaultValue={event?.name}
           required
           disabled={loading}
+          autoComplete="off"
+          data-autofocus
         />
         {error?.message && (
           <Text c="red">{error.message}</Text>

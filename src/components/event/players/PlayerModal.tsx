@@ -69,7 +69,8 @@ export function PlayerModal({
           placeholder="Enter player name"
           defaultValue={player?.name ?? ''}
           required
-          disabled={loading}
+          autoComplete="off"
+          data-autofocus
         />
         <Checkbox
           label="Paid"
