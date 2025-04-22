@@ -20,8 +20,7 @@ export default function PlayersTab({ event }: PlayersTabProps) {
 
   return (
     <>
-      <Group justify="space-between" mb="xl">
-        <Text>Players</Text>
+      <Group justify="end" mb="xl">
         <Button onClick={() => setModalOpened(true)}>Add Player</Button>
       </Group>
 

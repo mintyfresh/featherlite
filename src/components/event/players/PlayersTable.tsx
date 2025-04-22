@@ -7,6 +7,7 @@ import {
   Text,
 } from '@mantine/core'
 import { useLiveQuery } from 'dexie-react-hooks'
+import { useMemo } from 'react'
 import { Player } from '../../../db'
 import playerBulkCalculateStats from '../../../db/player-bulk-calculate-stats'
 
@@ -19,6 +20,27 @@ export function PlayersTable({ players }: PlayersTableProps) {
   const playerStats = useLiveQuery(
     async () => playerBulkCalculateStats(playerIds),
     [playerIds.join(',')]
+  )
+
+  const playersByRanking = useMemo(
+    () => players.sort((player1, player2) => {
+      const stats1 = playerStats?.get(player1.id)
+      const stats2 = playerStats?.get(player2.id)
+
+      if (!stats1 || !stats2) {
+        return 0
+      }
+
+      if (stats1.score !== stats2.score) {
+        return stats2.score - stats1.score
+      } else {
+        return stats2.opponentWinPercentage - stats1.opponentWinPercentage
+      }
+    }),
+    [
+      JSON.stringify(players),
+      JSON.stringify(playerStats)
+    ]
   )
 
   if (!playerStats) {
@@ -42,16 +64,12 @@ export function PlayersTable({ players }: PlayersTableProps) {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {players.map((player) => (
+          {playersByRanking.map((player) => (
             <Table.Tr key={player.id}>
               <Table.Td>
                 <Group gap="xs">
                   <Text>{player.name}</Text>
-                  {player.paid ? (
-                    <Badge color="green">Paid</Badge>
-                  ) : (
-                    <Badge color="orange">Unpaid</Badge>
-                  )}
+                  {player.paid || <Badge color="orange">Unpaid</Badge>}
                   {player.dropped && <Badge color="red">Dropped</Badge>}
                 </Group>
               </Table.Td>
