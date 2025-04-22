@@ -1,12 +1,15 @@
-import { Button, Modal, Stack, TextInput } from '@mantine/core'
-import { addEvent as addEventQuery, Event, updateEvent as updateEventQuery } from '../db'
-import { useLazyDBQuery } from '../hooks/use-db-query'
+import { Button, Modal, Stack, Text, TextInput } from '@mantine/core'
+import { useState } from 'react'
+import { Event } from '../db'
+import { DatabaseError } from '../db/errors'
+import eventCreate from '../db/event-create'
+import eventUpdate from '../db/event-update'
 
 interface EventModalProps {
   event?: Event | null
   opened: boolean
   onClose(): void
-  onSubmit(event: Event): void
+  onSubmit?(event: Event): void
 }
 
 export default function EventModal({
@@ -15,30 +18,38 @@ export default function EventModal({
   onClose,
   onSubmit,
 }: EventModalProps) {
-  const [createEvent] = useLazyDBQuery(addEventQuery, {
-    onSuccess(event) {
-      onSubmit(event)
-      onClose()
-    }
-  })
-  const [updateEvent] = useLazyDBQuery(updateEventQuery, {
-    onSuccess(event) {
-      onSubmit(event)
-      onClose()
-    }
-  })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<DatabaseError | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     const form = e.currentTarget as HTMLFormElement
     const formData = new FormData(form)
     const name = formData.get('name') as string
 
-    if (event?.id) {
-      updateEvent(event.id, { name })
-    } else {
-      createEvent({ name, createdAt: new Date(), playersCount: 0, currentRound: null })
+    setLoading(true)
+    setError(null)
+
+    try {
+      let result: Event
+
+      if (event?.id) {
+        result = await eventUpdate(event.id, { name })
+      } else {
+        result = await eventCreate({ name })
+      }
+
+      onSubmit?.(result)
+      onClose()
+    } catch (error) {
+      if (error instanceof DatabaseError) {
+        setError(error)
+      } else {
+        console.error(error)
+      }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -51,8 +62,12 @@ export default function EventModal({
           placeholder={`e.g. Adventure ${(new Date()).getFullYear()}`}
           defaultValue={event?.name}
           required
+          disabled={loading}
         />
-        <Button type="submit">
+        {error?.message && (
+          <Text c="red">{error.message}</Text>
+        )}
+        <Button type="submit" loading={loading}>
           {event ? 'Update' : 'Create'}
         </Button>
       </Stack>

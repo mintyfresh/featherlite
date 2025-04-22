@@ -2,27 +2,34 @@ import {
   ActionIcon,
   Badge,
   Group,
+  Loader,
   Table,
   Text,
 } from '@mantine/core'
 import { Player } from '../db'
-
-interface PlayerStats {
-  wins: number
-  draws: number
-  losses: number
-  score: number
-  opponentWinPercentage: number
-}
+import playerBulkCalculateStats from '../db/player-bulk-calculate-stats'
+import { useLiveQuery } from 'dexie-react-hooks'
 
 interface PlayersTableProps {
   players: Player[]
-  playerStats: Map<string, PlayerStats>
   onEditPlayer: (player: Player) => void
   onDeletePlayer: (playerId: string) => void
 }
 
-export function PlayersTable({ players, playerStats, onEditPlayer, onDeletePlayer }: PlayersTableProps) {
+export function PlayersTable({ players, onEditPlayer, onDeletePlayer }: PlayersTableProps) {
+  const playerIds = players.map((player) => player.id)
+
+  const playerStats = useLiveQuery(
+    async () => playerBulkCalculateStats(playerIds),
+    [playerIds.join(',')]
+  )
+
+  if (!playerStats) {
+    return (
+      <Loader />
+    )
+  }
+
   return (
     <Table>
       <Table.Thead>
@@ -50,11 +57,11 @@ export function PlayersTable({ players, playerStats, onEditPlayer, onDeletePlaye
                 {player.dropped && <Badge color="red">Dropped</Badge>}
               </Group>
             </Table.Td>
-            <Table.Td>{playerStats.get(player.id)!.wins}</Table.Td>
-            <Table.Td>{playerStats.get(player.id)!.draws}</Table.Td>
-            <Table.Td>{playerStats.get(player.id)!.losses}</Table.Td>
-            <Table.Td>{playerStats.get(player.id)!.score}</Table.Td>
-            <Table.Td>{playerStats.get(player.id)!.opponentWinPercentage.toFixed(1)}%</Table.Td>
+            <Table.Td>{playerStats.get(player.id)?.wins}</Table.Td>
+            <Table.Td>{playerStats.get(player.id)?.draws}</Table.Td>
+            <Table.Td>{playerStats.get(player.id)?.losses}</Table.Td>
+            <Table.Td>{playerStats.get(player.id)?.score}</Table.Td>
+            <Table.Td>{playerStats.get(player.id)?.opponentWinPercentage?.toFixed(2)}%</Table.Td>
             <Table.Td>
               <Group gap="xs" justify="flex-end">
                 <ActionIcon

@@ -7,68 +7,37 @@ import {
   Text,
   Title,
 } from '@mantine/core'
-import { useEffect, useState } from 'react'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { 
-  addPlayer, 
-  deletePlayer, 
-  Event, 
-  getEvent, 
-  getEventPlayers, 
-  getPlayerStats,
-  Player,
-  Match,
-  getRoundMatches,
-  updateMatch,
-  addMatch,
-  updatePlayer,
-} from '../db'
+import { db, Player } from '../db'
+import { generateSwissPairings } from '../utils/swissPairings'
 import { PlayerModal } from './PlayerModal'
 import { PlayersTable } from './PlayersTable'
-import { MatchesTable } from './MatchesTable'
-import { generateSwissPairings } from '../utils/swissPairings'
-import { useDBQuery } from '../hooks/use-db-query'
-
-interface PlayerStats {
-  wins: number
-  draws: number
-  losses: number
-  score: number
-  opponentWinPercentage: number
-}
+import RoundsTable from './RoundsTable'
 
 export function EventDetails() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
 
-  const [playerStats, setPlayerStats] = useState<Map<string, PlayerStats>>(() => new Map())
+  const [error, setError] = useState<Error | null>(null)
   const [modalOpened, setModalOpened] = useState(false)
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null)
 
-  const { result: event } = useDBQuery(getEvent, {
-    params: [id!],
-    skip: !id,
-  })
+  const event = useLiveQuery(
+    async () => id && db.events.get(id),
+    [id]
+  )
 
-  const { result: players } = useDBQuery(getEventPlayers, {
-    params: [id!],
-    skip: !id,
-    onSuccess(players) {
-      Promise.all(
-        players.map(async (player) => [
-          player.id,
-          await getPlayerStats(id!, player.id)
-        ] as [string, PlayerStats])
-      ).then((pairs) => {
-        setPlayerStats(new Map(pairs))
-      })
-    },
-  })
+  const players = useLiveQuery(
+    async () => id ? db.players.where({ eventId: id }).toArray() : [],
+    [id]
+  )
 
-  const { result: matches } = useDBQuery(getRoundMatches, {
-    params: [id!, event?.currentRound!],
-    skip: !!event?.currentRound
-  })
+  const rounds = useLiveQuery(
+    async () => id ? (await db.rounds.where({ eventId: id }).sortBy('number')).reverse() : [],
+    [id]
+  )
 
   async function handleAddPlayer(player: Omit<Player, 'id' | 'eventId'>) {
     if (!id) return
@@ -116,36 +85,6 @@ export function EventDetails() {
     }
   }
 
-  async function handleStartNewRound() {
-    if (!id) return
-    
-    try {
-      const nextRound = currentRound === null ? 1 : currentRound + 1
-      
-      // Get all previous matches
-      const allMatches: Match[] = []
-      if (currentRound !== null) {
-        for (let round = 1; round <= currentRound; round++) {
-          const roundMatches = await getRoundMatches(id, round)
-          allMatches.push(...roundMatches)
-        }
-      }
-      
-      // Generate new pairings
-      const newMatches = generateSwissPairings(players, allMatches, nextRound)
-      console.log(newMatches)
-      
-      // Add new matches to the database
-      await Promise.all(newMatches.map(match => addMatch(id, match)))
-      
-      // Update current round and reload matches
-      setCurrentRound(nextRound)
-      loadMatches(nextRound)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to start new round')
-    }
-  }
-
   if (!event || !players) {
     return (
       <Container size="md" py="xl">
@@ -173,10 +112,9 @@ export function EventDetails() {
             <Button onClick={() => setModalOpened(true)}>Add Player</Button>
           </Group>
 
-          {players && playerStats.size > 0 && (
+          {players && (
             <PlayersTable
               players={players}
-              playerStats={playerStats}
               onEditPlayer={(player) => {
                 setEditingPlayer(player)
                 setModalOpened(true)
@@ -187,12 +125,12 @@ export function EventDetails() {
         </Tabs.Panel>
 
         <Tabs.Panel value="matches" pt="xl">
-          {matches && players && (
-            <MatchesTable
-              matches={matches}
+          {rounds && players && (
+            <RoundsTable
+              eventId={event.id}
+              rounds={rounds}
               players={players}
               currentRound={event.currentRound}
-              onStartNewRound={handleStartNewRound}
               onUpdateMatch={handleUpdateMatch}
             />
           )}
@@ -200,15 +138,13 @@ export function EventDetails() {
       </Tabs>
 
       <PlayerModal
+        eventId={event.id}
+        player={editingPlayer}
         opened={modalOpened}
         onClose={() => {
           setModalOpened(false)
           setEditingPlayer(null)
         }}
-        onSubmit={editingPlayer ? handleUpdatePlayer : handleAddPlayer}
-        initialValues={editingPlayer ?? undefined}
-        title={editingPlayer ? 'Edit Player' : 'New Player'}
-        submitLabel={editingPlayer ? 'Save Changes' : 'Add Player'}
       />
     </Container>
   )

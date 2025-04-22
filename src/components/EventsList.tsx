@@ -10,23 +10,21 @@ import {
   Title
 } from '@mantine/core'
 import { format } from 'date-fns'
+import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Event, getAllEvents } from '../db'
-import { useDBQuery } from '../hooks/use-db-query'
+import { db, Event } from '../db'
 import EventModal from './EventModal'
 
 export function EventsList() {
   const navigate = useNavigate()
 
-  const { result: events, setResult: setEvents } = useDBQuery(getAllEvents, {
-    params: []
-  })
+  const events = useLiveQuery(() => db.events.orderBy('createdAt').reverse().toArray())
 
   const [modalOpened, setModalOpened] = useState(false)
   const [editingEvent, setEditingEvent] = useState<Event | null>(null)
 
-  if (events === null) {
+  if (!events) {
     return (
       <Container size="md" py="xl">
         <Loader />
@@ -54,7 +52,7 @@ export function EventsList() {
               <div>
                 <Text fw={500} size="lg">{event.name}</Text>
                 <Text size="sm" c="dimmed">
-                  {event.playerCount || 0} players • Created {format(event.createdAt, 'PPP')}
+                  {event.playersCount || 0} players • Created {format(event.createdAt, 'PPP')}
                 </Text>
               </div>
               <ActionIcon 
@@ -78,13 +76,6 @@ export function EventsList() {
         onClose={() => {
           setModalOpened(false)
           setEditingEvent(null)
-        }}
-        onSubmit={(event) => {
-          if (editingEvent) {
-            setEvents((events) => events?.map((e) => e.id === event.id ? event : e) ?? null)
-          } else {
-            setEvents((events) => [event, ...(events ?? [])])
-          }
         }}
       />
     </Container>
