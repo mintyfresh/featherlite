@@ -13,6 +13,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<EventsList />} />
           <Route path="/events/:id" element={<EventDetails />} />
+          <Route path="/events/:id/:tab" element={<EventDetails />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

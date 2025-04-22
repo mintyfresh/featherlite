@@ -14,7 +14,7 @@ import PlayersTab from './players/PlayersTab'
 
 export function EventDetails() {
   const navigate = useNavigate()
-  const { id } = useParams<{ id: string }>()
+  const { id, tab } = useParams<{ id: string, tab: string | undefined }>()
 
   const event = useLiveQuery(
     async () => id && db.events.get(id),
@@ -36,7 +36,13 @@ export function EventDetails() {
         <Button variant="subtle" onClick={() => navigate('/')}>← Back to Events</Button>
       </Group>
 
-      <Tabs defaultValue="players">
+      <Tabs value={tab ?? 'players'} onChange={(value) => {
+        if (value === 'players') {
+          navigate(`/events/${id}`)
+        } else {
+          navigate(`/events/${id}/${value}`)
+        }
+      }}>
         <Tabs.List>
           <Tabs.Tab value="players">Players</Tabs.Tab>
           <Tabs.Tab value="matches">Matches</Tabs.Tab>
