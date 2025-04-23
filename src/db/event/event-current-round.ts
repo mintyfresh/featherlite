@@ -1,15 +1,9 @@
 import { db, Event } from '../../db'
-import { RecordNotFoundError } from '../errors'
+import eventGet from './event-get'
 
 export default async function eventCurrentRound(event: Event | string) {
   if (typeof event === 'string') {
-    const result = await db.events.get(event)
-
-    if (!result) {
-      throw new RecordNotFoundError('Event', event)
-    }
-
-    event = result
+    event = await eventGet(event)
   }
 
   if (!event.currentRound) {

@@ -28,7 +28,7 @@ export default function MatchesTable({
   )
 
   const roundMatches = useLiveQuery(
-    async () => await db.matches.where('roundId').equals(round.id).toArray(),
+    async () => await db.matches.where('roundId').equals(round.id).sortBy('table'),
     [round.id]
   )
 

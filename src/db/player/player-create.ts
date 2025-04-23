@@ -1,7 +1,7 @@
 import { db, Event, Player } from '../../db'
 import eventGet from '../event/event-get'
 
-export type PlayerCreateInput = Omit<Player, 'id' | 'eventId'>
+export type PlayerCreateInput = Pick<Player, 'name' | 'paid' | 'dropped'>
 
 export default async function playerCreate(event: Event | string, input: PlayerCreateInput) {
   return await db.transaction('rw', db.events, db.players, async () => {
@@ -13,6 +13,11 @@ export default async function playerCreate(event: Event | string, input: PlayerC
       ...input,
       id: crypto.randomUUID(),
       eventId: event.id,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      score: 0,
+      opponentWinRate: 0,
     }
 
     db.players.add(result)

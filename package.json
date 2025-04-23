@@ -3,16 +3,23 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "imports": {
+    "#pyodide": "./deps/pyodide/"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "pyodide:download": "curl -L https://github.com/pyodide/pyodide/releases/download/0.27.5/pyodide-0.27.5.tar.bz2 -o pyodide-0.27.5.tar.bz2",
+    "pyodide:extract": "tar -xjf pyodide-0.27.5.tar.bz2 -C deps"
   },
   "dependencies": {
     "@mantine/core": "^7.17.4",
     "@mantine/hooks": "^7.17.4",
     "@tabler/icons-react": "^3.31.0",
+    "combinations": "^1.0.0",
     "date-fns": "^4.1.0",
     "dexie": "^4.0.11",
     "dexie-react-hooks": "^1.1.7",
@@ -20,10 +27,12 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.5.1",
-    "tournament-pairings": "^2.0.0"
+    "vite-plugin-static-copy": "^2.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
+    "@types/combinations": "^1.0.2",
+    "@types/jest": "^29.5.14",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react-swc": "^3.8.0",
@@ -34,6 +43,8 @@
     "postcss": "^8.5.3",
     "postcss-preset-mantine": "^1.17.0",
     "postcss-simple-vars": "^7.0.1",
+    "ts-jest": "^29.3.2",
+    "ts-node": "^10.9.2",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.26.1",
     "vite": "^6.3.1"

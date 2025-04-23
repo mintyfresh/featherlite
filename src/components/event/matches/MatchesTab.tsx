@@ -4,8 +4,8 @@ import { useCallback } from 'react'
 import { db, Event } from '../../../db'
 import eventCurrentRound from '../../../db/event/event-current-round'
 import roundCreate from '../../../db/round/round-create'
-import { generateSwissPairings } from '../../../utils/swissPairings'
 import RoundsList from './RoundsList'
+import generateSwissPairings from '../../../utils/swiss'
 
 export interface MatchesTabProps {
   event: Event
@@ -29,7 +29,10 @@ export default function MatchesTab({ event }: MatchesTabProps) {
 
   const startNextRound = useCallback(
     async () => {
-      const matches = await generateSwissPairings(event.id)
+      const pairings = await generateSwissPairings(event)
+      console.log(pairings)
+      const matches = pairings.map((playerIds) => ({ playerIds }))
+
       await roundCreate(event.id, { matches })
     },
     [event.id]

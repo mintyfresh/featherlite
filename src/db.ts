@@ -15,6 +15,11 @@ export interface Player {
   name: string
   paid: boolean
   dropped: boolean
+  wins: number
+  losses: number
+  draws: number
+  score: number
+  opponentWinRate: number
 }
 
 export interface Round {
@@ -29,7 +34,7 @@ export interface Match {
   id: string
   roundId: string
   table: number
-  playerIds: [string, string] | [string, null]
+  playerIds: [string, string | null]
   winnerId: string | null
   isDraw: boolean
 }

@@ -1,8 +1,10 @@
 import { db, Event, Match, Round } from '../../db'
 import eventGet from '../event/event-get'
+import matchValidate from '../match/match-validate'
+import playerUpdateStats from '../player/player-update-stats'
 
 export type MatchCreateInput = {
-  playerIds: [string, string] | [string, null]
+  playerIds: [string, string | null]
 }
 
 export type RoundCreateInput = {
@@ -10,7 +12,7 @@ export type RoundCreateInput = {
 }
 
 export default async function roundCreate(event: Event | string, round: RoundCreateInput) {
-  return await db.transaction('rw', db.events, db.rounds, db.matches, async () => {
+  return await db.transaction('rw', db.events, db.rounds, db.matches, db.players, async () => {
     if (typeof event === 'string') {
       event = await eventGet(event)
     }
@@ -42,7 +44,13 @@ export default async function roundCreate(event: Event | string, round: RoundCre
         isDraw: false,
       }
 
+      await matchValidate(matchResult)
       await db.matches.add(matchResult)
+
+      // If this was a BYE, immediately update the winner's stats
+      if (winnerId) {
+        await playerUpdateStats(winnerId)
+      }
     })
 
     return result

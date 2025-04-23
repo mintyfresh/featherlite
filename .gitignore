@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Pyodide
+deps/*
+!deps/.gitkeep
+pyodide-*.tar.bz2

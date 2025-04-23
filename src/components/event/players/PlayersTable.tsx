@@ -2,14 +2,11 @@ import {
   ActionIcon,
   Badge,
   Group,
-  Loader,
   Table,
-  Text,
+  Text
 } from '@mantine/core'
-import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo } from 'react'
 import { Player } from '../../../db'
-import playerBulkCalculateStats from '../../../db/player/player-bulk-calculate-stats'
 
 interface PlayersTableProps {
   players: Player[]
@@ -17,38 +14,18 @@ interface PlayersTableProps {
 }
 
 export function PlayersTable({ players, onPlayerEdit }: PlayersTableProps) {
-  const playerIds = players.map((player) => player.id)
-  const playerStats = useLiveQuery(
-    async () => playerBulkCalculateStats(playerIds),
-    [playerIds.join(',')]
-  )
-
   const playersByRanking = useMemo(
     () => players.sort((player1, player2) => {
-      const stats1 = playerStats?.get(player1.id)
-      const stats2 = playerStats?.get(player2.id)
-
-      if (!stats1 || !stats2) {
-        return 0
-      }
-
-      if (stats1.score !== stats2.score) {
-        return stats2.score - stats1.score
+      if (player1.score !== player2.score) {
+        return player2.score - player1.score
       } else {
-        return stats2.opponentWinPercentage - stats1.opponentWinPercentage
+        return player2.opponentWinRate - player1.opponentWinRate
       }
     }),
     [
       JSON.stringify(players),
-      JSON.stringify(playerStats)
     ]
   )
-
-  if (!playerStats) {
-    return (
-      <Loader />
-    )
-  }
 
   return (
     <>
@@ -74,11 +51,11 @@ export function PlayersTable({ players, onPlayerEdit }: PlayersTableProps) {
                   {player.dropped && <Badge color="red">Dropped</Badge>}
                 </Group>
               </Table.Td>
-              <Table.Td>{playerStats.get(player.id)?.wins}</Table.Td>
-              <Table.Td>{playerStats.get(player.id)?.draws}</Table.Td>
-              <Table.Td>{playerStats.get(player.id)?.losses}</Table.Td>
-              <Table.Td>{playerStats.get(player.id)?.score}</Table.Td>
-              <Table.Td>{playerStats.get(player.id)?.opponentWinPercentage?.toFixed(2)}%</Table.Td>
+              <Table.Td>{player.wins}</Table.Td>
+              <Table.Td>{player.draws}</Table.Td>
+              <Table.Td>{player.losses}</Table.Td>
+              <Table.Td>{player.score}</Table.Td>
+              <Table.Td>{(player.opponentWinRate * 100).toFixed(2)}%</Table.Td>
               <Table.Td ta="end">
                 <ActionIcon
                   variant="subtle"
