@@ -1,4 +1,4 @@
-import { TimerCreateInput } from './db/timer-create'
+import { TimerCreateInput } from './db/timer/timer-create'
 
 const SECOND = 1000 // millis
 const MINUTE = 60 * SECOND

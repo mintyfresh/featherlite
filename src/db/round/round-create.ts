@@ -1,5 +1,5 @@
-import { db, Event, Match, Round } from '../db'
-import eventGet from './event-get'
+import { db, Event, Match, Round } from '../../db'
+import eventGet from '../event/event-get'
 
 export type MatchCreateInput = {
   playerIds: [string, string] | [string, null]

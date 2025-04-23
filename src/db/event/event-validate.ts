@@ -1,5 +1,5 @@
-import { db, Event } from '../db'
-import { RecordInvalidError } from './errors'
+import { db, Event } from '../../db'
+import { RecordInvalidError } from '../errors'
 
 export default async function eventValidate(event: Event) {
   if (!await isEventNameUnique(event)) {

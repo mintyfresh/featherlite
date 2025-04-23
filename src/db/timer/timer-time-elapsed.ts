@@ -1,4 +1,4 @@
-import { Timer } from '../db'
+import { Timer } from '../../db'
 import timerGet from './timer-get'
 import timerTimeRemaining from './timer-time-remaining'
 

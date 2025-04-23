@@ -1,7 +1,7 @@
-import { db, Match, Round } from '../db'
+import { db, Match, Round } from '../../db'
 import matchGet from './match-get'
 import matchValidate from './match-validate'
-import roundGet from './round-get'
+import roundGet from '../round/round-get'
 
 export type MatchUpdateInput = Partial<Pick<Match, 'winnerId' | 'isDraw'>>
 

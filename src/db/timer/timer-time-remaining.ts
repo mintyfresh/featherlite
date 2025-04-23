@@ -1,4 +1,4 @@
-import { Timer } from '../db'
+import { Timer } from '../../db'
 import timerGet from './timer-get'
 
 export default async function timerTimeRemaining(timer: Timer | string, at: Date = new Date()) {

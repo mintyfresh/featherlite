@@ -1,5 +1,5 @@
-import { db, Event, Player } from '../db'
-import eventGet from './event-get'
+import { db, Event, Player } from '../../db'
+import eventGet from '../event/event-get'
 
 export type PlayerCreateInput = Omit<Player, 'id' | 'eventId'>
 

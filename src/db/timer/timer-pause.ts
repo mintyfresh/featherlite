@@ -1,4 +1,4 @@
-import { db, Timer } from '../db'
+import { db, Timer } from '../../db'
 import timerGet from './timer-get'
 
 export default async function timerPause(timer: Timer | string) {

@@ -1,6 +1,6 @@
-import { db, Round, Timer } from '../db'
-import roundGet from './round-get'
-import { RecordInvalidError } from './errors'
+import { db, Round, Timer } from '../../db'
+import roundGet from '../round/round-get'
+import { RecordInvalidError } from '../errors'
 
 export interface TimerCreateInput {
   matchId: string | null

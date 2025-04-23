@@ -9,7 +9,7 @@ import {
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo } from 'react'
 import { db, Player, Round } from '../../../db'
-import matchUpdate from '../../../db/match-update'
+import matchUpdate from '../../../db/match/match-update'
 
 interface MatchesTableProps {
   round: Round

@@ -1,4 +1,4 @@
-import { db, Event } from '../db'
+import { db, Event } from '../../db'
 import eventGet from './event-get'
 import eventValidate from './event-validate'
 

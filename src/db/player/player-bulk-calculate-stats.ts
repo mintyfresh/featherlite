@@ -1,4 +1,4 @@
-import { db, Match } from '../db'
+import { db, Match } from '../../db'
 
 export interface PlayerStats {
   wins: number

@@ -9,7 +9,7 @@ import {
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo } from 'react'
 import { Player } from '../../../db'
-import playerBulkCalculateStats from '../../../db/player-bulk-calculate-stats'
+import playerBulkCalculateStats from '../../../db/player/player-bulk-calculate-stats'
 
 interface PlayersTableProps {
   players: Player[]

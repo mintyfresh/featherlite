@@ -1,4 +1,4 @@
-import { db, Timer } from '../db'
+import { db, Timer } from '../../db'
 import timerGet from './timer-get'
 import timerTimeRemainingInCurrentPhase from './timer-time-remaining-in-current-phase'
 

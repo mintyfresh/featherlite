@@ -1,4 +1,4 @@
-import { db, Event } from '../db'
+import { db, Event } from '../../db'
 import eventValidate from './event-validate'
 
 export type EventCreateInput = Pick<Event, 'name'>

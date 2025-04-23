@@ -1,5 +1,5 @@
-import { db, Event } from '../db'
-import { RecordNotFoundError } from './errors'
+import { db, Event } from '../../db'
+import { RecordNotFoundError } from '../errors'
 
 export default async function eventCurrentRound(event: Event | string) {
   if (typeof event === 'string') {

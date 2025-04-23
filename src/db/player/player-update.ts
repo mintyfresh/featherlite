@@ -1,5 +1,5 @@
-import { db, Player } from '../db'
-import eventTouch from './event-touch'
+import { db, Player } from '../../db'
+import eventTouch from '../event/event-touch'
 import playerGet from './player-get'
 
 export type PlayerUpdateInput = Partial<Pick<Player, 'name' | 'paid' | 'dropped'>>

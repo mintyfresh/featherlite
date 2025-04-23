@@ -1,7 +1,7 @@
 import { Swiss } from 'tournament-pairings'
 import { db, Match } from '../db'
 import { RecordNotFoundError } from '../db/errors'
-import playerBulkCalculateStats from '../db/player-bulk-calculate-stats'
+import playerBulkCalculateStats from '../db/player/player-bulk-calculate-stats'
 
 interface SwissPlayer {
   id: string | number
