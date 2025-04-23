@@ -17,7 +17,6 @@ export default async function timerUnpause(timer: Timer | string, at: Date = new
     ...timer,
     expiresAt,
     pausedAt: null,
-    updatedAt: new Date(),
   }
 
   await db.timers.update(timer.id, result)

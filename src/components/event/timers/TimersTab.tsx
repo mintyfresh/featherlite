@@ -59,16 +59,18 @@ export default function TimersTab({ event }: TimersTabProps) {
           defaultValue={timerPresets[0].label}
           value={selectedPreset}
           onChange={setSelectedPreset}
+          rightSection={
+            <Button
+              onClick={handleCreateTimer}
+              disabled={!selectedPreset}
+            >
+              Create Timer
+            </Button>
+          }
         />
-        <Button
-          onClick={handleCreateTimer}
-          disabled={!selectedPreset}
-        >
-          Create Timer
-        </Button>
       </Group>
 
-      <Stack>
+      <Stack gap="xl">
         {timers?.map((timer) => (
           <TimerListItem key={timer.id} timer={timer} />
         ))}

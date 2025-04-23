@@ -42,7 +42,7 @@ export interface Timer {
   duration: number // millis
   expiresAt: Date
   pausedAt: Date | null
-  updatedAt: Date
+  createdAt: Date
 }
 
 export interface TimerPhase {

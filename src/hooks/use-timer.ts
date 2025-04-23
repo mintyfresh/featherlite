@@ -3,6 +3,7 @@ import { Timer, TimerPhase } from '../db'
 import timerCurrentPhase from '../db/timer-current-phase'
 import timerDelete from '../db/timer-delete'
 import timerPause from '../db/timer-pause'
+import timerReset from '../db/timer-reset'
 import timerSkipToNextPhase from '../db/timer-skip-to-next-phase'
 import timerTimeRemainingInCurrentPhase from '../db/timer-time-remaining-in-current-phase'
 import timerUnpause from '../db/timer-unpause'
@@ -52,6 +53,11 @@ export default function useTimer(timer: Timer | null | undefined) {
     [timer?.id]
   )
 
+  const reset = useCallback(
+    () => timer && timerReset(timer.id),
+    [timer?.id]
+  )
+
   const destroy = useCallback(
     () => timer && timerDelete(timer.id),
     [timer?.id]
@@ -65,6 +71,7 @@ export default function useTimer(timer: Timer | null | undefined) {
     pause,
     unpause,
     skipToNextPhase,
+    reset,
     destroy,
   } as const
 }

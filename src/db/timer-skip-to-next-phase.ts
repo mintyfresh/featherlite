@@ -17,7 +17,6 @@ export default async function timerSkipToNextPhase(timer: Timer | string) {
   const result: Timer = {
     ...timer,
     expiresAt,
-    updatedAt: new Date(),
   }
   
   await db.timers.update(timer.id, result)

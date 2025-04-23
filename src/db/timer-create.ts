@@ -34,7 +34,7 @@ export default async function timerCreate(input: TimerCreateInput) {
       duration, // total duration in millis
       expiresAt: new Date(Date.now() + duration),
       pausedAt: null,
-      updatedAt: new Date()
+      createdAt: new Date()
     }
 
     let timeElapsed = 0
