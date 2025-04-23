@@ -2,6 +2,7 @@ import react from '@vitejs/plugin-react-swc'
 import { join } from 'path'
 import { defineConfig } from 'vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
+import electron from 'vite-plugin-electron'
 
 const PYODIDE_EXCLUDE = [
   "!**/*.{md,html}",
@@ -23,14 +24,37 @@ function viteStaticCopyPyodide() {
 }
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [
-    react(),
-    viteStaticCopyPyodide(),
-  ],
-  esbuild: {
-    supported: {
-      'top-level-await': true,
+export default defineConfig(({ command, mode }) => {
+  const isElectron = mode === 'electron'
+  
+  return {
+    plugins: [
+      react(),
+      viteStaticCopyPyodide(),
+      ...(isElectron ? [
+        electron({
+          entry: 'electron/main.ts',
+          vite: {
+            build: {
+              outDir: 'dist-electron',
+              rollupOptions: {
+                output: {
+                  format: 'es'
+                }
+              }
+            }
+          }
+        })
+      ] : [])
+    ],
+    esbuild: {
+      supported: {
+        'top-level-await': true,
+      },
     },
-  },
+    build: {
+      outDir: 'dist',
+      emptyOutDir: true,
+    },
+  }
 })
