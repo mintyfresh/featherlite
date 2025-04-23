@@ -1,5 +1,5 @@
 import { db, Event } from '../db'
-import { RecordInvalidError } from './errors'
+import eventValidate from './event-validate'
 
 export type EventCreateInput = Pick<Event, 'name'>
 
@@ -15,10 +15,7 @@ export default async function eventCreate(event: EventCreateInput) {
     updatedAt: now,
   }
 
-  if (await db.events.get({ name: event.name })) {
-    throw new RecordInvalidError(`Event already exists with name '${event.name}'`)
-  }
-
+  await eventValidate(result)
   await db.events.add(result)
 
   return result

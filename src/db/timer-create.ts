@@ -1,8 +1,8 @@
-import { db, Timer } from '../db'
+import { db, Round, Timer } from '../db'
+import roundGet from './round-get'
 import { RecordInvalidError } from './errors'
 
 export interface TimerCreateInput {
-  roundId: string
   matchId: string | null
   label: string
   phases: TimerPhaseCreateInput[]
@@ -14,8 +14,12 @@ export interface TimerPhaseCreateInput {
   colour: number | null
 }
 
-export default async function timerCreate(input: TimerCreateInput) {
+export default async function timerCreate(round: Round | string, input: TimerCreateInput) {
   return await db.transaction('rw', db.rounds, db.timers, db.timerPhases, async () => {
+    if (typeof round === 'string') {
+      round = await roundGet(round)
+    }
+
     if (input.phases.length < 1) {
       throw new RecordInvalidError('At least one phase is required')
     }
@@ -28,7 +32,7 @@ export default async function timerCreate(input: TimerCreateInput) {
 
     const timer: Timer = {
       id: crypto.randomUUID(),
-      roundId: input.roundId,
+      roundId: round.id,
       matchId: input.matchId,
       label: input.label,
       duration, // total duration in millis

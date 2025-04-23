@@ -33,9 +33,8 @@ export default function TimersTab({ event }: TimersTabProps) {
     const preset = timerPresets.find((preset) => preset.label === selectedPreset)
     if (!preset) return
 
-    await timerCreate({
+    await timerCreate(currentRound, {
       ...preset,
-      roundId: currentRound.id,
       matchId: null
     })
   }

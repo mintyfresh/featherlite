@@ -1,12 +1,4 @@
 import { db } from '../db'
-import { RecordNotFoundError } from './errors'
+import recordGet from './record-get'
 
-export default async function roundGet(id: string) {
-  const result = await db.rounds.get(id)
-
-  if (!result) {
-    throw new RecordNotFoundError('Round', id)
-  }
-
-  return result
-}
+export default recordGet(db.rounds, 'Round')

@@ -1,38 +1,26 @@
 import { db, Match, Round } from '../db'
-import { RecordNotFoundError } from './errors'
+import matchGet from './match-get'
+import matchValidate from './match-validate'
+import roundGet from './round-get'
 
 export type MatchUpdateInput = Partial<Pick<Match, 'winnerId' | 'isDraw'>>
 
-export default async function matchUpdate(id: string, match: MatchUpdateInput) {
+export default async function matchUpdate(match: Match | string, input: MatchUpdateInput) {
   return await db.transaction('rw', db.matches, db.rounds, async () => {
-    const existingMatch = await db.matches.get(id)
-
-    if (!existingMatch) {
-      throw new RecordNotFoundError('Match', id)
-    }
-
-    const round = await db.rounds.get(existingMatch.roundId)
-
-    if (!round) {
-      throw new RecordNotFoundError('Round', existingMatch.roundId)
+    if (typeof match === 'string') {
+      match = await matchGet(match)
     }
 
     const result: Match = {
-      ...existingMatch,
       ...match,
+      ...input,
     }
 
-    // Prevent invalid match states
-    if (result.isDraw && result.winnerId) {
-      throw new Error('Match cannot be a draw and have a winner')
-    }
-
-    await db.matches.update(id, {
-      winnerId: result.winnerId,
-      isDraw: result.isDraw,
-    })
+    await matchValidate(result)
+    await db.matches.update(match.id, input)
 
     // Update the completedness state of the round
+    const round = await roundGet(match.roundId)
     await db.rounds.update(round.id, {
       isComplete: await allMatchesComplete(round),
       updatedAt: new Date(),

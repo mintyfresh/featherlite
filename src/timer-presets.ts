@@ -1,9 +1,10 @@
 import { TimerCreateInput } from './db/timer-create'
 
-const MINUTE = 60 * 1000
+const SECOND = 1000 // millis
+const MINUTE = 60 * SECOND
 const HOUR = 60 * MINUTE
 
-export const timerPresets: Omit<TimerCreateInput, 'roundId' | 'matchId'>[] = [
+export const timerPresets: Omit<TimerCreateInput, 'matchId'>[] = [
   {
     label: '45 Minute Game',
     phases: [
@@ -38,6 +39,6 @@ export const timerPresets: Omit<TimerCreateInput, 'roundId' | 'matchId'>[] = [
         colour: 0x198754,
       },
       // No soft time
-    ]
-  }
+    ],
+  },
 ]

@@ -1,24 +1,22 @@
-import { db, Player } from '../db'
-import { RecordNotFoundError } from './errors'
+import { db, Event, Player } from '../db'
+import eventGet from './event-get'
 
 export type PlayerCreateInput = Omit<Player, 'id' | 'eventId'>
 
-export default async function playerCreate(eventId: string, player: PlayerCreateInput) {
+export default async function playerCreate(event: Event | string, input: PlayerCreateInput) {
   return await db.transaction('rw', db.events, db.players, async () => {
-    const event = await db.events.get(eventId)
-  
-    if (!event) {
-      throw new RecordNotFoundError('Event', eventId)
+    if (typeof event === 'string') {
+      event = await eventGet(event)
     }
-  
+
     const result: Player = {
-      ...player,
+      ...input,
       id: crypto.randomUUID(),
       eventId: event.id,
     }
 
     db.players.add(result)
-    db.events.update(eventId, {
+    db.events.update(event.id, {
       ...event,
       playersCount: event.playersCount + 1,
       updatedAt: new Date(),
