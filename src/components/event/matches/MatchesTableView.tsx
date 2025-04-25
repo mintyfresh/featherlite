@@ -1,8 +1,9 @@
 import { ActionIcon, Badge, Group, Loader, Table, Text } from '@mantine/core'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo } from 'react'
-import { db, Player, Round } from '../../../db'
+import { Player, Round } from '../../../db'
 import matchUpdate from '../../../db/match/match-update'
+import roundMatches from '../../../db/round/round-matches'
 
 interface MatchesTableViewProps {
   round: Round
@@ -12,12 +13,9 @@ interface MatchesTableViewProps {
 export default function MatchesTableView({ round, players }: MatchesTableViewProps) {
   const playerIndex = useMemo(() => new Map<string, Player>(players.map((player) => [player.id, player])), [players])
 
-  const roundMatches = useLiveQuery(
-    async () => await db.matches.where('roundId').equals(round.id).sortBy('table'),
-    [round.id]
-  )
+  const matches = useLiveQuery(() => roundMatches(round.id), [round.id])
 
-  if (!roundMatches) {
+  if (!matches) {
     return <Loader />
   }
 
@@ -33,7 +31,7 @@ export default function MatchesTableView({ round, players }: MatchesTableViewPro
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>
-        {roundMatches.map((match) => {
+        {matches.map((match) => {
           const player1 = playerIndex.get(match.playerIds[0])!
           const player2 = match.playerIds[1] ? playerIndex.get(match.playerIds[1]) : undefined
           const winner = match.winnerId ? playerIndex.get(match.winnerId) : undefined

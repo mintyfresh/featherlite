@@ -2,8 +2,9 @@ import { Card, Divider, Flex, Loader, SimpleGrid, Text, UnstyledButton, Unstyled
 import { IconCrown } from '@tabler/icons-react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo } from 'react'
-import { Match, Player, Round, db } from '../../../db'
+import { Match, Player, Round } from '../../../db'
 import matchUpdate from '../../../db/match/match-update'
+import roundMatches from '../../../db/round/round-matches'
 
 interface MatchesListGridProps {
   round: Round
@@ -13,18 +14,15 @@ interface MatchesListGridProps {
 export default function MatchesListGrid({ round, players }: MatchesListGridProps) {
   const playerIndex = useMemo(() => new Map<string, Player>(players.map((player) => [player.id, player])), [players])
 
-  const roundMatches = useLiveQuery(
-    async () => await db.matches.where('roundId').equals(round.id).sortBy('table'),
-    [round.id]
-  )
+  const matches = useLiveQuery(() => roundMatches(round.id), [round.id])
 
-  if (!roundMatches) {
+  if (!matches) {
     return <Loader />
   }
 
   return (
     <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }}>
-      {roundMatches.map((match) => (
+      {matches.map((match) => (
         <Card key={match.id} withBorder shadow="sm" radius="md">
           <Card.Section withBorder inheritPadding py="xs">
             <Text fw={500}>Table {match.table}</Text>

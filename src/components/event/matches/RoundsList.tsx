@@ -1,4 +1,5 @@
-import { Accordion, Text } from '@mantine/core'
+import { Accordion, ActionIcon, Center, Text } from '@mantine/core'
+import { IconPrinter } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { Event, Player, Round } from '../../../db'
 import MatchesGridView from './MatchesGridView'
@@ -22,17 +23,34 @@ export default function RoundsList({ view, event, rounds, players }: RoundsListP
   )
 
   return (
-    <Accordion variant="separated" multiple value={expanded} onChange={setExpanded}>
+    <Accordion chevronPosition="left" variant="separated" multiple value={expanded} onChange={setExpanded}>
       {rounds.map((round) => (
         <Accordion.Item key={round.id} value={`round-${round.number}`}>
-          <Accordion.Control>
-            Round {round.number}
-            {round.isComplete && (
-              <Text size="xs" c="dimmed">
-                Complete
-              </Text>
-            )}
-          </Accordion.Control>
+          <Center>
+            <Accordion.Control>
+              Round {round.number}
+              {round.isComplete && (
+                <Text size="xs" c="dimmed">
+                  Complete
+                </Text>
+              )}
+            </Accordion.Control>
+            <ActionIcon
+              size="lg"
+              me="md"
+              variant="subtle"
+              color="gray"
+              onClick={() => {
+                window.open(
+                  `/rounds/${round.id}/slips`,
+                  'Slips',
+                  'popup,titlebar=no,toolbar=no,menubar=no,directories=no,location=no,status=no,width=600,height=800'
+                )
+              }}
+            >
+              <IconPrinter />
+            </ActionIcon>
+          </Center>
           <Accordion.Panel>
             {view === 'table' ? (
               <MatchesTableView round={round} players={players} />

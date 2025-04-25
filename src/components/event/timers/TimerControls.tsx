@@ -27,11 +27,15 @@ export default function TimerControls({
 }: TimerControlsProps) {
   return (
     <Group gap="xs">
-      <ActionIcon variant="outline" color="gray" onClick={() => {
-        if (confirm('Are you sure you want to reset this timer?')) {
-          onReset()
-        }
-      }}>
+      <ActionIcon
+        variant="outline"
+        color="gray"
+        onClick={() => {
+          if (confirm('Are you sure you want to reset this timer?')) {
+            onReset()
+          }
+        }}
+      >
         <IconPlayerSkipBack />
       </ActionIcon>
       {timer.pausedAt ? (
