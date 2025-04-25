@@ -23,10 +23,10 @@ export default function MatchesTab({ event }: MatchesTabProps) {
 
   const rounds = useLiveQuery(
     async () => (await db.rounds.where({ eventId: event.id }).sortBy('number')).reverse(),
-    [event.id, event.currentRound]
+    [event.id]
   )
 
-  const currentRound = useLiveQuery(async () => eventCurrentRound(event), [event.id, event.currentRound])
+  const currentRound = useLiveQuery(async () => eventCurrentRound(event), [event])
 
   useEffect(
     // Start loading the Python runtime and dependencies as soon as the component mounts

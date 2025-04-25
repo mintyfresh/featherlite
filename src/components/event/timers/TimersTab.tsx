@@ -16,7 +16,7 @@ export default function TimersTab({ event }: TimersTabProps) {
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null)
 
   // Get current round
-  const currentRound = useLiveQuery(async () => eventCurrentRound(event), [event.id])
+  const currentRound = useLiveQuery(async () => eventCurrentRound(event), [event])
 
   // Get timers for current round
   const timers = useLiveQuery(async () => (currentRound ? roundTimers(currentRound) : []), [currentRound?.id])

@@ -53,7 +53,7 @@ export default function useTimer(timer: Timer | null | undefined) {
         audio?.play()
       }
     }
-  }, [endOfPhaseSound, hours, minutes, seconds])
+  }, [hours, minutes, seconds, endOfPhaseSound, audio])
 
   const pause = useCallback(() => timer?.id && timerPause(timer.id), [timer?.id])
   const unpause = useCallback(() => timer?.id && timerUnpause(timer.id), [timer?.id])
