@@ -16,8 +16,7 @@ export default async function playerUpdateStats(player: Player | string) {
   let draws = 0
   let losses = 0
   let byes = 0
-  let opponentWins = 0
-  let opponentGames = 0
+  let opponentIds = new Set<string>()
 
   matches.forEach((match) => {
     const isBye = !match.playerIds[1]
@@ -28,7 +27,8 @@ export default async function playerUpdateStats(player: Player | string) {
       return
     }
 
-    opponentGames++
+    const opponentId = match.playerIds[0] === player.id ? match.playerIds[1]! : match.playerIds[0]
+    opponentIds.add(opponentId)
 
     if (match.isDraw) {
       draws++
@@ -36,12 +36,11 @@ export default async function playerUpdateStats(player: Player | string) {
       wins++
     } else if (match.winnerId) {
       losses++
-      opponentWins++
     }
   })
 
   const score = (wins * POINTS_FOR_WIN) + (draws * POINTS_FOR_DRAW) + (losses * POINTS_FOR_LOSS)
-  const opponentWinRate = opponentGames > 0 ? (opponentWins / opponentGames) : 0
+  const opponentWinRate = await calculateOpponentWinRate(opponentIds)
 
   const result: Player = {
     ...player,
@@ -55,4 +54,24 @@ export default async function playerUpdateStats(player: Player | string) {
   await db.players.update(player.id, result)
 
   return result
+}
+
+async function calculateOpponentWinRate(opponentIds: Set<string>): Promise<number> {
+  if (opponentIds.size === 0) {
+    return 0
+  }
+
+  const opponents = await db.players.where('id').anyOf(Array.from(opponentIds)).toArray()
+
+  if (opponents.length === 0) {
+    return 0
+  }
+
+  return opponents.reduce((acc, opponent) => {
+    // Calculate the number of matches played by the opponent
+    const matches = opponent.wins + opponent.draws + opponent.losses
+
+    // Calculate the win rate of the opponent
+    return acc + (opponent.wins / matches)
+  }, 0) / opponents.length // Average the win rates of all opponents
 }
