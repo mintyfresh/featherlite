@@ -1,14 +1,9 @@
-import { ActionIcon, Box, Group, Loader, Text } from '@mantine/core'
-import {
-  IconPlayerPause,
-  IconPlayerPlay,
-  IconPlayerSkipBack,
-  IconPlayerSkipForward,
-  IconTrash,
-} from '@tabler/icons-react'
+import { Box, Flex, Loader, Text, TextInput } from '@mantine/core'
 import { Timer } from '../../../db'
 import useTimer from '../../../hooks/use-timer'
 import { integerToColour } from '../../../utils/colour'
+import TimerControls from './TimerControls'
+import timerUpdate from '../../../db/timer/timer-update'
 
 interface TimerProps {
   timer: Timer
@@ -26,7 +21,7 @@ export default function TimerListItem({ timer }: TimerProps) {
   }
 
   return (
-    <Box ta="center">
+    <Flex ta="center" align="center" direction="column" gap="md">
       <Text size="70px" fw="lighter">
         {phase.name}
       </Text>
@@ -34,41 +29,20 @@ export default function TimerListItem({ timer }: TimerProps) {
         {hours > 0 && `${hours.toString().padStart(2, '0')}:`}
         {minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}
       </Text>
-      <Group gap="xs">
-        <ActionIcon variant="outline" color="gray" onClick={reset}>
-          <IconPlayerSkipBack />
-        </ActionIcon>
-        {timer.pausedAt ? (
-          <ActionIcon variant="outline" color="gray" onClick={unpause}>
-            <IconPlayerPlay />
-          </ActionIcon>
-        ) : (
-          <ActionIcon variant="outline" color="gray" onClick={pause}>
-            <IconPlayerPause />
-          </ActionIcon>
-        )}
-        <ActionIcon
-          variant="outline"
-          color="gray"
-          onClick={() => {
-            // Confirm that the user wants to skip if there's more than 5 minutes left on the timer
-            if ((hours < 1 && minutes < 5) || confirm('Are you sure you want to skip this phase?')) {
-              skipToNextPhase()
-            }
-          }}
-        >
-          <IconPlayerSkipForward />
-        </ActionIcon>
-        <ActionIcon
-          variant="outline"
-          color="gray"
-          onClick={() => {
-            confirm('Are you sure you want to delete this timer?') && destroy()
-          }}
-        >
-          <IconTrash />
-        </ActionIcon>
-      </Group>
-    </Box>
+      <TextInput
+        defaultValue={timer.label}
+        onBlur={(event) => timerUpdate(timer.id, { label: event.currentTarget.value })}
+        styles={{ input: { textAlign: 'center', borderTop: 'none', borderLeft: 'none', borderRight: 'none' } }}
+        radius="none"
+      />
+      <TimerControls
+        timer={timer}
+        onReset={reset}
+        onPause={pause}
+        onUnpause={unpause}
+        onSkipToNextPhase={skipToNextPhase}
+        onDestroy={destroy}
+      />
+    </Flex>
   )
 }

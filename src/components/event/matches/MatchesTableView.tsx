@@ -10,10 +10,7 @@ interface MatchesTableViewProps {
 }
 
 export default function MatchesTableView({ round, players }: MatchesTableViewProps) {
-  const playerIndex = useMemo(
-    () => new Map<string, Player>(players.map((player) => [player.id, player])),
-    [JSON.stringify(players)]
-  )
+  const playerIndex = useMemo(() => new Map<string, Player>(players.map((player) => [player.id, player])), [players])
 
   const roundMatches = useLiveQuery(
     async () => await db.matches.where('roundId').equals(round.id).sortBy('table'),

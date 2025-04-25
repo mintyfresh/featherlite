@@ -20,7 +20,7 @@ function viteStaticCopyPyodide() {
 }
 
 // https://vite.dev/config/
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(({ mode }) => {
   const isElectron = mode === 'electron'
 
   return {

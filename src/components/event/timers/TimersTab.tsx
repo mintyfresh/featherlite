@@ -43,21 +43,18 @@ export default function TimersTab({ event }: TimersTabProps) {
   }
 
   return (
-    <Stack>
+    <Stack gap="xl">
       <Group>
         <Select
-          label="Timer Preset"
           placeholder="Select a preset"
           data={timerPresets.map((preset) => preset.label)}
           defaultValue={timerPresets[0].label}
           value={selectedPreset}
           onChange={setSelectedPreset}
-          rightSection={
-            <Button onClick={handleCreateTimer} disabled={!selectedPreset}>
-              Create Timer
-            </Button>
-          }
         />
+        <Button onClick={handleCreateTimer} disabled={!selectedPreset}>
+          Start Timer
+        </Button>
       </Group>
 
       <Stack gap="xl">{timers?.map((timer) => <TimerListItem key={timer.id} timer={timer} />)}</Stack>

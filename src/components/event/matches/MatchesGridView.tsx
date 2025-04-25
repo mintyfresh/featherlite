@@ -5,16 +5,13 @@ import { useMemo } from 'react'
 import { Match, Player, Round, db } from '../../../db'
 import matchUpdate from '../../../db/match/match-update'
 
-interface MatchesListViewProps {
+interface MatchesListGridProps {
   round: Round
   players: Player[]
 }
 
-export default function MatchesListView({ round, players }: MatchesListViewProps) {
-  const playerIndex = useMemo(
-    () => new Map<string, Player>(players.map((player) => [player.id, player])),
-    [JSON.stringify(players)]
-  )
+export default function MatchesListGrid({ round, players }: MatchesListGridProps) {
+  const playerIndex = useMemo(() => new Map<string, Player>(players.map((player) => [player.id, player])), [players])
 
   const roundMatches = useLiveQuery(
     async () => await db.matches.where('roundId').equals(round.id).sortBy('table'),
@@ -65,6 +62,7 @@ interface MatchCardDividerProps {
 
 function MatchCardDivider({ match }: MatchCardDividerProps) {
   const isBye = match.playerIds[1] === null
+  const interactive = !isBye
 
   const colour = match.isDraw ? 'green' : 'black'
   const text = isBye ? 'BYE' : match.isDraw ? '<< TIE >>' : 'TIE'
@@ -76,9 +74,9 @@ function MatchCardDivider({ match }: MatchCardDividerProps) {
           {text}
         </Text>
       }
-      role={!isBye ? 'button' : undefined}
-      style={{ cursor: !isBye ? 'pointer' : undefined }}
-      onClick={() => !isBye && matchUpdate(match.id, { isDraw: true, winnerId: null })}
+      role={interactive ? 'button' : undefined}
+      style={{ cursor: interactive ? 'pointer' : undefined }}
+      onClick={() => interactive && matchUpdate(match.id, { isDraw: true, winnerId: null })}
     />
   )
 }

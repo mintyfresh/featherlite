@@ -11,19 +11,17 @@ export default async function playerUpdateStats(player: Player | string) {
   }
 
   const matches = await db.matches.where('playerIds').equals(player.id).toArray()
+  const opponentIds = new Set<string>()
 
   let wins = 0
   let draws = 0
   let losses = 0
-  let byes = 0
-  let opponentIds = new Set<string>()
 
   matches.forEach((match) => {
     const isBye = !match.playerIds[1]
 
     if (isBye) {
       wins++
-      byes++
       return
     }
 

@@ -14,15 +14,12 @@ export interface MatchesTabProps {
 
 export default function MatchesTab({ event }: MatchesTabProps) {
   const [loading, setLoading] = useState(false)
-  const [view, setView] = useLocalStorage<'table' | 'list'>({
+  const [view, setView] = useLocalStorage<'table' | 'grid'>({
     key: 'matches-view',
     defaultValue: 'table',
   })
 
-  const players = useLiveQuery(
-    async () => db.players.where({ eventId: event.id }).toArray(),
-    [event.id, event.updatedAt]
-  )
+  const players = useLiveQuery(async () => db.players.where({ eventId: event.id }).toArray(), [event.id])
 
   const rounds = useLiveQuery(
     async () => (await db.rounds.where({ eventId: event.id }).sortBy('number')).reverse(),
@@ -51,7 +48,7 @@ export default function MatchesTab({ event }: MatchesTabProps) {
     } finally {
       setLoading(false)
     }
-  }, [event.id])
+  }, [event])
 
   const roundComplete = !currentRound || currentRound.isComplete
 
@@ -62,8 +59,8 @@ export default function MatchesTab({ event }: MatchesTabProps) {
   return (
     <>
       <Group justify="end" mb="md">
-        <Button variant="outline" onClick={() => setView(view === 'table' ? 'list' : 'table')}>
-          {view === 'table' ? 'List View' : 'Table View'}
+        <Button variant="outline" onClick={() => setView(view === 'table' ? 'grid' : 'table')}>
+          {view === 'table' ? 'Grid View' : 'Table View'}
         </Button>
 
         <Button onClick={() => startNextRound()} loading={loading} disabled={!roundComplete}>

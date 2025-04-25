@@ -1,11 +1,11 @@
 import { Accordion, Text } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { Event, Player, Round } from '../../../db'
-import MatchesListView from './MatchesListView'
+import MatchesGridView from './MatchesGridView'
 import MatchesTableView from './MatchesTableView'
 
 interface RoundsListProps {
-  view: 'table' | 'list'
+  view: 'table' | 'grid'
   event: Event
   rounds: Round[]
   players: Player[]
@@ -37,7 +37,7 @@ export default function RoundsList({ view, event, rounds, players }: RoundsListP
             {view === 'table' ? (
               <MatchesTableView round={round} players={players} />
             ) : (
-              <MatchesListView round={round} players={players} />
+              <MatchesGridView round={round} players={players} />
             )}
           </Accordion.Panel>
         </Accordion.Item>

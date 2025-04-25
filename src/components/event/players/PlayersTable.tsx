@@ -25,7 +25,7 @@ export function PlayersTable({ players, onPlayerEdit }: PlayersTableProps) {
         return player2.opponentWinRate - player1.opponentWinRate
       }
     })
-  }, [JSON.stringify(players)])
+  }, [players])
 
   return (
     <>

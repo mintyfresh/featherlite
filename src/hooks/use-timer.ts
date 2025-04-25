@@ -16,10 +16,10 @@ export default function useTimer(timer: Timer | null | undefined) {
   const [seconds, setSeconds] = useState(0)
 
   useEffect(() => {
-    if (timer) {
+    if (timer?.id) {
       const interval = setInterval(() => {
-        timerCurrentPhase(timer).then(setPhase)
-        timerTimeRemainingInCurrentPhase(timer).then((timeRemaining) => {
+        timerCurrentPhase(timer.id).then(setPhase)
+        timerTimeRemainingInCurrentPhase(timer.id).then((timeRemaining) => {
           const [hours, minutes, seconds] = extractComponentsFromDuration(timeRemaining)
 
           setHours(hours)
@@ -32,15 +32,11 @@ export default function useTimer(timer: Timer | null | undefined) {
     }
   }, [timer?.id, timer?.pausedAt, timer?.expiresAt])
 
-  const pause = useCallback(() => timer && timerPause(timer.id), [timer?.id])
-
-  const unpause = useCallback(() => timer && timerUnpause(timer.id), [timer?.id])
-
-  const skipToNextPhase = useCallback(() => timer && timerSkipToNextPhase(timer.id), [timer?.id])
-
-  const reset = useCallback(() => timer && timerReset(timer.id), [timer?.id])
-
-  const destroy = useCallback(() => timer && timerDelete(timer.id), [timer?.id])
+  const pause = useCallback(() => timer?.id && timerPause(timer.id), [timer?.id])
+  const unpause = useCallback(() => timer?.id && timerUnpause(timer.id), [timer?.id])
+  const skipToNextPhase = useCallback(() => timer?.id && timerSkipToNextPhase(timer.id), [timer?.id])
+  const reset = useCallback(() => timer?.id && timerReset(timer.id), [timer?.id])
+  const destroy = useCallback(() => timer?.id && timerDelete(timer.id), [timer?.id])
 
   return {
     phase,

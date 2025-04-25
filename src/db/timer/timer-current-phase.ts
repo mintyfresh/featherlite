@@ -8,8 +8,7 @@ export default async function timerCurrentPhase(timer: Timer | string, at: Date 
   }
 
   const phases = await db.timerPhases.where('timerId').equals(timer.id).sortBy('position')
-
-  let timeElapsed = await timerTimeElapsed(timer, at)
+  const timeElapsed = await timerTimeElapsed(timer, at)
 
   for (const phase of phases) {
     const phaseStart = phase.offsetFromStart
