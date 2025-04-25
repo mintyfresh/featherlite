@@ -1,4 +1,4 @@
-import { Button, Group, Select, Stack, Text, Title } from '@mantine/core'
+import { Button, Group, Paper, Select, Stack, Text, Title } from '@mantine/core'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
 import { Event } from '../../../db'
@@ -35,10 +35,9 @@ export default function TimersTab({ event }: TimersTabProps) {
 
   if (!currentRound) {
     return (
-      <Stack>
-        <Title order={3}>No active round</Title>
-        <Text>Start a round to create timers</Text>
-      </Stack>
+      <Paper withBorder p="lg" shadow="sm">
+        <Text>Timers cannot be started until pairings have been assigned</Text>
+      </Paper>
     )
   }
 

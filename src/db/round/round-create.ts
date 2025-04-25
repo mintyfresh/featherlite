@@ -17,11 +17,14 @@ export default async function roundCreate(event: Event | string, round: RoundCre
       event = await eventGet(event)
     }
 
+    // Technically, creating a round with just a single player will immediately complete the round
+    const isComplete = round.matches.length === 1 && round.matches[0].playerIds[1] === null
+
     const result: Round = {
       id: crypto.randomUUID(),
       eventId: event.id,
       number: (event.currentRound ?? 0) + 1,
-      isComplete: false,
+      isComplete,
       updatedAt: new Date(),
     }
 

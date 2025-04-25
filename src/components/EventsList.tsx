@@ -77,6 +77,9 @@ export function EventsList() {
           setModalOpened(false)
           setEditingEvent(null)
         }}
+        onSubmit={(event) => {
+          navigate(`/events/${event.id}`)
+        }}
       />
     </Container>
   )
