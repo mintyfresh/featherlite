@@ -1,10 +1,12 @@
 import {
   ActionIcon,
+  Box,
   Button,
   Card,
   Container,
   Group,
   Loader,
+  Paper,
   Stack,
   Text,
   Title
@@ -34,27 +36,34 @@ export function EventsList() {
 
   return (
     <Container size="md" py="xl">
-      <Group justify="space-between" mb="xl">
+      <Group justify="space-between" mb="md">
         <Title>Events</Title>
         <Button onClick={() => setModalOpened(true)}>New Event</Button>
       </Group>
 
       <Stack gap="md">
+        {events.length === 0 && (
+          <Paper withBorder p="lg" shadow="sm">
+            <Text>Create a new event to get started</Text>
+          </Paper>
+        )}
+
         {events.map((event) => (
-          <Card 
+          <Card
             key={event.id} 
+            withBorder
             shadow="sm" 
-            padding="lg"
+            p="lg"
             style={{ cursor: 'pointer' }}
             onClick={() => navigate(`/events/${event.id}`)}
           >
             <Group justify="space-between">
-              <div>
+              <Box>
                 <Text fw={500} size="lg">{event.name}</Text>
                 <Text size="sm" c="dimmed">
-                  {event.playersCount || 0} players • Created {format(event.createdAt, 'PPP')}
+                  {event.playersCount} players • Created {format(event.createdAt, 'PPP')}
                 </Text>
-              </div>
+              </Box>
               <ActionIcon 
                 variant="subtle" 
                 onClick={(e) => {

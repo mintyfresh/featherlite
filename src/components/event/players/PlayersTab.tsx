@@ -1,4 +1,4 @@
-import { Button, Group } from '@mantine/core'
+import { Button, Group, Loader, Paper, Text } from '@mantine/core'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
 import { db, Event, Player } from '../../../db'
@@ -18,13 +18,17 @@ export default function PlayersTab({ event }: PlayersTabProps) {
     [event.id, event.updatedAt]
   )
 
+  if (!players) {
+    return <Loader />
+  }
+
   return (
     <>
-      <Group justify="end" mb="xl">
-        <Button onClick={() => setModalOpened(true)}>Add Player</Button>
+      <Group justify="end" mb="md">
+        <Button accessKey="a" onClick={() => setModalOpened(true)}>Add Player</Button>
       </Group>
 
-      {players && (
+      {players.length > 0 ? (
         <PlayersTable
           players={players}
           onPlayerEdit={(player) => {
@@ -32,6 +36,10 @@ export default function PlayersTab({ event }: PlayersTabProps) {
             setModalOpened(true)
           }}
         />
+      ) : (
+        <Paper withBorder p="lg" shadow="sm">
+          <Text>No players have been added yet</Text>
+        </Paper>
       )}
 
       <PlayerModal

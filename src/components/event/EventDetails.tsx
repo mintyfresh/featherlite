@@ -32,7 +32,7 @@ export function EventDetails() {
 
   return (
     <Container size="md" py="xl">
-      <Group justify="space-between" mb="xl">
+      <Group justify="space-between" mb="md">
         <Title>{event.name}</Title>
         <Button variant="subtle" onClick={() => navigate('/')}>← Back to Events</Button>
       </Group>

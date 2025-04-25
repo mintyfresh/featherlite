@@ -1,17 +1,19 @@
-import { Button, Group, Loader } from '@mantine/core'
+import { Button, Group, Loader, Paper, Text } from '@mantine/core'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { db, Event } from '../../../db'
 import eventCurrentRound from '../../../db/event/event-current-round'
 import roundCreate from '../../../db/round/round-create'
+import generateSwissPairings, { preloadSwissDependencies } from '../../../utils/swiss'
 import RoundsList from './RoundsList'
-import generateSwissPairings from '../../../utils/swiss'
 
 export interface MatchesTabProps {
   event: Event
 }
 
 export default function MatchesTab({ event }: MatchesTabProps) {
+  const [loading, setLoading] = useState(false)
+
   const players = useLiveQuery(
     async () => db.players.where({ eventId: event.id }).toArray(),
     [event.id, event.updatedAt]
@@ -27,17 +29,30 @@ export default function MatchesTab({ event }: MatchesTabProps) {
     [event.id, event.currentRound]
   )
 
+  useEffect(
+    // Start loading the Python runtime and dependencies as soon as the component mounts
+    () => { preloadSwissDependencies() },
+    []
+  )
+
   const startNextRound = useCallback(
     async () => {
-      const pairings = await generateSwissPairings(event)
-      console.log(pairings)
-      const matches = pairings.map((playerIds) => ({ playerIds }))
+      setLoading(true)
 
-      await roundCreate(event.id, { matches })
+      try {
+        const pairings = await generateSwissPairings(event)
+        console.log(pairings)
+        const matches = pairings.map((playerIds) => ({ playerIds }))
+
+        await roundCreate(event.id, { matches })
+      } finally {
+        setLoading(false)
+      }
     },
     [event.id]
   )
 
+  const roundComplete = !currentRound || currentRound.isComplete
 
   if (!players || !rounds) {
     return (
@@ -48,16 +63,26 @@ export default function MatchesTab({ event }: MatchesTabProps) {
   return (
     <>
       <Group justify="end" mb="md">
-        <Button onClick={() => startNextRound()} disabled={currentRound ? !currentRound.isComplete : false}>
+        <Button
+          onClick={() => startNextRound()}
+          loading={loading}
+          disabled={!roundComplete}
+        >
           {event.currentRound === null ? 'Start Tournament' : `Start Round ${event.currentRound + 1}`}
         </Button>
       </Group>
 
-      <RoundsList
-        event={event}
-        rounds={rounds}
-        players={players}
-      />
+      {rounds.length > 0 ? (
+        <RoundsList
+          event={event}
+          rounds={rounds}
+          players={players}
+        />
+      ) : (
+        <Paper withBorder p="lg" shadow="sm">
+          <Text>Click start tournament to create the first round</Text>
+        </Paper>
+      )}
     </>
   )
 }
