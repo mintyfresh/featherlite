@@ -39,7 +39,7 @@ export default function MatchesTable({
   }
 
   return (
-    <Table>
+    <Table striped>
       <Table.Thead>
         <Table.Tr>
           <Table.Th>Table</Table.Th>

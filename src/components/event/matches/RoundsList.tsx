@@ -24,7 +24,7 @@ export default function RoundsList({
   )
 
   return (
-    <Accordion multiple value={expanded} onChange={setExpanded}>
+    <Accordion variant="separated" multiple value={expanded} onChange={setExpanded}>
       {rounds.map((round) => (
         <Accordion.Item key={round.id} value={`round-${round.number}`}>
           <Accordion.Control>

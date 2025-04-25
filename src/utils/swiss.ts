@@ -6,14 +6,15 @@ import type { PyodideInterface } from '#pyodide'
 
 type Pairing = [string, string | null]
 
+export async function preloadSwissDependencies() {
+  await getPythonContext()
+}
+
 export default async function generateSwissPairings(event: Event | string): Promise<Pairing[]> {
   event = typeof event === 'string' ? await eventGet(event) : event
 
   const players = await db.players.where('eventId').equals(event.id).filter((player) => !player.dropped).toArray()
-  console.log(players)
-
   const edges = await generateWeightedEdges(players)
-  console.log(edges)
 
   const instance = await getPythonContext()
   instance.globals.set('edges', edges)
@@ -37,8 +38,6 @@ export default async function generateSwissPairings(event: Event | string): Prom
     result
   `)).toJs()
 
-  console.log(result)
-
   const pairings = result.map((pairing: [string, string]): [string, string | null] => {
     if (pairing[0] === 'BYE') {
       return [pairing[1], null]
@@ -48,8 +47,6 @@ export default async function generateSwissPairings(event: Event | string): Prom
       return pairing
     }
   })
-
-  console.log(pairings)
 
   return sortPairingsByRankings(pairings)
 }
@@ -74,7 +71,6 @@ async function getPythonContext() {
 async function generateWeightedEdges(players: Player[]) {
   const result: [string, string, number][] = []
   const items = (players.length % 2 === 0 ? players : [...players, null]).map((player) => player?.id ?? null)
-  console.log(items)
 
   for (const [player1, player2] of combinations(items, 2, 2)) {
     const weight = await calculateWeightForPairing(player1!, player2)
@@ -94,7 +90,7 @@ async function calculateWeightForPairing(player1: Player | string, player2: Play
     player2 = await playerGet(player2)
   }
 
-  const matches = await db.matches.where('playerIds').equals([player1.id]).filter((match) =>
+  const matches = await db.matches.where('playerIds').equals(player1.id).filter((match) =>
     player2 ? match.playerIds.includes(player2.id) : match.playerIds[1] === null
   )
 
