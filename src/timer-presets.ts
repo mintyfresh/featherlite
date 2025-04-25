@@ -10,7 +10,7 @@ export const timerPresets: Omit<TimerCreateInput, 'matchId'>[] = [
     phases: [
       {
         name: 'Setup',
-        duration: 3 * SECOND, // * MINUTE,
+        duration: 3 * MINUTE,
         colour: 0xffc107,
         audioClip: 'begin.wav',
       },

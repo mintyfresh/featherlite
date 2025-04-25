@@ -15,6 +15,14 @@ import player from 'play-sound'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
+declare global {
+  interface Window {
+    electron?: {
+      playSound(soundFile: string): Promise<void>
+    }
+  }
+}
+
 process.env.DIST = join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST, '../public')
 
@@ -32,7 +40,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: join(__dirname, 'preload.js'),
+      preload: join(__dirname, '../electron', 'preload.mjs'),
     },
   })
 

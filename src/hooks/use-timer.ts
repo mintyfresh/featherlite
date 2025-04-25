@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Timer, TimerPhase } from '../db'
 import timerCurrentPhase from '../db/timer/timer-current-phase'
 import timerDelete from '../db/timer/timer-delete'
@@ -8,21 +8,20 @@ import timerSkipToNextPhase from '../db/timer/timer-skip-to-next-phase'
 import timerTimeRemainingInCurrentPhase from '../db/timer/timer-time-remaining-in-current-phase'
 import timerUnpause from '../db/timer/timer-unpause'
 import { extractComponentsFromDuration } from '../utils/timer-helpers'
+import usePreviousState from './use-previous-state'
 
-function usePreviousState<T>(value: T) {
-  const ref = useRef<T>(value)
+const electron = window.electron
+const POLLING_INTERVAL = 100 // millis
 
-  useEffect(() => {
-    ref.current = value
-  }, [value])
-
-  return ref.current
-}
-
-export default function useTimer(timer: Timer | null | undefined, { playSound = true }: { playSound?: boolean } = {}) {
+export default function useTimer(timer: Timer | null | undefined) {
   const [phase, setPhase] = useState<TimerPhase | null>(null)
   const endOfPhaseSound = usePreviousState(phase?.audioClip)
-  const audio = useMemo(() => (window.electron || !endOfPhaseSound || !playSound ? null : new Audio(`/public/${endOfPhaseSound}`)), [endOfPhaseSound, playSound])
+
+  // If using browser audio, preload the audio file
+  const audio = useMemo(
+    () => (electron || !endOfPhaseSound ? null : new Audio(`/public/${endOfPhaseSound}`)),
+    [endOfPhaseSound]
+  )
 
   const [hours, setHours] = useState(0)
   const [minutes, setMinutes] = useState(0)
@@ -39,7 +38,7 @@ export default function useTimer(timer: Timer | null | undefined, { playSound = 
           setMinutes(minutes)
           setSeconds(seconds)
         })
-      }, 250)
+      }, POLLING_INTERVAL)
 
       return () => clearInterval(interval)
     }
@@ -48,8 +47,8 @@ export default function useTimer(timer: Timer | null | undefined, { playSound = 
   // Play a sound when the timer reaches the end of the phase
   useEffect(() => {
     if (hours === 0 && minutes === 0 && seconds === 0 && endOfPhaseSound) {
-      if (window.electron) {
-        window.electron.playSound(endOfPhaseSound)
+      if (electron) {
+        electron.playSound(endOfPhaseSound)
       } else {
         audio?.play()
       }

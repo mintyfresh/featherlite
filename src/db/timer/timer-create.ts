@@ -31,13 +31,16 @@ export default async function timerCreate(round: Round | string, input: TimerCre
       throw new RecordInvalidError('Duration must be greater than 0')
     }
 
+    const expiresAt = new Date(Date.now() + duration)
+    expiresAt.setMilliseconds(0) // round to nearest second
+
     const timer: Timer = {
       id: crypto.randomUUID(),
       roundId: round.id,
       matchId: input.matchId,
       label: input.label,
       duration, // total duration in millis
-      expiresAt: new Date(Date.now() + duration),
+      expiresAt,
       pausedAt: null,
       createdAt: new Date(),
     }
