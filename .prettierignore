@@ -4,3 +4,4 @@ coverage
 deps
 dist
 dist-electron
+release

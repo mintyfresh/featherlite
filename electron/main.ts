@@ -37,6 +37,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    icon: join(process.env.VITE_PUBLIC!, 'icon.png'),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

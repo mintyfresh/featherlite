@@ -1,5 +1,6 @@
 {
-  "name": "featherlight",
+  "name": "featherlite",
+  "author": "Minty Fresh",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -65,10 +66,11 @@
     "vite-plugin-electron": "^0.29.0"
   },
   "build": {
-    "appId": "com.featherlight.app",
-    "productName": "Featherlight",
+    "appId": "com.featherlite.app",
+    "productName": "Featherlite",
     "directories": {
-      "output": "release"
+      "output": "release",
+      "buildResources": "public"
     },
     "files": [
       "dist/**/*",
