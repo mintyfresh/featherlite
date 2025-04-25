@@ -1,9 +1,10 @@
 import { Button, Checkbox, Modal, Stack, Text, TextInput } from '@mantine/core'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Player } from '../../../db'
 import { DatabaseError } from '../../../db/errors'
 import playerCreate from '../../../db/player/player-create'
 import playerUpdate from '../../../db/player/player-update'
+import { useLocalStorage } from '@mantine/hooks'
 
 interface PlayerModalProps {
   eventId: string
@@ -20,8 +21,14 @@ export function PlayerModal({
   onClose,
   onSubmit,
 }: PlayerModalProps) {
+  const nameRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<DatabaseError | null>(null)
+
+  const [createAnotherPlayer, setCreateAnotherPlayer] = useLocalStorage({
+    key: 'createAnotherPlayer',
+    defaultValue: false,
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -48,7 +55,15 @@ export function PlayerModal({
       }
 
       onSubmit?.(result)
-      onClose()
+
+      if (player?.id || !createAnotherPlayer) {
+        onClose()
+      } else if (createAnotherPlayer) {
+        if (nameRef.current) {
+          nameRef.current.value = ''
+          nameRef.current.focus()
+        }
+      }
     } catch (error) {
       if (error instanceof DatabaseError) {
         setError(error)
@@ -68,6 +83,7 @@ export function PlayerModal({
           name="name"
           placeholder="Enter player name"
           defaultValue={player?.name ?? ''}
+          ref={nameRef}
           required
           autoComplete="off"
           data-autofocus
@@ -86,6 +102,15 @@ export function PlayerModal({
           value="true"
           disabled={loading}
         />
+        {!player?.id && (
+          <Checkbox
+            label="Create another player"
+            name="createAnotherPlayer"
+            checked={createAnotherPlayer}
+            onChange={(event) => setCreateAnotherPlayer(event.currentTarget.checked)}
+            disabled={loading}
+          />
+        )}
         {error?.message && (
           <Text c="red">{error.message}</Text>
         )}
