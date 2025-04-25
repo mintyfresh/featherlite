@@ -39,7 +39,7 @@ export default async function playerUpdateStats(player: Player | string) {
     }
   })
 
-  const score = (wins * POINTS_FOR_WIN) + (draws * POINTS_FOR_DRAW) + (losses * POINTS_FOR_LOSS)
+  const score = wins * POINTS_FOR_WIN + draws * POINTS_FOR_DRAW + losses * POINTS_FOR_LOSS
   const opponentWinRate = await calculateOpponentWinRate(opponentIds)
 
   const result: Player = {
@@ -67,11 +67,13 @@ async function calculateOpponentWinRate(opponentIds: Set<string>): Promise<numbe
     return 0
   }
 
-  return opponents.reduce((acc, opponent) => {
-    // Calculate the number of matches played by the opponent
-    const matches = opponent.wins + opponent.draws + opponent.losses
+  return (
+    opponents.reduce((acc, opponent) => {
+      // Calculate the number of matches played by the opponent
+      const matches = opponent.wins + opponent.draws + opponent.losses
 
-    // Calculate the win rate of the opponent
-    return acc + (opponent.wins / matches)
-  }, 0) / opponents.length // Average the win rates of all opponents
+      // Calculate the win rate of the opponent
+      return acc + opponent.wins / matches
+    }, 0) / opponents.length
+  ) // Average the win rates of all opponents
 }

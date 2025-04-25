@@ -13,13 +13,18 @@ export async function preloadSwissDependencies() {
 export default async function generateSwissPairings(event: Event | string): Promise<Pairing[]> {
   event = typeof event === 'string' ? await eventGet(event) : event
 
-  const players = await db.players.where('eventId').equals(event.id).filter((player) => !player.dropped).toArray()
+  const players = await db.players
+    .where('eventId')
+    .equals(event.id)
+    .filter((player) => !player.dropped)
+    .toArray()
   const edges = await generateWeightedEdges(players)
 
   const instance = await getPythonContext()
   instance.globals.set('edges', edges)
 
-  const result: [string, string][] = (await instance.runPythonAsync(`
+  const result: [string, string][] = (
+    await instance.runPythonAsync(`
     import networkx as nx
 
     g = nx.Graph()
@@ -36,7 +41,8 @@ export default async function generateSwissPairings(event: Event | string): Prom
         result.append([p1, p2])
 
     result
-  `)).toJs()
+  `)
+  ).toJs()
 
   const pairings = result.map((pairing: [string, string]): [string, string | null] => {
     if (pairing[0] === 'BYE') {
@@ -90,9 +96,10 @@ async function calculateWeightForPairing(player1: Player | string, player2: Play
     player2 = await playerGet(player2)
   }
 
-  const matches = await db.matches.where('playerIds').equals(player1.id).filter((match) =>
-    player2 ? match.playerIds.includes(player2.id) : match.playerIds[1] === null
-  )
+  const matches = await db.matches
+    .where('playerIds')
+    .equals(player1.id)
+    .filter((match) => (player2 ? match.playerIds.includes(player2.id) : match.playerIds[1] === null))
 
   const previousMatchesCount = await matches.count()
   const penalty = previousMatchesCount * -999_999
@@ -103,14 +110,14 @@ async function calculateWeightForPairing(player1: Player | string, player2: Play
   const min = Math.min(player1Score, player2Score)
   const max = Math.max(player1Score, player2Score)
 
-  return ((min + max) / 2) - Math.pow(max - min, 2) + penalty
+  return (min + max) / 2 - Math.pow(max - min, 2) + penalty
 }
 
 async function sortPairingsByRankings(pairings: Pairing[]) {
   const rankings = new Map<string, number>(
-    await Promise.all(pairings.map(async (pairing) => (
-      [pairing.join(','), await calculateWeightForPairing(...pairing)] as const
-    )))
+    await Promise.all(
+      pairings.map(async (pairing) => [pairing.join(','), await calculateWeightForPairing(...pairing)] as const)
+    )
   )
 
   return pairings.sort((pair1, pair2) => {

@@ -11,7 +11,7 @@ export const timerPresets: Omit<TimerCreateInput, 'matchId'>[] = [
       {
         name: 'Setup',
         duration: 3 * MINUTE,
-        colour: 0xFFC107,
+        colour: 0xffc107,
       },
       {
         name: 'Time Remaining',
@@ -21,7 +21,7 @@ export const timerPresets: Omit<TimerCreateInput, 'matchId'>[] = [
       {
         name: 'Soft Time',
         duration: 5 * MINUTE,
-        colour: 0xDC3545,
+        colour: 0xdc3545,
       },
     ],
   },
@@ -31,7 +31,7 @@ export const timerPresets: Omit<TimerCreateInput, 'matchId'>[] = [
       {
         name: 'Setup',
         duration: 3 * MINUTE,
-        colour: 0xFFC107,
+        colour: 0xffc107,
       },
       {
         name: 'Time Remaining',

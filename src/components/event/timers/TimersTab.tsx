@@ -16,16 +16,10 @@ export default function TimersTab({ event }: TimersTabProps) {
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null)
 
   // Get current round
-  const currentRound = useLiveQuery(
-    async () => eventCurrentRound(event),
-    [event.id]
-  )
+  const currentRound = useLiveQuery(async () => eventCurrentRound(event), [event.id])
 
   // Get timers for current round
-  const timers = useLiveQuery(
-    async () => currentRound ? roundTimers(currentRound) : [],
-    [currentRound?.id]
-  )
+  const timers = useLiveQuery(async () => (currentRound ? roundTimers(currentRound) : []), [currentRound?.id])
 
   const handleCreateTimer = async () => {
     if (!currentRound || !selectedPreset) return
@@ -35,7 +29,7 @@ export default function TimersTab({ event }: TimersTabProps) {
 
     await timerCreate(currentRound, {
       ...preset,
-      matchId: null
+      matchId: null,
     })
   }
 
@@ -54,26 +48,19 @@ export default function TimersTab({ event }: TimersTabProps) {
         <Select
           label="Timer Preset"
           placeholder="Select a preset"
-          data={timerPresets.map(preset => preset.label)}
+          data={timerPresets.map((preset) => preset.label)}
           defaultValue={timerPresets[0].label}
           value={selectedPreset}
           onChange={setSelectedPreset}
           rightSection={
-            <Button
-              onClick={handleCreateTimer}
-              disabled={!selectedPreset}
-            >
+            <Button onClick={handleCreateTimer} disabled={!selectedPreset}>
               Create Timer
             </Button>
           }
         />
       </Group>
 
-      <Stack gap="xl">
-        {timers?.map((timer) => (
-          <TimerListItem key={timer.id} timer={timer} />
-        ))}
-      </Stack>
+      <Stack gap="xl">{timers?.map((timer) => <TimerListItem key={timer.id} timer={timer} />)}</Stack>
     </Stack>
   )
-} 
+}

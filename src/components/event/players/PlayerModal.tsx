@@ -14,13 +14,7 @@ interface PlayerModalProps {
   onSubmit?(player: Omit<Player, 'id' | 'eventId'>): void
 }
 
-export function PlayerModal({
-  eventId,
-  player,
-  opened,
-  onClose,
-  onSubmit,
-}: PlayerModalProps) {
+export function PlayerModal({ eventId, player, opened, onClose, onSubmit }: PlayerModalProps) {
   const nameRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<DatabaseError | null>(null)
@@ -88,13 +82,7 @@ export function PlayerModal({
           autoComplete="off"
           data-autofocus
         />
-        <Checkbox
-          label="Paid"
-          name="paid"
-          defaultChecked={player?.paid ?? true}
-          value="true"
-          disabled={loading}
-        />
+        <Checkbox label="Paid" name="paid" defaultChecked={player?.paid ?? true} value="true" disabled={loading} />
         <Checkbox
           label="Dropped"
           name="dropped"
@@ -111,13 +99,11 @@ export function PlayerModal({
             disabled={loading}
           />
         )}
-        {error?.message && (
-          <Text c="red">{error.message}</Text>
-        )}
+        {error?.message && <Text c="red">{error.message}</Text>}
         <Button type="submit" loading={loading}>
           {player?.id ? 'Update' : 'Create'}
         </Button>
       </Stack>
     </Modal>
   )
-} 
+}

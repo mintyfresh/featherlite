@@ -1,11 +1,4 @@
-import {
-  Button,
-  Container,
-  Group,
-  Loader,
-  Tabs,
-  Title
-} from '@mantine/core'
+import { Button, Container, Group, Loader, Tabs, Title } from '@mantine/core'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useNavigate, useParams } from 'react-router-dom'
 import { db } from '../../db'
@@ -15,12 +8,9 @@ import TimersTab from './timers/TimersTab'
 
 export function EventDetails() {
   const navigate = useNavigate()
-  const { id, tab } = useParams<{ id: string, tab: string | undefined }>()
+  const { id, tab } = useParams<{ id: string; tab: string | undefined }>()
 
-  const event = useLiveQuery(
-    async () => id && db.events.get(id),
-    [id]
-  )
+  const event = useLiveQuery(async () => id && db.events.get(id), [id])
 
   if (!event) {
     return (
@@ -34,16 +24,21 @@ export function EventDetails() {
     <Container size="md" py="xl">
       <Group justify="space-between" mb="md">
         <Title>{event.name}</Title>
-        <Button variant="subtle" onClick={() => navigate('/')}>← Back to Events</Button>
+        <Button variant="subtle" onClick={() => navigate('/')}>
+          ← Back to Events
+        </Button>
       </Group>
 
-      <Tabs value={tab ?? 'players'} onChange={(value) => {
-        if (value === 'players') {
-          navigate(`/events/${id}`)
-        } else {
-          navigate(`/events/${id}/${value}`)
-        }
-      }}>
+      <Tabs
+        value={tab ?? 'players'}
+        onChange={(value) => {
+          if (value === 'players') {
+            navigate(`/events/${id}`)
+          } else {
+            navigate(`/events/${id}/${value}`)
+          }
+        }}
+      >
         <Tabs.List>
           <Tabs.Tab value="players">Players</Tabs.Tab>
           <Tabs.Tab value="matches">Matches</Tabs.Tab>
@@ -64,4 +59,4 @@ export function EventDetails() {
       </Tabs>
     </Container>
   )
-} 
+}

@@ -4,11 +4,7 @@ import { defineConfig } from 'vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import electron from 'vite-plugin-electron'
 
-const PYODIDE_EXCLUDE = [
-  "!**/*.{md,html}",
-  "!**/*.d.ts",
-  "!**/node_modules",
-]
+const PYODIDE_EXCLUDE = ['!**/*.{md,html}', '!**/*.d.ts', '!**/node_modules']
 
 function viteStaticCopyPyodide() {
   const pyodideDir = join(__dirname, 'deps', 'pyodide')
@@ -26,26 +22,28 @@ function viteStaticCopyPyodide() {
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
   const isElectron = mode === 'electron'
-  
+
   return {
     plugins: [
       react(),
       viteStaticCopyPyodide(),
-      ...(isElectron ? [
-        electron({
-          entry: 'electron/main.ts',
-          vite: {
-            build: {
-              outDir: 'dist-electron',
-              rollupOptions: {
-                output: {
-                  format: 'es'
-                }
-              }
-            }
-          }
-        })
-      ] : [])
+      ...(isElectron
+        ? [
+            electron({
+              entry: 'electron/main.ts',
+              vite: {
+                build: {
+                  outDir: 'dist-electron',
+                  rollupOptions: {
+                    output: {
+                      format: 'es',
+                    },
+                  },
+                },
+              },
+            }),
+          ]
+        : []),
     ],
     esbuild: {
       supported: {

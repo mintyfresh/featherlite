@@ -1,19 +1,17 @@
 import { Accordion, Text } from '@mantine/core'
-import { Event, Player, Round } from '../../../db'
-import MatchesTable from './MatchesTable'
 import { useEffect, useState } from 'react'
+import { Event, Player, Round } from '../../../db'
+import MatchesListView from './MatchesListView'
+import MatchesTableView from './MatchesTableView'
 
 interface RoundsListProps {
+  view: 'table' | 'list'
   event: Event
   rounds: Round[]
   players: Player[]
 }
 
-export default function RoundsList({
-  event,
-  rounds,
-  players,
-}: RoundsListProps) {
+export default function RoundsList({ view, event, rounds, players }: RoundsListProps) {
   const currentRound = event.currentRound
   const [expanded, setExpanded] = useState<string[]>(currentRound !== null ? [`round-${currentRound}`] : [])
 
@@ -36,10 +34,14 @@ export default function RoundsList({
             )}
           </Accordion.Control>
           <Accordion.Panel>
-            <MatchesTable round={round} players={players} />
+            {view === 'table' ? (
+              <MatchesTableView round={round} players={players} />
+            ) : (
+              <MatchesListView round={round} players={players} />
+            )}
           </Accordion.Panel>
         </Accordion.Item>
       ))}
     </Accordion>
   )
-} 
+}

@@ -6,7 +6,7 @@ export default async function eventValidate(event: Event) {
     throw new RecordInvalidError('Event name is required')
   }
 
-  if (!await isEventNameUnique(event)) {
+  if (!(await isEventNameUnique(event))) {
     throw new RecordInvalidError(`Event already exists with name '${event.name}'`)
   }
 

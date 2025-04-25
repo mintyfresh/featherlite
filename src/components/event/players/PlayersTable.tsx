@@ -1,10 +1,4 @@
-import {
-  ActionIcon,
-  Badge,
-  Group,
-  Table,
-  Text
-} from '@mantine/core'
+import { ActionIcon, Badge, Group, Table, Text } from '@mantine/core'
 import { useMemo } from 'react'
 import { Player } from '../../../db'
 
@@ -14,29 +8,24 @@ interface PlayersTableProps {
 }
 
 export function PlayersTable({ players, onPlayerEdit }: PlayersTableProps) {
-  const sortedPlayers = useMemo(
-    () => {
-      // If no games have been played, sort by name
-      const preGameState = players.every((player) => player.score === 0)
+  const sortedPlayers = useMemo(() => {
+    // If no games have been played, sort by name
+    const preGameState = players.every((player) => player.score === 0)
 
-      if (preGameState) {
-        return players.sort((player1, player2) => {
-          return player1.name.localeCompare(player2.name)
-        })
-      }
-
+    if (preGameState) {
       return players.sort((player1, player2) => {
-        if (player1.score !== player2.score) {
-          return player2.score - player1.score
-        } else {
-          return player2.opponentWinRate - player1.opponentWinRate
-        }
+        return player1.name.localeCompare(player2.name)
       })
-    },
-    [
-      JSON.stringify(players),
-    ]
-  )
+    }
+
+    return players.sort((player1, player2) => {
+      if (player1.score !== player2.score) {
+        return player2.score - player1.score
+      } else {
+        return player2.opponentWinRate - player1.opponentWinRate
+      }
+    })
+  }, [JSON.stringify(players)])
 
   return (
     <>
@@ -68,10 +57,7 @@ export function PlayersTable({ players, onPlayerEdit }: PlayersTableProps) {
               <Table.Td>{player.score}</Table.Td>
               <Table.Td>{(player.opponentWinRate * 100).toFixed(2)}%</Table.Td>
               <Table.Td ta="end">
-                <ActionIcon
-                  variant="subtle"
-                  onClick={() => onPlayerEdit(player)}
-                >
+                <ActionIcon variant="subtle" onClick={() => onPlayerEdit(player)}>
                   ✎
                 </ActionIcon>
               </Table.Td>
@@ -81,4 +67,4 @@ export function PlayersTable({ players, onPlayerEdit }: PlayersTableProps) {
       </Table>
     </>
   )
-} 
+}

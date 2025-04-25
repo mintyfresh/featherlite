@@ -3,8 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { EventsList } from './components/EventsList'
 import { EventDetails } from './components/event/EventDetails'
 
-const theme = createTheme({
-})
+const theme = createTheme({})
 
 export default function App() {
   return (

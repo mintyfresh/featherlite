@@ -25,7 +25,9 @@ export default function PlayersTab({ event }: PlayersTabProps) {
   return (
     <>
       <Group justify="end" mb="md">
-        <Button accessKey="a" onClick={() => setModalOpened(true)}>Add Player</Button>
+        <Button accessKey="a" onClick={() => setModalOpened(true)}>
+          Add Player
+        </Button>
       </Group>
 
       {players.length > 0 ? (

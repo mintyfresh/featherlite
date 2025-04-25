@@ -15,53 +15,32 @@ export default function useTimer(timer: Timer | null | undefined) {
   const [minutes, setMinutes] = useState(0)
   const [seconds, setSeconds] = useState(0)
 
-  useEffect(
-    () => {
-      if (timer) {
-        const interval = setInterval(
-          () => {
-            timerCurrentPhase(timer).then(setPhase)
-            timerTimeRemainingInCurrentPhase(timer).then((timeRemaining) => {
-              const [hours, minutes, seconds] = extractComponentsFromDuration(timeRemaining)
+  useEffect(() => {
+    if (timer) {
+      const interval = setInterval(() => {
+        timerCurrentPhase(timer).then(setPhase)
+        timerTimeRemainingInCurrentPhase(timer).then((timeRemaining) => {
+          const [hours, minutes, seconds] = extractComponentsFromDuration(timeRemaining)
 
-              setHours(hours)
-              setMinutes(minutes)
-              setSeconds(seconds)
-            })
-          },
-          250
-        )
+          setHours(hours)
+          setMinutes(minutes)
+          setSeconds(seconds)
+        })
+      }, 250)
 
-        return () => clearInterval(interval)
-      }
-    },
-    [timer?.id, timer?.pausedAt, timer?.expiresAt]
-  )
+      return () => clearInterval(interval)
+    }
+  }, [timer?.id, timer?.pausedAt, timer?.expiresAt])
 
-  const pause = useCallback(
-    () => timer && timerPause(timer.id),
-    [timer?.id]
-  )
+  const pause = useCallback(() => timer && timerPause(timer.id), [timer?.id])
 
-  const unpause = useCallback(
-    () => timer && timerUnpause(timer.id),
-    [timer?.id]
-  )
+  const unpause = useCallback(() => timer && timerUnpause(timer.id), [timer?.id])
 
-  const skipToNextPhase = useCallback(
-    () => timer && timerSkipToNextPhase(timer.id),
-    [timer?.id]
-  )
+  const skipToNextPhase = useCallback(() => timer && timerSkipToNextPhase(timer.id), [timer?.id])
 
-  const reset = useCallback(
-    () => timer && timerReset(timer.id),
-    [timer?.id]
-  )
+  const reset = useCallback(() => timer && timerReset(timer.id), [timer?.id])
 
-  const destroy = useCallback(
-    () => timer && timerDelete(timer.id),
-    [timer?.id]
-  )
+  const destroy = useCallback(() => timer && timerDelete(timer.id), [timer?.id])
 
   return {
     phase,

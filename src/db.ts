@@ -63,12 +63,12 @@ export interface TimerPhase {
 }
 
 export const db = new Dexie('featherlight-db') as Dexie & {
-  events: EntityTable<Event, 'id'>,
-  players: EntityTable<Player, 'id'>,
-  rounds: EntityTable<Round, 'id'>,
-  matches: EntityTable<Match, 'id'>,
-  timers: EntityTable<Timer, 'id'>,
-  timerPhases: EntityTable<TimerPhase, 'id'>,
+  events: EntityTable<Event, 'id'>
+  players: EntityTable<Player, 'id'>
+  rounds: EntityTable<Round, 'id'>
+  matches: EntityTable<Match, 'id'>
+  timers: EntityTable<Timer, 'id'>
+  timerPhases: EntityTable<TimerPhase, 'id'>
 }
 
 db.version(1).stores({

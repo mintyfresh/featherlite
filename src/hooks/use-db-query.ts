@@ -8,22 +8,22 @@ export interface LazyDBQueryOptions<Query extends DBQuery> {
   onError?(error: Error | unknown): void
 }
 
-export function useLazyDBQuery<Query extends DBQuery>(query: Query, options: LazyDBQueryOptions<Query> = {}): [
+export function useLazyDBQuery<Query extends DBQuery>(
+  query: Query,
+  options: LazyDBQueryOptions<Query> = {}
+): [
   (...params: Parameters<Query>) => Promise<Awaited<ReturnType<Query>>>,
   {
     called: boolean
     loading: boolean
     error: Error | unknown | null
-    result: Awaited<ReturnType<Query>> | null,
+    result: Awaited<ReturnType<Query>> | null
     setResult: Dispatch<SetStateAction<Awaited<ReturnType<Query>> | null>>
-  }
+  },
 ] {
   type Result = Awaited<ReturnType<Query>>
 
-  const callbacks = useCallbacksRef(
-    options?.onSuccess,
-    options?.onError
-  )
+  const callbacks = useCallbacksRef(options?.onSuccess, options?.onError)
 
   const [called, setCalled] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -54,13 +54,7 @@ export function useLazyDBQuery<Query extends DBQuery>(query: Query, options: Laz
         setLoading(false)
       }
     },
-    [
-      query,
-      callbacks,
-      setLoading,
-      setError,
-      setResult,
-    ]
+    [query, callbacks, setLoading, setError, setResult]
   )
 
   return [
@@ -71,7 +65,7 @@ export function useLazyDBQuery<Query extends DBQuery>(query: Query, options: Laz
       error,
       result,
       setResult,
-    }
+    },
   ] as const
 }
 
@@ -83,19 +77,11 @@ export interface DBQueryOptions<Query extends DBQuery> extends LazyDBQueryOption
 export function useDBQuery<Query extends DBQuery>(query: Query, options: DBQueryOptions<Query>) {
   const [call, data] = useLazyDBQuery(query, options)
 
-  useEffect(
-    () => {
-      if (!options.skip && !data.called) {
-        call(...options.params)
-      }
-    },
-    [
-      call,
-      JSON.stringify(options.params),
-      data.called,
-      options.skip,
-    ]
-  )
+  useEffect(() => {
+    if (!options.skip && !data.called) {
+      call(...options.params)
+    }
+  }, [call, JSON.stringify(options.params), data.called, options.skip])
 
   return data
 }

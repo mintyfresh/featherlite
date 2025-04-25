@@ -7,5 +7,5 @@ export default async function timerTimeElapsed(timer: Timer | string, at: Date =
     timer = await timerGet(timer)
   }
 
-  return timer.duration - await timerTimeRemaining(timer, at)
+  return timer.duration - (await timerTimeRemaining(timer, at))
 }

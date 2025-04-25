@@ -1,30 +1,18 @@
-import {
-  ActionIcon,
-  Badge,
-  Group,
-  Loader,
-  Table,
-  Text,
-} from '@mantine/core'
+import { ActionIcon, Badge, Group, Loader, Table, Text } from '@mantine/core'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo } from 'react'
 import { db, Player, Round } from '../../../db'
 import matchUpdate from '../../../db/match/match-update'
 
-interface MatchesTableProps {
+interface MatchesTableViewProps {
   round: Round
   players: Player[]
 }
 
-export default function MatchesTable({
-  round,
-  players,
-}: MatchesTableProps) {
-  const playerIds = players.map((player) => player.id)
-
+export default function MatchesTableView({ round, players }: MatchesTableViewProps) {
   const playerIndex = useMemo(
     () => new Map<string, Player>(players.map((player) => [player.id, player])),
-    [playerIds.join(',')]
+    [JSON.stringify(players)]
   )
 
   const roundMatches = useLiveQuery(
@@ -33,9 +21,7 @@ export default function MatchesTable({
   )
 
   if (!roundMatches) {
-    return (
-      <Loader />
-    )
+    return <Loader />
   }
 
   return (
@@ -120,4 +106,4 @@ export default function MatchesTable({
       </Table.Tbody>
     </Table>
   )
-} 
+}

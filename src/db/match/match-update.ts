@@ -21,9 +21,7 @@ export default async function matchUpdate(match: Match | string, input: MatchUpd
     await db.matches.update(match.id, input)
 
     // Update the stats of each of the players
-    await Promise.all(result.playerIds.map(
-      (playerId) => playerId && playerUpdateStats(playerId)
-    ))
+    await Promise.all(result.playerIds.map((playerId) => playerId && playerUpdateStats(playerId)))
 
     // Update the completedness state of the round
     const round = await roundGet(match.roundId)

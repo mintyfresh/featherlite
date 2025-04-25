@@ -12,12 +12,7 @@ interface EventModalProps {
   onSubmit?(event: Event): void
 }
 
-export default function EventModal({
-  event,
-  opened,
-  onClose,
-  onSubmit,
-}: EventModalProps) {
+export default function EventModal({ event, opened, onClose, onSubmit }: EventModalProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<DatabaseError | null>(null)
 
@@ -59,20 +54,18 @@ export default function EventModal({
         <TextInput
           label="Name"
           name="name"
-          placeholder={`e.g. Adventure ${(new Date()).getFullYear()}`}
+          placeholder={`e.g. Adventure ${new Date().getFullYear()}`}
           defaultValue={event?.name}
           required
           disabled={loading}
           autoComplete="off"
           data-autofocus
         />
-        {error?.message && (
-          <Text c="red">{error.message}</Text>
-        )}
+        {error?.message && <Text c="red">{error.message}</Text>}
         <Button type="submit" loading={loading}>
           {event ? 'Update' : 'Create'}
         </Button>
       </Stack>
     </Modal>
   )
-} 
+}

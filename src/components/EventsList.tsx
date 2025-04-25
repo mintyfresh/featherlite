@@ -1,16 +1,4 @@
-import {
-  ActionIcon,
-  Box,
-  Button,
-  Card,
-  Container,
-  Group,
-  Loader,
-  Paper,
-  Stack,
-  Text,
-  Title
-} from '@mantine/core'
+import { ActionIcon, Box, Button, Card, Container, Group, Loader, Paper, Stack, Text, Title } from '@mantine/core'
 import { format } from 'date-fns'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
@@ -50,22 +38,25 @@ export function EventsList() {
 
         {events.map((event) => (
           <Card
-            key={event.id} 
+            key={event.id}
             withBorder
-            shadow="sm" 
+            shadow="sm"
             p="lg"
             style={{ cursor: 'pointer' }}
             onClick={() => navigate(`/events/${event.id}`)}
+            role="button"
           >
             <Group justify="space-between">
               <Box>
-                <Text fw={500} size="lg">{event.name}</Text>
+                <Text fw={500} size="lg">
+                  {event.name}
+                </Text>
                 <Text size="sm" c="dimmed">
                   {event.playersCount} players • Created {format(event.createdAt, 'PPP')}
                 </Text>
               </Box>
-              <ActionIcon 
-                variant="subtle" 
+              <ActionIcon
+                variant="subtle"
                 onClick={(e) => {
                   e.stopPropagation()
                   setEditingEvent(event)
@@ -89,4 +80,4 @@ export function EventsList() {
       />
     </Container>
   )
-} 
+}
