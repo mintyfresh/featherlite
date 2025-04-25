@@ -10,6 +10,7 @@ export interface TimerCreateInput {
 
 export interface TimerPhaseCreateInput {
   name: string
+  audioClip: string | null
   duration: number
   colour: number | null
 }
@@ -47,7 +48,7 @@ export default async function timerCreate(round: Round | string, input: TimerCre
       await db.timerPhases.add({
         id: crypto.randomUUID(),
         timerId: timer.id,
-        audioClipId: null,
+        audioClip: phase.audioClip,
         name: phase.name,
         position: index,
         duration: phase.duration,

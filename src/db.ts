@@ -53,7 +53,7 @@ export interface Timer {
 export interface TimerPhase {
   id: string
   timerId: string
-  audioClipId: string | null
+  audioClip: string | null
   name: string
   position: number
   duration: number // millis

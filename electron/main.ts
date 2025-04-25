@@ -1,6 +1,7 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
+import player from 'play-sound'
 
 // The built directory structure
 //
@@ -17,31 +18,44 @@ const __dirname = dirname(__filename)
 process.env.DIST = join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST, '../public')
 
-let win: BrowserWindow | null
+let mainWindow: BrowserWindow | null
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 
+// Initialize the sound player
+const audioPlayer = player({})
+
 function createWindow() {
-  win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: join(__dirname, 'preload.js'),
     },
   })
 
   // Test active push message to Renderer-process.
-  win.webContents.on('did-finish-load', () => {
-    win?.webContents.send('main-process-message', new Date().toLocaleString())
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow?.webContents.send('main-process-message', new Date().toLocaleString())
   })
 
   if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL)
+    mainWindow.loadURL(VITE_DEV_SERVER_URL)
   } else {
-    win.loadFile(join(process.env.DIST!, 'index.html'))
+    mainWindow.loadFile(join(process.env.DIST!, 'index.html'))
   }
 }
+
+// Set up IPC handlers
+ipcMain.on('play-sound', (_, soundFile: string) => {
+  console.log('play-sound', soundFile)
+  const soundPath = join(process.env.VITE_PUBLIC!, soundFile)
+  audioPlayer.play(soundPath, (err) => {
+    if (err) console.error(`Error playing sound: ${err}`)
+  })
+})
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

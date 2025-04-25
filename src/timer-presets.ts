@@ -10,18 +10,21 @@ export const timerPresets: Omit<TimerCreateInput, 'matchId'>[] = [
     phases: [
       {
         name: 'Setup',
-        duration: 3 * MINUTE,
+        duration: 3 * SECOND, // * MINUTE,
         colour: 0xffc107,
+        audioClip: 'begin.wav',
       },
       {
         name: 'Time Remaining',
         duration: 45 * MINUTE,
         colour: 0x198754,
+        audioClip: 'over.wav',
       },
       {
         name: 'Soft Time',
         duration: 5 * MINUTE,
         colour: 0xdc3545,
+        audioClip: 'time.wav',
       },
     ],
   },
@@ -32,11 +35,13 @@ export const timerPresets: Omit<TimerCreateInput, 'matchId'>[] = [
         name: 'Setup',
         duration: 3 * MINUTE,
         colour: 0xffc107,
+        audioClip: 'begin.wav',
       },
       {
         name: 'Time Remaining',
         duration: 2 * HOUR,
         colour: 0x198754,
+        audioClip: 'time.wav',
       },
       // No soft time
     ],
