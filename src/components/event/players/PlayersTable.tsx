@@ -14,14 +14,25 @@ interface PlayersTableProps {
 }
 
 export function PlayersTable({ players, onPlayerEdit }: PlayersTableProps) {
-  const playersByRanking = useMemo(
-    () => players.sort((player1, player2) => {
-      if (player1.score !== player2.score) {
-        return player2.score - player1.score
-      } else {
-        return player2.opponentWinRate - player1.opponentWinRate
+  const sortedPlayers = useMemo(
+    () => {
+      // If no games have been played, sort by name
+      const preGameState = players.every((player) => player.score === 0)
+
+      if (preGameState) {
+        return players.sort((player1, player2) => {
+          return player1.name.localeCompare(player2.name)
+        })
       }
-    }),
+
+      return players.sort((player1, player2) => {
+        if (player1.score !== player2.score) {
+          return player2.score - player1.score
+        } else {
+          return player2.opponentWinRate - player1.opponentWinRate
+        }
+      })
+    },
     [
       JSON.stringify(players),
     ]
@@ -29,7 +40,7 @@ export function PlayersTable({ players, onPlayerEdit }: PlayersTableProps) {
 
   return (
     <>
-      <Table>
+      <Table striped>
         <Table.Thead>
           <Table.Tr>
             <Table.Th>Player</Table.Th>
@@ -42,7 +53,7 @@ export function PlayersTable({ players, onPlayerEdit }: PlayersTableProps) {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {playersByRanking.map((player) => (
+          {sortedPlayers.map((player) => (
             <Table.Tr key={player.id}>
               <Table.Td>
                 <Group gap="xs">
