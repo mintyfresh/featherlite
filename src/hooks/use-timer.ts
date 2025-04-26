@@ -10,16 +10,21 @@ import timerUnpause from '../db/timer/timer-unpause'
 import { extractComponentsFromDuration } from '../utils/timer-helpers'
 import usePreviousState from './use-previous-state'
 
-const electron = window.electron
 const POLLING_INTERVAL = 100 // millis
 
-export default function useTimer(timer: Timer | null | undefined) {
+export interface UseTimerOptions {
+  muted?: boolean
+}
+
+export default function useTimer(timer: Timer | null | undefined, { muted = false }: UseTimerOptions = {}) {
+  const isElectron = typeof window.electron !== 'undefined'
+
   const [phase, setPhase] = useState<TimerPhase | null>(null)
   const endOfPhaseSound = usePreviousState(phase?.audioClip)
 
   // If using browser audio, preload the audio file
   const audio = useMemo(
-    () => (electron || !endOfPhaseSound ? null : new Audio(`/public/${endOfPhaseSound}`)),
+    () => (!isElectron && !endOfPhaseSound ? null : new Audio(`/public/${endOfPhaseSound}`)),
     [endOfPhaseSound]
   )
 
@@ -46,14 +51,14 @@ export default function useTimer(timer: Timer | null | undefined) {
 
   // Play a sound when the timer reaches the end of the phase
   useEffect(() => {
-    if (hours === 0 && minutes === 0 && seconds === 0 && endOfPhaseSound) {
-      if (electron) {
-        electron.playSound(endOfPhaseSound)
+    if (hours === 0 && minutes === 0 && seconds === 0 && endOfPhaseSound && !muted) {
+      if (isElectron) {
+        window.electron?.playSound(endOfPhaseSound)
       } else {
         audio?.play()
       }
     }
-  }, [hours, minutes, seconds, endOfPhaseSound, audio])
+  }, [hours, minutes, seconds, endOfPhaseSound, audio, muted])
 
   const pause = useCallback(() => timer?.id && timerPause(timer.id), [timer?.id])
   const unpause = useCallback(() => timer?.id && timerUnpause(timer.id), [timer?.id])

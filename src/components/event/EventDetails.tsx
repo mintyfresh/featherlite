@@ -52,7 +52,13 @@ export function EventDetails() {
           {timers
             ?.slice(0, 3)
             ?.map((timer, index) => (
-              <TimerTab key={timer.id} timer={timer} ml={index === 0 ? 'auto' : undefined} inert />
+              <TimerTab
+                key={timer.id}
+                timer={timer}
+                ml={index === 0 ? 'auto' : undefined}
+                inert
+                muted={tab === 'timers'} // Avoid double sound on timers tab
+              />
             ))}
         </Tabs.List>
 
@@ -72,8 +78,8 @@ export function EventDetails() {
   )
 }
 
-function TimerTab({ timer, ...props }: { timer: Timer } & Omit<TabsTabProps, 'value'>) {
-  const { phase, hours, minutes, seconds } = useTimer(timer)
+function TimerTab({ timer, muted, ...props }: { timer: Timer, muted: boolean } & Omit<TabsTabProps, 'value'>) {
+  const { phase, hours, minutes, seconds } = useTimer(timer, { muted })
 
   return (
     <Tabs.Tab {...props} value={timer.id} c={integerToColour(phase?.colour ?? 0)}>

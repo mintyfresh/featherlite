@@ -12,7 +12,7 @@ export default async function timerSkipToNextPhase(timer: Timer | string) {
   }
 
   const timeRemainingInPhase = await timerTimeRemainingInCurrentPhase(timer)
-  const expiresAt = new Date(timer.expiresAt.getTime() - timeRemainingInPhase)
+  const expiresAt = new Date(timer.expiresAt.getTime() - timeRemainingInPhase + 500) // half a second before so the sound plays
 
   const result: Timer = {
     ...timer,
