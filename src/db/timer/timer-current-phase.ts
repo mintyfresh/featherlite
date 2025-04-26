@@ -19,5 +19,5 @@ export default async function timerCurrentPhase(timer: Timer | string, at: Date 
     }
   }
 
-  return phases[phases.length - 1]
+  return null
 }

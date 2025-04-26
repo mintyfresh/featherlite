@@ -49,17 +49,15 @@ export function EventDetails() {
           <Tabs.Tab value="players">Players</Tabs.Tab>
           <Tabs.Tab value="matches">Matches</Tabs.Tab>
           <Tabs.Tab value="timers">Timers</Tabs.Tab>
-          {timers
-            ?.slice(0, 3)
-            ?.map((timer, index) => (
-              <TimerTab
-                key={timer.id}
-                timer={timer}
-                ml={index === 0 ? 'auto' : undefined}
-                inert
-                muted={tab === 'timers'} // Avoid double sound on timers tab
-              />
-            ))}
+          {timers?.slice(0, 3)?.map((timer, index) => (
+            <TimerTab
+              key={timer.id}
+              timer={timer}
+              ml={index === 0 ? 'auto' : undefined}
+              inert
+              muted={tab === 'timers'} // Avoid double sound on timers tab
+            />
+          ))}
         </Tabs.List>
 
         <Tabs.Panel value="players" pt="md">
@@ -78,7 +76,7 @@ export function EventDetails() {
   )
 }
 
-function TimerTab({ timer, muted, ...props }: { timer: Timer, muted: boolean } & Omit<TabsTabProps, 'value'>) {
+function TimerTab({ timer, muted, ...props }: { timer: Timer; muted: boolean } & Omit<TabsTabProps, 'value'>) {
   const { phase, hours, minutes, seconds } = useTimer(timer, { muted })
 
   return (

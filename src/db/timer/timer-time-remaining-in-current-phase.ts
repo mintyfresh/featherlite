@@ -10,6 +10,7 @@ export default async function timerTimeRemainingInCurrentPhase(timer: Timer | st
 
   const currentPhase = await timerCurrentPhase(timer, at)
   const timeRemaining = await timerTimeRemaining(timer, at)
+  const timeRemainingInPhase = timeRemaining - (currentPhase?.offsetFromEnd ?? 0)
 
-  return timeRemaining - currentPhase.offsetFromEnd
+  return timeRemainingInPhase > 0 ? timeRemainingInPhase : 0
 }

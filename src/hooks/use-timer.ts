@@ -8,7 +8,7 @@ import timerSkipToNextPhase from '../db/timer/timer-skip-to-next-phase'
 import timerTimeRemainingInCurrentPhase from '../db/timer/timer-time-remaining-in-current-phase'
 import timerUnpause from '../db/timer/timer-unpause'
 import { extractComponentsFromDuration } from '../utils/timer-helpers'
-import usePreviousState from './use-previous-state'
+import { usePrevious } from '@mantine/hooks'
 
 const POLLING_INTERVAL = 100 // millis
 
@@ -17,16 +17,8 @@ export interface UseTimerOptions {
 }
 
 export default function useTimer(timer: Timer | null | undefined, { muted = false }: UseTimerOptions = {}) {
-  const isElectron = typeof window.electron !== 'undefined'
-
   const [phase, setPhase] = useState<TimerPhase | null>(null)
-  const endOfPhaseSound = usePreviousState(phase?.audioClip)
-
-  // If using browser audio, preload the audio file
-  const audio = useMemo(
-    () => (!isElectron && !endOfPhaseSound ? null : new Audio(`/public/${endOfPhaseSound}`)),
-    [endOfPhaseSound]
-  )
+  const previousPhase = usePrevious(phase)
 
   const [hours, setHours] = useState(0)
   const [minutes, setMinutes] = useState(0)
@@ -49,16 +41,33 @@ export default function useTimer(timer: Timer | null | undefined, { muted = fals
     }
   }, [timer?.id, timer?.pausedAt, timer?.expiresAt])
 
+  // If using browser audio, preload the audio file
+  const audio = useMemo(
+    () =>
+      typeof window.electron === 'undefined' && previousPhase?.audioClip
+        ? new Audio(`/public/${previousPhase.audioClip}`)
+        : null,
+    [previousPhase?.audioClip]
+  )
+
   // Play a sound when the timer reaches the end of the phase
   useEffect(() => {
-    if (hours === 0 && minutes === 0 && seconds === 0 && endOfPhaseSound && !muted) {
-      if (isElectron) {
-        window.electron?.playSound(endOfPhaseSound)
+    let isSubsequentPhase = false
+
+    if (phase && previousPhase) {
+      isSubsequentPhase = phase.offsetFromStart > previousPhase.offsetFromStart
+    } else if (!phase && previousPhase) {
+      isSubsequentPhase = true
+    }
+
+    if (isSubsequentPhase && previousPhase?.audioClip && !muted) {
+      if (typeof window.electron !== 'undefined') {
+        window.electron.playSound(previousPhase.audioClip)
       } else {
         audio?.play()
       }
     }
-  }, [hours, minutes, seconds, endOfPhaseSound, audio, muted])
+  }, [phase?.id, previousPhase?.id, previousPhase?.audioClip, audio, muted])
 
   const pause = useCallback(() => timer?.id && timerPause(timer.id), [timer?.id])
   const unpause = useCallback(() => timer?.id && timerUnpause(timer.id), [timer?.id])
