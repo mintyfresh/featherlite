@@ -44,6 +44,14 @@ export default defineConfig(({ mode }) => {
                 },
               },
             }),
+            viteStaticCopy({
+              targets: [
+                {
+                  src: join(__dirname, 'electron', 'preload.js'),
+                  dest: 'assets',
+                },
+              ],
+            }),
           ]
         : []),
     ],

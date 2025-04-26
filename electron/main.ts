@@ -1,7 +1,9 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
-import { fileURLToPath } from 'url'
+import { copyFile, existsSync, readdir } from 'fs'
 import { dirname, join } from 'path'
 import player from 'play-sound'
+import { tmpNameSync } from 'tmp'
+import { fileURLToPath } from 'url'
 
 // The built directory structure
 //
@@ -31,9 +33,45 @@ let mainWindow: BrowserWindow | null
 
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
+const PRELOAD_PATH = app.isPackaged
+  ? join(process.env.DIST!, 'assets', 'preload.js')
+  : join(__dirname, '../electron', 'preload.js')
 
 // Initialize the sound player
 const audioPlayer = player({})
+const soundAssets = new Map<string, string>()
+
+function extractSoundAssets() {
+  // File files with .wav, .mp3, .ogg extensions
+  readdir(process.env.VITE_PUBLIC!, { withFileTypes: true }, (err, files) => {
+    if (err) {
+      console.error('Error reading sound assets:', err)
+      return
+    }
+
+    const soundFiles = files.filter((file) => file.isFile() && (file.name.endsWith('.wav') || file.name.endsWith('.mp3') || file.name.endsWith('.ogg')))
+    console.log('soundFiles', soundFiles)
+
+    soundFiles.forEach((file) => {
+      if (app.isPackaged) {
+        const srcPath = join(process.env.VITE_PUBLIC!, file.name)
+        const dstPath = tmpNameSync({ postfix: file.name })
+
+        soundAssets.set(file.name, dstPath)
+
+        copyFile(srcPath, dstPath, (err) => {
+          if (err) {
+            console.error('Error copying sound file:', err)
+          }
+        })
+      } else {
+        soundAssets.set(file.name, join(process.env.VITE_PUBLIC!, file.name))
+      }
+    })
+
+    console.log('soundAssets', soundAssets)
+  })
+}
 
 function createMainWindow() {
   mainWindow = new BrowserWindow({
@@ -44,7 +82,7 @@ function createMainWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: join(__dirname, '../electron', 'preload.mjs'),
+      preload: PRELOAD_PATH,
     },
   })
 
@@ -62,8 +100,14 @@ function createMainWindow() {
 
 // Set up IPC handlers
 ipcMain.on('play-sound', (_, soundFile: string) => {
-  console.log('play-sound', soundFile)
-  const soundPath = join(process.env.VITE_PUBLIC!, soundFile)
+  const soundPath = soundAssets.get(soundFile)
+  console.log('play-sound', soundFile, soundPath)
+
+  if (!soundPath || !existsSync(soundPath)) {
+    console.error(`Sound file not found: ${soundPath}`)
+    return
+  }
+
   audioPlayer.play(soundPath, (err) => {
     if (err) console.error(`Error playing sound: ${err}`)
   })
@@ -78,7 +122,7 @@ ipcMain.on('show-match-slips', (_, roundId: string) => {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: join(__dirname, 'preload.js'),
+      preload: PRELOAD_PATH,
     },
   })
 
@@ -89,6 +133,10 @@ ipcMain.on('show-match-slips', (_, roundId: string) => {
       hash: `/rounds/${roundId}/slips`,
     })
   }
+})
+
+app.on('ready', () => {
+  extractSoundAssets()
 })
 
 app.on('window-all-closed', () => {
