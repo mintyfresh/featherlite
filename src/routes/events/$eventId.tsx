@@ -1,6 +1,7 @@
 import { Button, Container, Group, Loader, Tabs, Title } from '@mantine/core'
 import { createFileRoute } from '@tanstack/react-router'
 import { useLiveQuery } from 'dexie-react-hooks'
+import ExportTab from '../../components/ExportTab/ExportTab'
 import MatchTab from '../../components/MatchTab/MatchTab'
 import PlayerTab from '../../components/PlayerTab/PlayerTab'
 import TimerInlineDisplay from '../../components/TimerInlineDisplay/TimerInlineDisplay'
@@ -52,6 +53,9 @@ export default function EventDetailsPage() {
           <Tabs.Tab value="players">Players</Tabs.Tab>
           <Tabs.Tab value="matches">Matches</Tabs.Tab>
           <Tabs.Tab value="timers">Timers</Tabs.Tab>
+          <Tabs.Tab value="export">Export</Tabs.Tab>
+
+          {/* Pseudo-tabs for inline timers */}
           {timers?.slice(0, 3)?.map((timer, index) => (
             <TimerInlineDisplay
               key={timer.id}
@@ -73,6 +77,10 @@ export default function EventDetailsPage() {
 
         <Tabs.Panel value="timers" pt="md">
           <TimerTab event={event} />
+        </Tabs.Panel>
+
+        <Tabs.Panel value="export" pt="md">
+          <ExportTab event={event} />
         </Tabs.Panel>
       </Tabs>
     </Container>
