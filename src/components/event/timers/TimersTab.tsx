@@ -1,4 +1,4 @@
-import { Button, Group, Paper, Select, Stack, Text, Title } from '@mantine/core'
+import { Button, Group, Paper, Select, Stack, Text } from '@mantine/core'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
 import { Event } from '../../../db'
