@@ -1,15 +1,15 @@
 import { Button, Group, Loader, Paper, Text } from '@mantine/core'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
-import { db, Event, Player } from '../../../db'
-import { PlayerModal } from './PlayerModal'
-import { PlayersTable } from './PlayersTable'
+import { db, Event, Player } from '../../db'
+import PlayersTable from '../PlayerTable/PlayerTable'
+import PlayerModal from '../PlayerModal/PlayerModal'
 
-export interface PlayersTabProps {
+export interface PlayerTabProps {
   event: Event
 }
 
-export default function PlayersTab({ event }: PlayersTabProps) {
+export default function PlayerTab({ event }: PlayerTabProps) {
   const [modalOpened, setModalOpened] = useState(false)
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null)
 

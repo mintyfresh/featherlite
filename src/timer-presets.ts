@@ -46,4 +46,27 @@ export const timerPresets: Omit<TimerCreateInput, 'matchId'>[] = [
       // No soft time
     ],
   },
+  {
+    label: 'Test Timer',
+    phases: [
+      {
+        name: 'Setup',
+        duration: 3 * SECOND,
+        colour: 0xffc107,
+        audioClip: 'begin.wav',
+      },
+      {
+        name: 'Time Remaining',
+        duration: 3 * SECOND,
+        colour: 0x198754,
+        audioClip: 'over.wav',
+      },
+      {
+        name: 'Soft Time',
+        duration: 3 * SECOND,
+        colour: 0xdc3545,
+        audioClip: 'time.wav',
+      },
+    ],
+  },
 ]

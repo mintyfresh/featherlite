@@ -18,7 +18,7 @@ export class RecordNotFoundError extends DatabaseError {
 export class RecordInvalidError extends DatabaseError {
   constructor(
     public readonly record: string,
-    public readonly id: string,
+    public readonly id: string | null,
     public readonly errors: [string | null, string][]
   ) {
     super(`${record} with is invalid`)

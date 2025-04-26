@@ -2,12 +2,12 @@ import { Alert, Button, Checkbox, Modal, Stack, Text, TextInput } from '@mantine
 import { useLocalStorage } from '@mantine/hooks'
 import { IconAlertCircle } from '@tabler/icons-react'
 import { useRef, useState } from 'react'
-import { Player } from '../../../db'
-import playerCreate from '../../../db/player/player-create'
-import playerUpdate from '../../../db/player/player-update'
-import useFormErrors from '../../../hooks/use-form-errors'
+import { Player } from '../../db'
+import playerCreate from '../../db/player/player-create'
+import playerUpdate from '../../db/player/player-update'
+import useFormErrors from '../../hooks/use-form-errors'
 
-interface PlayerModalProps {
+export interface PlayerModalProps {
   eventId: string
   player?: Player | null
   opened: boolean
@@ -15,7 +15,7 @@ interface PlayerModalProps {
   onSubmit?(player: Omit<Player, 'id' | 'eventId'>): void
 }
 
-export function PlayerModal({ eventId, player, opened, onClose, onSubmit }: PlayerModalProps) {
+export default function PlayerModal({ eventId, player, opened, onClose, onSubmit }: PlayerModalProps) {
   const nameRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useFormErrors()

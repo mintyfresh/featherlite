@@ -41,11 +41,11 @@ export default function useTimer(timer: Timer | null | undefined, { muted = fals
     }
   }, [timer?.id, timer?.pausedAt, timer?.expiresAt])
 
-  // If using browser audio, preload the audio file
+  // If using browser audio, preload the audio file to avoid a delay
   const audio = useMemo(
     () =>
       typeof window.electron === 'undefined' && previousPhase?.audioClip
-        ? new Audio(`/public/${previousPhase.audioClip}`)
+        ? new Audio(`/${previousPhase.audioClip}`)
         : null,
     [previousPhase?.audioClip]
   )
@@ -67,7 +67,7 @@ export default function useTimer(timer: Timer | null | undefined, { muted = fals
         audio?.play()
       }
     }
-  }, [phase?.id, previousPhase?.id, previousPhase?.audioClip, audio, muted])
+  }, [phase, previousPhase, previousPhase?.audioClip, audio, muted])
 
   const pause = useCallback(() => timer?.id && timerPause(timer.id), [timer?.id])
   const unpause = useCallback(() => timer?.id && timerUnpause(timer.id), [timer?.id])

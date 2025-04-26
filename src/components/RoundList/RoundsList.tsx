@@ -1,12 +1,12 @@
 import { Accordion, ActionIcon, Center, Text } from '@mantine/core'
 import { IconPrinter } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
-import { Event, Player, Round } from '../../../db'
-import MatchesGridView from './MatchesGridView'
-import MatchesTableView from './MatchesTableView'
+import { Event, Player, Round } from '../../db'
+import MatchListView from '../MatchListView/MatchListView'
+import MatchGridView from '../MatchGridView/MatchGridView'
 
 interface RoundsListProps {
-  view: 'table' | 'grid'
+  view: 'list' | 'grid'
   event: Event
   rounds: Round[]
   players: Player[]
@@ -56,10 +56,10 @@ export default function RoundsList({ view, event, rounds, players }: RoundsListP
             </ActionIcon>
           </Center>
           <Accordion.Panel>
-            {view === 'table' ? (
-              <MatchesTableView round={round} players={players} />
+            {view === 'list' ? (
+              <MatchListView round={round} players={players} />
             ) : (
-              <MatchesGridView round={round} players={players} />
+              <MatchGridView round={round} players={players} />
             )}
           </Accordion.Panel>
         </Accordion.Item>

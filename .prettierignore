@@ -5,3 +5,4 @@ deps
 dist
 dist-electron
 release
+src/routeTree.gen.ts

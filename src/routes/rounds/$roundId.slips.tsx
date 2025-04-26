@@ -1,23 +1,27 @@
 import { Button, Group, Stack, Switch } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
+import { createFileRoute } from '@tanstack/react-router'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo } from 'react'
-import { useParams } from 'react-router-dom'
 import { db } from '../../db'
 import eventGet from '../../db/event/event-get'
 import roundGet from '../../db/round/round-get'
 import roundMatches from '../../db/round/round-matches'
-import LegacyMatchSlip from './LegacyMatchSlip'
-import './MatchSlips.css'
+import './$roundId.slips.css'
+import LegacyMatchSlip from '../../components/LegacyMatchSlip/LegacyMatchSlip'
 
-export default function MatchSlips() {
+export const Route = createFileRoute('/rounds/$roundId/slips')({
+  component: MatchSlipsPage,
+})
+
+export default function MatchSlipsPage() {
+  const { roundId } = Route.useParams()
   const [includeBye, setIncludeBye] = useLocalStorage({ key: 'includeBye', defaultValue: false })
 
-  const { id } = useParams<{ id: string }>()
-  const round = useLiveQuery(() => (id ? roundGet(id) : null), [id])
+  const round = useLiveQuery(() => (roundId ? roundGet(roundId) : null), [roundId])
   const event = useLiveQuery(() => (round?.eventId ? eventGet(round.eventId) : null), [round?.eventId])
 
-  const matches = useLiveQuery(() => (id ? roundMatches(id) : []), [id])
+  const matches = useLiveQuery(() => (roundId ? roundMatches(roundId) : []), [roundId])
   const playerIds = matches?.flatMap((match) => match.playerIds).filter((id) => id !== null) as string[]
 
   const players = useLiveQuery(() => (playerIds ? db.players.where('id').anyOf(playerIds).toArray() : []), [playerIds])

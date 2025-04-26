@@ -1,13 +1,17 @@
 import { ActionIcon, Box, Button, Card, Container, Group, Loader, Paper, Stack, Text, Title } from '@mantine/core'
+import { createFileRoute } from '@tanstack/react-router'
 import { format } from 'date-fns'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import EventModal from '../components/EventModal/EventModal'
 import { db, Event } from '../db'
-import EventModal from './EventModal'
 
-export function EventsList() {
-  const navigate = useNavigate()
+export const Route = createFileRoute('/')({
+  component: EventsListPage,
+})
+
+export default function EventsListPage() {
+  const navigate = Route.useNavigate()
 
   const events = useLiveQuery(() => db.events.orderBy('createdAt').reverse().toArray())
 
@@ -43,7 +47,7 @@ export function EventsList() {
             shadow="sm"
             p="lg"
             style={{ cursor: 'pointer' }}
-            onClick={() => navigate(`/events/${event.id}`)}
+            onClick={() => navigate({ to: `/events/${event.id}` })}
             role="button"
           >
             <Group justify="space-between">
@@ -78,7 +82,7 @@ export function EventsList() {
           setEditingEvent(null)
         }}
         onSubmit={(event) => {
-          navigate(`/events/${event.id}`)
+          navigate({ to: `/events/${event.id}` })
         }}
       />
     </Container>

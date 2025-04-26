@@ -6,7 +6,7 @@ import {
   IconPlayerSkipForward,
   IconTrash,
 } from '@tabler/icons-react'
-import { Timer } from '../../../db'
+import { Timer } from '../../db'
 
 interface TimerControlsProps {
   timer: Timer

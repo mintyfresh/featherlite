@@ -1,18 +1,18 @@
 import { Button, Group, Paper, Select, Stack, Text } from '@mantine/core'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
-import { Event } from '../../../db'
-import eventCurrentRound from '../../../db/event/event-current-round'
-import roundTimers from '../../../db/round/round-timers'
-import timerCreate from '../../../db/timer/timer-create'
-import { timerPresets } from '../../../timer-presets'
-import TimerListItem from './TimerListItem'
+import { Event } from '../../db'
+import eventCurrentRound from '../../db/event/event-current-round'
+import roundTimers from '../../db/round/round-timers'
+import timerCreate from '../../db/timer/timer-create'
+import { timerPresets } from '../../timer-presets'
+import TimerListItem from '../TimerListItem/TimerListItem'
 
-interface TimersTabProps {
+interface TimerTabProps {
   event: Event
 }
 
-export default function TimersTab({ event }: TimersTabProps) {
+export default function TimerTab({ event }: TimerTabProps) {
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null)
 
   // Get current round

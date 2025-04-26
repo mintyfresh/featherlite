@@ -1,15 +1,15 @@
 import { Flex, Text, TextInput } from '@mantine/core'
-import { Timer } from '../../../db'
-import timerUpdate from '../../../db/timer/timer-update'
-import useTimer from '../../../hooks/use-timer'
-import { integerToColour } from '../../../utils/colour'
+import { Timer } from '../../db'
+import timerUpdate from '../../db/timer/timer-update'
+import useTimer from '../../hooks/use-timer'
+import { integerToColour } from '../../utils/colour'
 import TimerControls from './TimerControls'
 
-interface TimerProps {
+export interface TimerListItemProps {
   timer: Timer
 }
 
-export default function TimerListItem({ timer }: TimerProps) {
+export default function TimerListItem({ timer }: TimerListItemProps) {
   const { phase, hours, minutes, seconds, pause, unpause, skipToNextPhase, reset, destroy } = useTimer(timer)
 
   return (

@@ -1,11 +1,11 @@
 import { Button, Modal, Stack, Text, TextInput } from '@mantine/core'
 import { useState } from 'react'
-import { Event } from '../db'
-import { DatabaseError } from '../db/errors'
-import eventCreate from '../db/event/event-create'
-import eventUpdate from '../db/event/event-update'
+import { Event } from '../../db'
+import { DatabaseError } from '../../db/errors'
+import eventCreate from '../../db/event/event-create'
+import eventUpdate from '../../db/event/event-update'
 
-interface EventModalProps {
+export interface EventModalProps {
   event?: Event | null
   opened: boolean
   onClose(): void

@@ -3,6 +3,7 @@ import { join } from 'path'
 import { defineConfig } from 'vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import electron from 'vite-plugin-electron'
+import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 
 const PYODIDE_EXCLUDE = ['!**/*.{md,html}', '!**/*.d.ts', '!**/node_modules']
 
@@ -25,6 +26,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
+      TanStackRouterVite({ target: 'react' }),
       react(),
       viteStaticCopyPyodide(),
       ...(isElectron

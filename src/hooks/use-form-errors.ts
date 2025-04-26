@@ -42,7 +42,12 @@ export default function useFormErrors() {
 
         error.errors.forEach(([key, message]) => {
           const fullMessage = key ? `${key} ${message}` : message
-          errors.get(key)?.push(fullMessage) ?? errors.set(key, [fullMessage])
+
+          if (errors.has(key)) {
+            errors.get(key)!.push(fullMessage)
+          } else {
+            errors.set(key, [fullMessage])
+          }
         })
 
         _setErrors(new MappedFormErrors(errors))

@@ -4,21 +4,21 @@ import { notifications } from '@mantine/notifications'
 import { IconCheck } from '@tabler/icons-react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useCallback, useState } from 'react'
-import { db, Event } from '../../../db'
-import eventCurrentRound from '../../../db/event/event-current-round'
-import roundCreate from '../../../db/round/round-create'
-import generateSwissPairings, { isPythonContextLoaded, preloadPythonContext } from '../../../utils/swiss'
-import RoundsList from './RoundsList'
+import { db, Event } from '../../db'
+import eventCurrentRound from '../../db/event/event-current-round'
+import roundCreate from '../../db/round/round-create'
+import generateSwissPairings, { isPythonContextLoaded, preloadPythonContext } from '../../utils/swiss'
+import RoundsList from '../RoundList/RoundsList'
 
-export interface MatchesTabProps {
+export interface MatchTabProps {
   event: Event
 }
 
-export default function MatchesTab({ event }: MatchesTabProps) {
+export default function MatchTab({ event }: MatchTabProps) {
   const [loading, setLoading] = useState(false)
-  const [view, setView] = useLocalStorage<'table' | 'grid'>({
+  const [view, setView] = useLocalStorage<'list' | 'grid'>({
     key: 'matches-view',
-    defaultValue: 'table',
+    defaultValue: 'list',
   })
 
   const players = useLiveQuery(async () => db.players.where({ eventId: event.id }).toArray(), [event.id])
@@ -74,8 +74,8 @@ export default function MatchesTab({ event }: MatchesTabProps) {
   return (
     <>
       <Group justify="end" mb="md">
-        <Button variant="outline" onClick={() => setView(view === 'table' ? 'grid' : 'table')}>
-          {view === 'table' ? 'Grid View' : 'Table View'}
+        <Button variant="outline" onClick={() => setView(view === 'list' ? 'grid' : 'list')}>
+          {view === 'list' ? 'Grid View' : 'List View'}
         </Button>
 
         <Button onClick={() => startNextRound()} loading={loading} disabled={!roundComplete}>

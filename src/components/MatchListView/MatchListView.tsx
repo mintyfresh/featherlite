@@ -1,16 +1,16 @@
 import { ActionIcon, Badge, Group, Loader, Table, Text } from '@mantine/core'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo } from 'react'
-import { Player, Round } from '../../../db'
-import matchUpdate from '../../../db/match/match-update'
-import roundMatches from '../../../db/round/round-matches'
+import { Player, Round } from '../../db'
+import matchUpdate from '../../db/match/match-update'
+import roundMatches from '../../db/round/round-matches'
 
-interface MatchesTableViewProps {
+export interface MatchListViewProps {
   round: Round
   players: Player[]
 }
 
-export default function MatchesTableView({ round, players }: MatchesTableViewProps) {
+export default function MatchListView({ round, players }: MatchListViewProps) {
   const playerIndex = useMemo(() => new Map<string, Player>(players.map((player) => [player.id, player])), [players])
 
   const matches = useLiveQuery(() => roundMatches(round.id), [round.id])

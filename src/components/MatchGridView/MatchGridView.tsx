@@ -2,16 +2,16 @@ import { Card, Divider, Flex, Loader, SimpleGrid, Text, UnstyledButton, Unstyled
 import { IconCrown } from '@tabler/icons-react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useMemo } from 'react'
-import { Match, Player, Round } from '../../../db'
-import matchUpdate from '../../../db/match/match-update'
-import roundMatches from '../../../db/round/round-matches'
+import { Match, Player, Round } from '../../db'
+import matchUpdate from '../../db/match/match-update'
+import roundMatches from '../../db/round/round-matches'
 
-interface MatchesListGridProps {
+export interface MatchGridViewProps {
   round: Round
   players: Player[]
 }
 
-export default function MatchesListGrid({ round, players }: MatchesListGridProps) {
+export default function MatchGridView({ round, players }: MatchGridViewProps) {
   const playerIndex = useMemo(() => new Map<string, Player>(players.map((player) => [player.id, player])), [players])
 
   const matches = useLiveQuery(() => roundMatches(round.id), [round.id])

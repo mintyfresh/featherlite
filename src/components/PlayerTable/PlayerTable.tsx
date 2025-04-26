@@ -1,13 +1,13 @@
 import { ActionIcon, Badge, Group, Table, Text } from '@mantine/core'
 import { useMemo } from 'react'
-import { Player } from '../../../db'
+import { Player } from '../../db'
 
-interface PlayersTableProps {
+export interface PlayerTableProps {
   players: Player[]
   onPlayerEdit(player: Player): void
 }
 
-export function PlayersTable({ players, onPlayerEdit }: PlayersTableProps) {
+export default function PlayerTable({ players, onPlayerEdit }: PlayerTableProps) {
   const sortedPlayers = useMemo(() => {
     // If no games have been played, sort by name
     const preGameState = players.every((player) => player.score === 0)

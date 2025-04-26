@@ -1,20 +1,23 @@
-import { Button, Container, Group, Loader, Tabs, TabsTabProps, Title } from '@mantine/core'
+import { Button, Container, Group, Loader, Tabs, Title } from '@mantine/core'
+import { createFileRoute } from '@tanstack/react-router'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { useNavigate, useParams } from 'react-router-dom'
-import { db, Timer } from '../../db'
+import MatchTab from '../../components/MatchTab/MatchTab'
+import PlayerTab from '../../components/PlayerTab/PlayerTab'
+import TimerInlineDisplay from '../../components/TimerInlineDisplay/TimerInlineDisplay'
+import TimerTab from '../../components/TimerTab/TimerTab'
+import { db } from '../../db'
 import eventCurrentRound from '../../db/event/event-current-round'
 import roundTimers from '../../db/round/round-timers'
-import useTimer from '../../hooks/use-timer'
-import { integerToColour } from '../../utils/colour'
-import MatchesTab from './matches/MatchesTab'
-import PlayersTab from './players/PlayersTab'
-import TimersTab from './timers/TimersTab'
 
-export function EventDetails() {
-  const navigate = useNavigate()
-  const { id, tab } = useParams<{ id: string; tab: string | undefined }>()
+export const Route = createFileRoute('/events/$eventId')({
+  component: EventDetailsPage,
+})
 
-  const event = useLiveQuery(async () => (id ? db.events.get(id) : null), [id])
+export default function EventDetailsPage() {
+  const navigate = Route.useNavigate()
+  const { eventId, tab } = Route.useParams()
+
+  const event = useLiveQuery(async () => (eventId ? db.events.get(eventId) : null), [eventId])
   const currentRound = useLiveQuery(async () => event && eventCurrentRound(event), [event])
   const timers = useLiveQuery(async () => currentRound && roundTimers(currentRound), [currentRound])
 
@@ -30,7 +33,7 @@ export function EventDetails() {
     <Container size="md" py="xl">
       <Group justify="space-between" mb="md">
         <Title>{event.name}</Title>
-        <Button variant="subtle" onClick={() => navigate('/')}>
+        <Button variant="subtle" onClick={() => navigate({ to: '/' })}>
           ← Back to Events
         </Button>
       </Group>
@@ -39,9 +42,9 @@ export function EventDetails() {
         value={tab ?? 'players'}
         onChange={(value) => {
           if (value === 'players') {
-            navigate(`/events/${id}`)
+            navigate({ to: `/events/${eventId}` })
           } else {
-            navigate(`/events/${id}/${value}`)
+            navigate({ to: `/events/${eventId}/${value}` })
           }
         }}
       >
@@ -50,7 +53,7 @@ export function EventDetails() {
           <Tabs.Tab value="matches">Matches</Tabs.Tab>
           <Tabs.Tab value="timers">Timers</Tabs.Tab>
           {timers?.slice(0, 3)?.map((timer, index) => (
-            <TimerTab
+            <TimerInlineDisplay
               key={timer.id}
               timer={timer}
               ml={index === 0 ? 'auto' : undefined}
@@ -61,28 +64,17 @@ export function EventDetails() {
         </Tabs.List>
 
         <Tabs.Panel value="players" pt="md">
-          <PlayersTab event={event} />
+          <PlayerTab event={event} />
         </Tabs.Panel>
 
         <Tabs.Panel value="matches" pt="md">
-          <MatchesTab event={event} />
+          <MatchTab event={event} />
         </Tabs.Panel>
 
         <Tabs.Panel value="timers" pt="md">
-          <TimersTab event={event} />
+          <TimerTab event={event} />
         </Tabs.Panel>
       </Tabs>
     </Container>
-  )
-}
-
-function TimerTab({ timer, muted, ...props }: { timer: Timer; muted: boolean } & Omit<TabsTabProps, 'value'>) {
-  const { phase, hours, minutes, seconds } = useTimer(timer, { muted })
-
-  return (
-    <Tabs.Tab {...props} value={timer.id} c={integerToColour(phase?.colour ?? 0)}>
-      {hours > 0 ? `${hours.toString().padStart(2, '0')}:` : ''}
-      {minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}
-    </Tabs.Tab>
   )
 }
