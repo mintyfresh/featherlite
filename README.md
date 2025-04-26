@@ -45,3 +45,7 @@ Build the application
 Run the app
 
     npm run electron:preview
+
+To build release executables (optional)
+
+    npm run electron:release

@@ -42,7 +42,7 @@ export default function TimersTab({ event }: TimersTabProps) {
   }
 
   return (
-    <Stack gap="xl">
+    <Stack gap="md">
       <Group>
         <Select
           placeholder="Select a preset"
@@ -55,6 +55,12 @@ export default function TimersTab({ event }: TimersTabProps) {
           Start Timer
         </Button>
       </Group>
+
+      {timers?.length === 0 && (
+        <Paper withBorder p="lg" shadow="sm">
+          <Text>No timers have been created for round {currentRound.number}</Text>
+        </Paper>
+      )}
 
       <Stack gap="xl">{timers?.map((timer) => <TimerListItem key={timer.id} timer={timer} />)}</Stack>
     </Stack>
