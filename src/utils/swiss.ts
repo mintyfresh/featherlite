@@ -6,7 +6,11 @@ import type { PyodideInterface } from '#pyodide'
 
 type Pairing = [string, string | null]
 
-export async function preloadSwissDependencies() {
+export function isPythonContextLoaded() {
+  return pythonContextLoaded
+}
+
+export async function preloadPythonContext() {
   await getPythonContext()
 }
 
@@ -57,6 +61,7 @@ export default async function generateSwissPairings(event: Event | string): Prom
   return sortPairingsByRankings(pairings)
 }
 
+let pythonContextLoaded = false
 let pythonContext: Promise<PyodideInterface> | null = null
 
 async function getPythonContext() {
@@ -69,6 +74,8 @@ async function getPythonContext() {
       import micropip
       await micropip.install("networkx")
     `)
+
+    pythonContextLoaded = true
   }
 
   return pythonContext

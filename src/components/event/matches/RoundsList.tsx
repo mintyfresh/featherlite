@@ -41,11 +41,15 @@ export default function RoundsList({ view, event, rounds, players }: RoundsListP
               variant="subtle"
               color="gray"
               onClick={() => {
-                window.open(
-                  `${window.location.origin}/#/rounds/${round.id}/slips`,
-                  'Slips',
-                  'popup,titlebar=no,toolbar=no,menubar=no,directories=no,location=no,status=no,width=600,height=800'
-                )
+                if (typeof window.electron !== 'undefined') {
+                  window.electron.showMatchSlips(round.id)
+                } else {
+                  window.open(
+                    `/#/rounds/${round.id}/slips`,
+                    'Slips',
+                    'popup,titlebar=no,toolbar=no,menubar=no,directories=no,location=no,status=no,width=600,height=800'
+                  )
+                }
               }}
             >
               <IconPrinter />

@@ -1,4 +1,5 @@
 import { createTheme, MantineProvider } from '@mantine/core'
+import { Notifications } from '@mantine/notifications'
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { EventsList } from './components/EventsList'
 import { EventDetails } from './components/event/EventDetails'
@@ -9,6 +10,7 @@ const theme = createTheme({})
 export default function App() {
   return (
     <MantineProvider theme={theme}>
+      <Notifications />
       <HashRouter>
         <Routes>
           <Route path="/" element={<EventsList />} />

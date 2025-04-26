@@ -1,12 +1,14 @@
 import { Button, Group, Loader, Paper, Text } from '@mantine/core'
+import { useLocalStorage } from '@mantine/hooks'
+import { notifications } from '@mantine/notifications'
+import { IconCheck } from '@tabler/icons-react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { db, Event } from '../../../db'
 import eventCurrentRound from '../../../db/event/event-current-round'
 import roundCreate from '../../../db/round/round-create'
-import generateSwissPairings, { preloadSwissDependencies } from '../../../utils/swiss'
+import generateSwissPairings, { isPythonContextLoaded, preloadPythonContext } from '../../../utils/swiss'
 import RoundsList from './RoundsList'
-import { useLocalStorage } from '@mantine/hooks'
 
 export interface MatchesTabProps {
   event: Event
@@ -28,20 +30,33 @@ export default function MatchesTab({ event }: MatchesTabProps) {
 
   const currentRound = useLiveQuery(async () => eventCurrentRound(event), [event])
 
-  useEffect(
-    // Start loading the Python runtime and dependencies as soon as the component mounts
-    () => {
-      preloadSwissDependencies()
-    },
-    []
-  )
-
   const startNextRound = useCallback(async () => {
     setLoading(true)
 
     try {
+      if (!isPythonContextLoaded()) {
+        const id = notifications.show({
+          title: 'Loading Python runtime',
+          message: 'The Python runtime is being loaded to generate pairings',
+          loading: true,
+          autoClose: false,
+          withCloseButton: false,
+        })
+
+        await preloadPythonContext()
+
+        notifications.update({
+          id,
+          color: 'green',
+          title: 'Python runtime loaded',
+          message: 'Players can now be paired',
+          icon: <IconCheck size={18} />,
+          loading: false,
+          autoClose: 3000,
+        })
+      }
+
       const pairings = await generateSwissPairings(event)
-      console.log(pairings)
       const matches = pairings.map((playerIds) => ({ playerIds }))
 
       await roundCreate(event.id, { matches })

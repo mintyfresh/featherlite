@@ -19,6 +19,7 @@ declare global {
   interface Window {
     electron?: {
       playSound(soundFile: string): Promise<void>
+      showMatchSlips(roundId: string): Promise<void>
     }
   }
 }
@@ -27,13 +28,14 @@ process.env.DIST = join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST, '../public')
 
 let mainWindow: BrowserWindow | null
+
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 
 // Initialize the sound player
 const audioPlayer = player({})
 
-function createWindow() {
+function createMainWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -66,16 +68,36 @@ ipcMain.on('play-sound', (_, soundFile: string) => {
   })
 })
 
+ipcMain.on('show-match-slips', (_, roundId: string) => {
+  const matchSlipsWindow = new BrowserWindow({
+    width: 600,
+    height: 800,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: join(__dirname, 'preload.js'),
+    },
+  })
+
+  if (VITE_DEV_SERVER_URL) {
+    matchSlipsWindow.loadURL(`${VITE_DEV_SERVER_URL}#/rounds/${roundId}/slips`)
+  } else {
+    matchSlipsWindow.loadFile(join(process.env.DIST!, 'index.html'), {
+      hash: `/rounds/${roundId}/slips`,
+    })
+  }
+})
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
 
-app.whenReady().then(createWindow)
+app.whenReady().then(createMainWindow)
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow()
+    createMainWindow()
   }
 })
