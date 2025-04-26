@@ -1,5 +1,6 @@
 import { db, Event, Player } from '../../db'
 import eventGet from '../event/event-get'
+import playerValidate from './player-validate'
 
 export type PlayerCreateInput = Pick<Player, 'name' | 'paid' | 'dropped'>
 
@@ -20,8 +21,9 @@ export default async function playerCreate(event: Event | string, input: PlayerC
       opponentWinRate: 0,
     }
 
-    db.players.add(result)
-    db.events.update(event.id, {
+    await playerValidate(result)
+    await db.players.add(result)
+    await db.events.update(event.id, {
       ...event,
       playersCount: event.playersCount + 1,
       updatedAt: new Date(),

@@ -6,15 +6,26 @@ export class DatabaseError extends Error {
 }
 
 export class RecordNotFoundError extends DatabaseError {
-  constructor(record: string, id: string) {
+  constructor(
+    public readonly record: string,
+    public readonly id: string
+  ) {
     super(`${record} with id ${id} not found`)
     this.name = 'RecordNotFoundError'
   }
 }
 
 export class RecordInvalidError extends DatabaseError {
-  constructor(message: string) {
-    super(message)
+  constructor(
+    public readonly record: string,
+    public readonly id: string,
+    public readonly errors: [string | null, string][]
+  ) {
+    super(`${record} with is invalid`)
     this.name = 'RecordInvalidError'
+  }
+
+  get fullMessages(): string[] {
+    return this.errors.map(([key, message]) => (key ? `${key} ${message}` : message))
   }
 }

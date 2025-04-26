@@ -1,10 +1,11 @@
-import { Button, Checkbox, Modal, Stack, Text, TextInput } from '@mantine/core'
+import { Alert, Button, Checkbox, Modal, Stack, Text, TextInput } from '@mantine/core'
+import { useLocalStorage } from '@mantine/hooks'
+import { IconAlertCircle } from '@tabler/icons-react'
 import { useRef, useState } from 'react'
 import { Player } from '../../../db'
-import { DatabaseError } from '../../../db/errors'
 import playerCreate from '../../../db/player/player-create'
 import playerUpdate from '../../../db/player/player-update'
-import { useLocalStorage } from '@mantine/hooks'
+import useFormErrors from '../../../hooks/use-form-errors'
 
 interface PlayerModalProps {
   eventId: string
@@ -17,7 +18,7 @@ interface PlayerModalProps {
 export function PlayerModal({ eventId, player, opened, onClose, onSubmit }: PlayerModalProps) {
   const nameRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<DatabaseError | null>(null)
+  const [errors, setErrors] = useFormErrors()
 
   const [createAnotherPlayer, setCreateAnotherPlayer] = useLocalStorage({
     key: 'createAnotherPlayer',
@@ -37,7 +38,7 @@ export function PlayerModal({ eventId, player, opened, onClose, onSubmit }: Play
     }
 
     setLoading(true)
-    setError(null)
+    setErrors(null)
 
     try {
       let result: Player
@@ -59,11 +60,7 @@ export function PlayerModal({ eventId, player, opened, onClose, onSubmit }: Play
         }
       }
     } catch (error) {
-      if (error instanceof DatabaseError) {
-        setError(error)
-      } else {
-        console.error(error)
-      }
+      setErrors(error)
     } finally {
       setLoading(false)
     }
@@ -77,6 +74,7 @@ export function PlayerModal({ eventId, player, opened, onClose, onSubmit }: Play
           name="name"
           placeholder="Enter player name"
           defaultValue={player?.name ?? ''}
+          error={errors.get('name')}
           ref={nameRef}
           required
           autoComplete="off"
@@ -99,7 +97,13 @@ export function PlayerModal({ eventId, player, opened, onClose, onSubmit }: Play
             disabled={loading}
           />
         )}
-        {error?.message && <Text c="red">{error.message}</Text>}
+        {errors.any(null) && (
+          <Alert color="red" icon={<IconAlertCircle />}>
+            {errors.get(null)!.map((message) => (
+              <Text key={message}>{message}</Text>
+            ))}
+          </Alert>
+        )}
         <Button type="submit" loading={loading}>
           {player?.id ? 'Update' : 'Create'}
         </Button>

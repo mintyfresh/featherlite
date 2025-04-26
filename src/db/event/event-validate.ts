@@ -2,12 +2,18 @@ import { db, Event } from '../../db'
 import { RecordInvalidError } from '../errors'
 
 export default async function eventValidate(event: Event) {
+  const errors: [string | null, string][] = []
+
   if (!event.name?.trim()) {
-    throw new RecordInvalidError('Event name is required')
+    errors.push(['name', "can't be blank"])
   }
 
   if (!(await isEventNameUnique(event))) {
-    throw new RecordInvalidError(`Event already exists with name '${event.name}'`)
+    errors.push(['name', 'must be unique'])
+  }
+
+  if (errors.length > 0) {
+    throw new RecordInvalidError('Event', event.id, errors)
   }
 
   return event

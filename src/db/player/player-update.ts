@@ -1,6 +1,7 @@
 import { db, Player } from '../../db'
 import eventTouch from '../event/event-touch'
 import playerGet from './player-get'
+import playerValidate from './player-validate'
 
 export type PlayerUpdateInput = Partial<Pick<Player, 'name' | 'paid' | 'dropped'>>
 
@@ -14,6 +15,7 @@ export default async function playerUpdate(player: Player | string, input: Playe
     ...input,
   }
 
+  await playerValidate(result)
   await db.players.update(player.id, result)
   await eventTouch(player.eventId)
 

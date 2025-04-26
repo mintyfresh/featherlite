@@ -2,28 +2,34 @@ import { Match } from '../../db'
 import { RecordInvalidError } from '../errors'
 
 export default async function matchValidate(match: Match) {
+  const errors: [string | null, string][] = []
+
   if (!match.roundId) {
-    throw new RecordInvalidError('Match must be associated with a round')
+    errors.push(['roundId', 'is required'])
   }
 
   if (!match.table || match.table < 1) {
-    throw new RecordInvalidError('Match must have a table number')
+    errors.push(['table', 'must be greater than 0'])
   }
 
   if (!match.playerIds || match.playerIds.length !== 2 || !match.playerIds[0]) {
-    throw new RecordInvalidError('Match must have either one or two players')
+    errors.push(['playerIds', 'must have either one or two players'])
   }
 
   if (match.playerIds[0] === match.playerIds[1]) {
-    throw new RecordInvalidError('Players cannot play against themselves')
+    errors.push(['playerIds', 'cannot have players play against themselves'])
   }
 
   if (match.winnerId && !match.playerIds.includes(match.winnerId)) {
-    throw new RecordInvalidError('Winner must be one of the players')
+    errors.push(['winnerId', 'must be one of the players'])
   }
 
   if (match.winnerId && match.isDraw) {
-    throw new RecordInvalidError('Match cannot be a draw and have a winner')
+    errors.push([null, 'cannot have a winner and be a draw'])
+  }
+
+  if (errors.length > 0) {
+    throw new RecordInvalidError('Match', match.id, errors)
   }
 
   return match
