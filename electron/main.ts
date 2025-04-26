@@ -39,6 +39,7 @@ function createMainWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    autoHideMenuBar: true,
     icon: join(process.env.VITE_PUBLIC!, 'icon.png'),
     webPreferences: {
       nodeIntegration: false,
@@ -72,6 +73,8 @@ ipcMain.on('show-match-slips', (_, roundId: string) => {
   const matchSlipsWindow = new BrowserWindow({
     width: 600,
     height: 800,
+    autoHideMenuBar: true,
+    icon: join(process.env.VITE_PUBLIC!, 'icon.png'),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
