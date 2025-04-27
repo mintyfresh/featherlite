@@ -14,7 +14,7 @@ export default function TimerListItem({ timer, muted }: TimerListItemProps) {
   const { phase, hours, minutes, seconds, pause, unpause, skipToNextPhase, reset, destroy } = useTimer(timer, { muted })
 
   return (
-    <Flex ta="center" align="center" direction="column" gap="md">
+    <Flex ta="center" align="center" direction="column" gap="md" data-testid={`timer-list-item-${timer.id}`}>
       <Text size="70px" fw="lighter">
         {phase?.name ?? timer.label}
       </Text>
