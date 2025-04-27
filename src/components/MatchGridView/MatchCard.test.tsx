@@ -43,10 +43,10 @@ describe('MatchCard', () => {
       />
     )
     // Click Alice
-    fireEvent.click(screen.getByTestId(`match-card-player-${player1.id}`))
+    fireEvent.click(screen.getByTestId(`match-card-player-${match.id}-${player1.id}`))
     expect(onSelectWinner).toHaveBeenCalledWith(player1)
     // Click Bob
-    fireEvent.click(screen.getByTestId(`match-card-player-${player2.id}`))
+    fireEvent.click(screen.getByTestId(`match-card-player-${match.id}-${player2.id}`))
     expect(onSelectWinner).toHaveBeenCalledWith(player2)
   })
 

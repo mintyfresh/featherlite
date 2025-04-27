@@ -25,7 +25,7 @@ describe('MatchCardPlayer', () => {
     renderWithMantineProvider(
       <MatchCardPlayer match={match} player={player} isWinner={true} onSelectWinner={onSelectWinner} />
     )
-    const button = screen.getByTestId(`match-card-player-${player.id}`)
+    const button = screen.getByTestId(`match-card-player-${match.id}-${player.id}`)
     expect(button).toHaveAttribute('data-test-iswinner', 'true')
   })
 
@@ -33,7 +33,7 @@ describe('MatchCardPlayer', () => {
     renderWithMantineProvider(
       <MatchCardPlayer match={match} player={player} isWinner={false} onSelectWinner={onSelectWinner} />
     )
-    const button = screen.getByTestId(`match-card-player-${player.id}`)
+    const button = screen.getByTestId(`match-card-player-${match.id}-${player.id}`)
     expect(button).toHaveAttribute('data-test-iswinner', 'false')
   })
 

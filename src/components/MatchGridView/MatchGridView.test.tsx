@@ -51,18 +51,18 @@ describe('MatchGridView', () => {
     useLiveQuery.mockReturnValue(matches)
     renderWithMantineProvider(<MatchGridView round={round} players={[player1, player2]} />)
     // Click Alice as winner
-    fireEvent.click(screen.getByTestId(`match-card-player-${player1.id}`))
-    expect(matchUpdate).toHaveBeenCalledWith('m1', { winnerId: player1.id, isDraw: false })
+    fireEvent.click(screen.getByTestId(`match-card-player-${matches[0].id}-${player1.id}`))
+    expect(matchUpdate).toHaveBeenCalledWith(matches[0].id, { winnerId: player1.id, isDraw: false })
     // Click Bob as winner
-    fireEvent.click(screen.getByTestId(`match-card-player-${player2.id}`))
-    expect(matchUpdate).toHaveBeenCalledWith('m1', { winnerId: player2.id, isDraw: false })
+    fireEvent.click(screen.getByTestId(`match-card-player-${matches[0].id}-${player2.id}`))
+    expect(matchUpdate).toHaveBeenCalledWith(matches[0].id, { winnerId: player2.id, isDraw: false })
   })
 
   it('calls matchUpdate with correct args when draw is set', () => {
     const matches = [buildMatch({ id: 'm1', playerIds: [player1.id, player2.id] })]
     useLiveQuery.mockReturnValue(matches)
     renderWithMantineProvider(<MatchGridView round={round} players={[player1, player2]} />)
-    fireEvent.click(screen.getByTestId('match-card-divider-m1'))
-    expect(matchUpdate).toHaveBeenCalledWith('m1', { winnerId: null, isDraw: true })
+    fireEvent.click(screen.getByTestId(`match-card-divider-${matches[0].id}`))
+    expect(matchUpdate).toHaveBeenCalledWith(matches[0].id, { winnerId: null, isDraw: true })
   })
 })

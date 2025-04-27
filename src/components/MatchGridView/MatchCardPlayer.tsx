@@ -14,7 +14,7 @@ export default function MatchCardPlayer({ match, player, isWinner, onSelectWinne
     <UnstyledButton
       fw="initial"
       c={isWinner ? 'green' : 'black'}
-      data-testid={`match-card-player-${player.id}`}
+      data-testid={`match-card-player-${match.id}-${player.id}`}
       data-test-iswinner={isWinner}
       variant="subtle"
       w="100%"
