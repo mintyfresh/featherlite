@@ -6,6 +6,7 @@ import EventStandingsTable from './EventStandingsTable'
 
 export interface ExportTabProps {
   event: Event
+  focused?: boolean
 }
 
 export default function ExportTab({ event }: ExportTabProps) {

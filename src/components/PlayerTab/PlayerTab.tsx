@@ -7,6 +7,7 @@ import PlayerModal from '../PlayerModal/PlayerModal'
 
 export interface PlayerTabProps {
   event: Event
+  focused?: boolean
 }
 
 export default function PlayerTab({ event }: PlayerTabProps) {

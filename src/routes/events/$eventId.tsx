@@ -68,19 +68,19 @@ export default function EventDetailsPage() {
         </Tabs.List>
 
         <Tabs.Panel value="players" pt="md">
-          <PlayerTab event={event} />
+          <PlayerTab event={event} focused={tab === 'players'} />
         </Tabs.Panel>
 
         <Tabs.Panel value="matches" pt="md">
-          <MatchTab event={event} />
+          <MatchTab event={event} focused={tab === 'matches'} />
         </Tabs.Panel>
 
         <Tabs.Panel value="timers" pt="md">
-          <TimerTab event={event} />
+          <TimerTab event={event} focused={tab === 'timers'} />
         </Tabs.Panel>
 
         <Tabs.Panel value="export" pt="md">
-          <ExportTab event={event} />
+          <ExportTab event={event} focused={tab === 'export'} />
         </Tabs.Panel>
       </Tabs>
     </Container>

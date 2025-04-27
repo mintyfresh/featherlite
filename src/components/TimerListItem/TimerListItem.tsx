@@ -7,10 +7,11 @@ import TimerControls from './TimerControls'
 
 export interface TimerListItemProps {
   timer: Timer
+  muted?: boolean
 }
 
-export default function TimerListItem({ timer }: TimerListItemProps) {
-  const { phase, hours, minutes, seconds, pause, unpause, skipToNextPhase, reset, destroy } = useTimer(timer)
+export default function TimerListItem({ timer, muted }: TimerListItemProps) {
+  const { phase, hours, minutes, seconds, pause, unpause, skipToNextPhase, reset, destroy } = useTimer(timer, { muted })
 
   return (
     <Flex ta="center" align="center" direction="column" gap="md">

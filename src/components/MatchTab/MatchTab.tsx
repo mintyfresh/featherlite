@@ -12,6 +12,7 @@ import RoundsList from '../RoundList/RoundsList'
 
 export interface MatchTabProps {
   event: Event
+  focused?: boolean
 }
 
 export default function MatchTab({ event }: MatchTabProps) {

@@ -10,9 +10,10 @@ import TimerListItem from '../TimerListItem/TimerListItem'
 
 interface TimerTabProps {
   event: Event
+  focused?: boolean
 }
 
-export default function TimerTab({ event }: TimerTabProps) {
+export default function TimerTab({ event, focused }: TimerTabProps) {
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null)
 
   // Get current round
@@ -62,7 +63,7 @@ export default function TimerTab({ event }: TimerTabProps) {
         </Paper>
       )}
 
-      <Stack gap="xl">{timers?.map((timer) => <TimerListItem key={timer.id} timer={timer} />)}</Stack>
+      <Stack gap="xl">{timers?.map((timer) => <TimerListItem key={timer.id} timer={timer} muted={!focused} />)}</Stack>
     </Stack>
   )
 }
