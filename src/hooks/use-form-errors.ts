@@ -7,11 +7,11 @@ export abstract class FormErrors {
 }
 
 class NullFormErrors extends FormErrors {
-  override any(_key: string | null): boolean {
+  override any(): boolean {
     return false
   }
 
-  override get(_key: string | null): string[] | null {
+  override get(): string[] | null {
     return null
   }
 }

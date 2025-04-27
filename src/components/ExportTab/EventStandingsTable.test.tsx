@@ -1,15 +1,22 @@
+import * as mantineHooks from '@mantine/hooks'
 import '@testing-library/jest-dom'
 import { fireEvent, screen } from '@testing-library/react'
+import { useLiveQuery } from 'dexie-react-hooks'
 import { buildEvent } from '../../test/db/event-factory'
 import { buildPlayer } from '../../test/db/player-factory'
 import { renderWithMantineProvider } from '../../test/test-utils'
 import EventStandingsTable from './EventStandingsTable'
 
+jest.mock('@mantine/hooks', () => ({
+  __esModule: true,
+  ...jest.requireActual('@mantine/hooks'),
+}))
+
 jest.mock('dexie-react-hooks', () => ({
   useLiveQuery: jest.fn(),
 }))
 
-const mockUseLiveQuery = require('dexie-react-hooks').useLiveQuery
+const mockUseLiveQuery = useLiveQuery as jest.Mock
 
 describe('EventStandingsTable', () => {
   const event = buildEvent({ playersCount: 2 })
@@ -44,7 +51,7 @@ describe('EventStandingsTable', () => {
     ]
     const copy = jest.fn()
     mockUseLiveQuery.mockReturnValue(players)
-    jest.spyOn(require('@mantine/hooks'), 'useClipboard').mockReturnValue({ copy, copied: false })
+    jest.spyOn(mantineHooks, 'useClipboard').mockReturnValue({ copy, copied: false, reset: jest.fn(), error: null })
     renderWithMantineProvider(<EventStandingsTable event={event} />)
     const button = screen.getByRole('button', { name: /copy/i })
     fireEvent.click(button)

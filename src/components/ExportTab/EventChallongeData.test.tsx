@@ -1,15 +1,22 @@
+import * as mantineHooks from '@mantine/hooks'
 import '@testing-library/jest-dom'
 import { fireEvent, screen } from '@testing-library/react'
+import { useLiveQuery } from 'dexie-react-hooks'
 import { buildEvent } from '../../test/db/event-factory'
 import { buildPlayer } from '../../test/db/player-factory'
 import { renderWithMantineProvider } from '../../test/test-utils'
 import EventChallongeData from './EventChallongeData'
 
+jest.mock('@mantine/hooks', () => ({
+  __esModule: true,
+  ...jest.requireActual('@mantine/hooks'),
+}))
+
 jest.mock('dexie-react-hooks', () => ({
   useLiveQuery: jest.fn(),
 }))
 
-const mockUseLiveQuery = require('dexie-react-hooks').useLiveQuery
+const mockUseLiveQuery = useLiveQuery as jest.Mock
 
 describe('EventChallongeData', () => {
   const event = buildEvent()
@@ -36,7 +43,7 @@ describe('EventChallongeData', () => {
   it('copy button copies challonge data', async () => {
     mockUseLiveQuery.mockReturnValue([player1])
     const copy = jest.fn()
-    jest.spyOn(require('@mantine/hooks'), 'useClipboard').mockReturnValue({ copy, copied: false })
+    jest.spyOn(mantineHooks, 'useClipboard').mockReturnValue({ copy, copied: false, reset: jest.fn(), error: null })
     renderWithMantineProvider(<EventChallongeData event={event} />)
     const button = screen.getByRole('button')
     fireEvent.click(button)
