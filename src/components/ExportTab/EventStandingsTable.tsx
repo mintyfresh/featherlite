@@ -19,7 +19,9 @@ export default function EventStandingsTable({ event }: EventStandingsTableProps)
   if (!players) {
     return (
       <Paper withBorder shadow="md" p="md">
-        <Text size="xs" c="dimmed">No players have been added yet</Text>
+        <Text size="xs" c="dimmed">
+          No players have been added yet
+        </Text>
       </Paper>
     )
   }

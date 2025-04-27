@@ -49,7 +49,10 @@ function extractSoundAssets() {
       return
     }
 
-    const soundFiles = files.filter((file) => file.isFile() && (file.name.endsWith('.wav') || file.name.endsWith('.mp3') || file.name.endsWith('.ogg')))
+    const soundFiles = files.filter(
+      (file) =>
+        file.isFile() && (file.name.endsWith('.wav') || file.name.endsWith('.mp3') || file.name.endsWith('.ogg'))
+    )
     console.log('soundFiles', soundFiles)
 
     soundFiles.forEach((file) => {

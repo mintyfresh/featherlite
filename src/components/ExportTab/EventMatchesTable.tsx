@@ -20,22 +20,32 @@ export default function EventMatchesTable({ event }: EventMatchesTableProps) {
   const playersById = useMemo(() => new Map(players?.map((player) => [player.id, player] as const) ?? []), [players])
 
   const currentRound = useLiveQuery(async () => eventCurrentRound(event), [event])
-  const matches = useLiveQuery(async () => currentRound ? roundMatches(currentRound) : [], [currentRound])
+  const matches = useLiveQuery(async () => (currentRound ? roundMatches(currentRound) : []), [currentRound])
 
   function formatPlayer(playerId: string | null) {
     const player = playerId && playersById.get(playerId)
 
     if (!player) {
-      return <Text size="xs" c="dimmed">BYE [0, 0, 0]</Text>
+      return (
+        <Text size="xs" c="dimmed">
+          BYE [0, 0, 0]
+        </Text>
+      )
     }
 
-    return <Text>{player.name} [{player.wins}, {player.losses}, {player.draws}]</Text>
+    return (
+      <Text>
+        {player.name} [{player.wins}, {player.losses}, {player.draws}]
+      </Text>
+    )
   }
 
   if (!currentRound) {
     return (
       <Paper withBorder shadow="md" p="md">
-        <Text size="xs" c="dimmed">No rounds have been played yet</Text>
+        <Text size="xs" c="dimmed">
+          No rounds have been played yet
+        </Text>
       </Paper>
     )
   }
@@ -43,7 +53,9 @@ export default function EventMatchesTable({ event }: EventMatchesTableProps) {
   if (!matches) {
     return (
       <Paper withBorder shadow="md" p="md">
-        <Text size="xs" c="dimmed">No matches for current round</Text>
+        <Text size="xs" c="dimmed">
+          No matches for current round
+        </Text>
       </Paper>
     )
   }

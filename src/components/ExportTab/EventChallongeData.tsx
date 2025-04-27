@@ -27,19 +27,20 @@ export default function EventChallongeData({ event }: EventChallongeDataProps) {
   const clipboard = useClipboard()
 
   const players = useLiveQuery(async () => eventPlayers(event), [event])
-  const data = useMemo(() => players?.map((player, index) => formatPlayerChallongeData(player, index + 1)).join('\n'), [players])
+  const data = useMemo(
+    () => players?.map((player, index) => formatPlayerChallongeData(player, index + 1)).join('\n'),
+    [players]
+  )
 
   return (
     <Textarea
       autosize
       value={data}
-      rightSection={<ActionIcon
-        size="compact-xs"
-        variant="transparent"
-        onClick={() => clipboard.copy(data)}
-      >
-        {clipboard.copied ? <IconCheck /> : <IconCopy />}
-      </ActionIcon>}
+      rightSection={
+        <ActionIcon size="compact-xs" variant="transparent" onClick={() => clipboard.copy(data)}>
+          {clipboard.copied ? <IconCheck /> : <IconCopy />}
+        </ActionIcon>
+      }
       readOnly
     />
   )
