@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { Event } from '../../db'
 import { DatabaseError } from '../../db/errors'
 import * as eventCreateModule from '../../db/event/event-create'
 import * as eventUpdateModule from '../../db/event/event-update'
@@ -74,7 +75,7 @@ describe('EventModal', () => {
     const pendingPromise = new Promise((resolve) => {
       resolvePromise = resolve
     })
-    jest.spyOn(eventCreateModule, 'default').mockReturnValue(pendingPromise as any)
+    jest.spyOn(eventCreateModule, 'default').mockReturnValue(pendingPromise as Promise<Event>)
     renderWithMantineProvider(<EventModal opened={true} onClose={onClose} onSubmit={onSubmit} />)
     fireEvent.change(screen.getByLabelText('Name', { exact: false }), { target: { value: 'Loading Event' } })
     fireEvent.submit(screen.getByRole('button', { name: /create/i }))

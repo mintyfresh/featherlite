@@ -28,7 +28,7 @@ export default function PlayerModal({ eventId, player, opened, onClose, onSubmit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const form = e.target as HTMLFormElement
+    const form = e.currentTarget as HTMLFormElement
     const formData = new FormData(form)
 
     const input = {
@@ -68,7 +68,7 @@ export default function PlayerModal({ eventId, player, opened, onClose, onSubmit
 
   return (
     <Modal opened={opened} onClose={onClose} title={player ? 'Edit Player' : 'Add Player'}>
-      <Stack component="form" onSubmit={handleSubmit}>
+      <Stack component="form" onSubmit={handleSubmit} data-testid="player-modal-form">
         <TextInput
           label="Name"
           name="name"
@@ -79,6 +79,7 @@ export default function PlayerModal({ eventId, player, opened, onClose, onSubmit
           required
           autoComplete="off"
           data-autofocus
+          disabled={loading}
         />
         <Checkbox label="Paid" name="paid" defaultChecked={player?.paid ?? true} value="true" disabled={loading} />
         <Checkbox
