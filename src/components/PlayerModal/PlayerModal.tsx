@@ -79,7 +79,7 @@ export default function PlayerModal({ eventId, player, opened, onClose, onSubmit
           required
           autoComplete="off"
           data-autofocus
-          disabled={loading}
+          disabled={loading && !createAnotherPlayer}
         />
         <Checkbox label="Paid" name="paid" defaultChecked={player?.paid ?? true} value="true" disabled={loading} />
         <Checkbox
