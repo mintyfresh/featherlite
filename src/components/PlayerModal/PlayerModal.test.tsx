@@ -81,7 +81,10 @@ describe('PlayerModal', () => {
   })
 
   it('shows error message on error', async () => {
-    const error = new RecordInvalidError('Player', null, [['name', "can't be blank", ], [null, 'General error']])
+    const error = new RecordInvalidError('Player', null, [
+      ['name', "can't be blank"],
+      [null, 'General error'],
+    ])
     jest.spyOn(playerCreateModule, 'default').mockRejectedValue(error)
     renderWithMantineProvider(<PlayerModal eventId={eventId} opened={true} onClose={onClose} onSubmit={onSubmit} />)
     fireEvent.change(screen.getByLabelText('Name', { exact: false }), { target: { value: '' } })

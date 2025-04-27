@@ -28,6 +28,9 @@ export default function TimerControls({
   return (
     <Group gap="xs">
       <ActionIcon
+        name="Reset"
+        role="button"
+        data-testid="reset-button"
         variant="outline"
         color="gray"
         onClick={() => {
@@ -39,15 +42,32 @@ export default function TimerControls({
         <IconPlayerSkipBack size={16} />
       </ActionIcon>
       {timer.pausedAt ? (
-        <ActionIcon variant="outline" color="gray" onClick={onUnpause}>
+        <ActionIcon
+          name="Unpause"
+          role="button"
+          data-testid="unpause-button"
+          variant="outline"
+          color="gray"
+          onClick={onUnpause}
+        >
           <IconPlayerPlay size={16} />
         </ActionIcon>
       ) : (
-        <ActionIcon variant="outline" color="gray" onClick={onPause}>
+        <ActionIcon
+          name="Pause"
+          role="button"
+          data-testid="pause-button"
+          variant="outline"
+          color="gray"
+          onClick={onPause}
+        >
           <IconPlayerPause size={16} />
         </ActionIcon>
       )}
       <ActionIcon
+        name="Skip to next phase"
+        role="button"
+        data-testid="skip-to-next-phase-button"
         variant="outline"
         color="gray"
         onClick={() => {
@@ -59,6 +79,9 @@ export default function TimerControls({
         <IconPlayerSkipForward size={16} />
       </ActionIcon>
       <ActionIcon
+        name="Delete"
+        role="button"
+        data-testid="delete-button"
         variant="outline"
         color="gray"
         onClick={() => {
