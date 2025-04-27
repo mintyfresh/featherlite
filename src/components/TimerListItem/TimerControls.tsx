@@ -36,15 +36,15 @@ export default function TimerControls({
           }
         }}
       >
-        <IconPlayerSkipBack />
+        <IconPlayerSkipBack size={16} />
       </ActionIcon>
       {timer.pausedAt ? (
         <ActionIcon variant="outline" color="gray" onClick={onUnpause}>
-          <IconPlayerPlay />
+          <IconPlayerPlay size={16} />
         </ActionIcon>
       ) : (
         <ActionIcon variant="outline" color="gray" onClick={onPause}>
-          <IconPlayerPause />
+          <IconPlayerPause size={16} />
         </ActionIcon>
       )}
       <ActionIcon
@@ -56,7 +56,7 @@ export default function TimerControls({
           }
         }}
       >
-        <IconPlayerSkipForward />
+        <IconPlayerSkipForward size={16} />
       </ActionIcon>
       <ActionIcon
         variant="outline"
@@ -67,7 +67,7 @@ export default function TimerControls({
           }
         }}
       >
-        <IconTrash />
+        <IconTrash size={16} />
       </ActionIcon>
     </Group>
   )
