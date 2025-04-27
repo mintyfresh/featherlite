@@ -13,6 +13,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "start": "serve -s dist",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "pyodide:download": "curl -L https://github.com/pyodide/pyodide/releases/download/0.27.5/pyodide-0.27.5.tar.bz2 -o pyodide-0.27.5.tar.bz2",
     "pyodide:extract": "tar -xjf pyodide-0.27.5.tar.bz2 -C deps",
@@ -40,6 +41,7 @@
     "play-sound": "^1.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "serve": "^14.2.4",
     "sound-play": "^1.1.0",
     "tmp": "^0.2.3",
     "vite-plugin-static-copy": "^2.3.1"
