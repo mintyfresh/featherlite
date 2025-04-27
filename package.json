@@ -47,6 +47,7 @@
     "@tanstack/router-plugin": "^1.117.2",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/combinations": "^1.0.2",
     "@types/jest": "^29.5.14",
     "@types/play-sound": "^1.1.2",
