@@ -28,7 +28,7 @@ Build the application
 
 Run the webserver
 
-    npm start
+    npx serve -d dist
 
 ## Running in electron
 
