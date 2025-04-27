@@ -17,15 +17,6 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-declare global {
-  interface Window {
-    electron?: {
-      playSound(soundFile: string): Promise<void>
-      showMatchSlips(roundId: string): Promise<void>
-    }
-  }
-}
-
 process.env.DIST = join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST, '../public')
 
