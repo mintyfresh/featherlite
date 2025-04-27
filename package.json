@@ -41,8 +41,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sound-play": "^1.1.0",
-    "tmp": "^0.2.3",
-    "vite-plugin-static-copy": "^2.3.1"
+    "tmp": "^0.2.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
@@ -70,7 +69,8 @@
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.26.1",
     "vite": "^6.3.1",
-    "vite-plugin-electron": "^0.29.0"
+    "vite-plugin-electron": "^0.29.0",
+    "vite-plugin-static-copy": "^2.3.1"
   },
   "build": {
     "appId": "com.featherlite.app",
