@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as EventsEventIdImport } from './routes/events/$eventId'
+import { Route as TimersEventIdPopoutImport } from './routes/timers/$eventId.popout'
 import { Route as RoundsRoundIdSlipsImport } from './routes/rounds/$roundId.slips'
 import { Route as EventsEventIdTabImport } from './routes/events/$eventId.$tab'
 
@@ -27,6 +28,12 @@ const IndexRoute = IndexImport.update({
 const EventsEventIdRoute = EventsEventIdImport.update({
   id: '/events/$eventId',
   path: '/events/$eventId',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TimersEventIdPopoutRoute = TimersEventIdPopoutImport.update({
+  id: '/timers/$eventId/popout',
+  path: '/timers/$eventId/popout',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -74,6 +81,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoundsRoundIdSlipsImport
       parentRoute: typeof rootRoute
     }
+    '/timers/$eventId/popout': {
+      id: '/timers/$eventId/popout'
+      path: '/timers/$eventId/popout'
+      fullPath: '/timers/$eventId/popout'
+      preLoaderRoute: typeof TimersEventIdPopoutImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -87,13 +101,16 @@ const EventsEventIdRouteChildren: EventsEventIdRouteChildren = {
   EventsEventIdTabRoute: EventsEventIdTabRoute,
 }
 
-const EventsEventIdRouteWithChildren = EventsEventIdRoute._addFileChildren(EventsEventIdRouteChildren)
+const EventsEventIdRouteWithChildren = EventsEventIdRoute._addFileChildren(
+  EventsEventIdRouteChildren,
+)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/events/$eventId': typeof EventsEventIdRouteWithChildren
   '/events/$eventId/$tab': typeof EventsEventIdTabRoute
   '/rounds/$roundId/slips': typeof RoundsRoundIdSlipsRoute
+  '/timers/$eventId/popout': typeof TimersEventIdPopoutRoute
 }
 
 export interface FileRoutesByTo {
@@ -101,6 +118,7 @@ export interface FileRoutesByTo {
   '/events/$eventId': typeof EventsEventIdRouteWithChildren
   '/events/$eventId/$tab': typeof EventsEventIdTabRoute
   '/rounds/$roundId/slips': typeof RoundsRoundIdSlipsRoute
+  '/timers/$eventId/popout': typeof TimersEventIdPopoutRoute
 }
 
 export interface FileRoutesById {
@@ -109,14 +127,31 @@ export interface FileRoutesById {
   '/events/$eventId': typeof EventsEventIdRouteWithChildren
   '/events/$eventId/$tab': typeof EventsEventIdTabRoute
   '/rounds/$roundId/slips': typeof RoundsRoundIdSlipsRoute
+  '/timers/$eventId/popout': typeof TimersEventIdPopoutRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/events/$eventId' | '/events/$eventId/$tab' | '/rounds/$roundId/slips'
+  fullPaths:
+    | '/'
+    | '/events/$eventId'
+    | '/events/$eventId/$tab'
+    | '/rounds/$roundId/slips'
+    | '/timers/$eventId/popout'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/events/$eventId' | '/events/$eventId/$tab' | '/rounds/$roundId/slips'
-  id: '__root__' | '/' | '/events/$eventId' | '/events/$eventId/$tab' | '/rounds/$roundId/slips'
+  to:
+    | '/'
+    | '/events/$eventId'
+    | '/events/$eventId/$tab'
+    | '/rounds/$roundId/slips'
+    | '/timers/$eventId/popout'
+  id:
+    | '__root__'
+    | '/'
+    | '/events/$eventId'
+    | '/events/$eventId/$tab'
+    | '/rounds/$roundId/slips'
+    | '/timers/$eventId/popout'
   fileRoutesById: FileRoutesById
 }
 
@@ -124,15 +159,19 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EventsEventIdRoute: typeof EventsEventIdRouteWithChildren
   RoundsRoundIdSlipsRoute: typeof RoundsRoundIdSlipsRoute
+  TimersEventIdPopoutRoute: typeof TimersEventIdPopoutRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EventsEventIdRoute: EventsEventIdRouteWithChildren,
   RoundsRoundIdSlipsRoute: RoundsRoundIdSlipsRoute,
+  TimersEventIdPopoutRoute: TimersEventIdPopoutRoute,
 }
 
-export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileTypes<FileRouteTypes>()
+export const routeTree = rootRoute
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()
 
 /* ROUTE_MANIFEST_START
 {
@@ -142,7 +181,8 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
       "children": [
         "/",
         "/events/$eventId",
-        "/rounds/$roundId/slips"
+        "/rounds/$roundId/slips",
+        "/timers/$eventId/popout"
       ]
     },
     "/": {
@@ -160,6 +200,9 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
     },
     "/rounds/$roundId/slips": {
       "filePath": "rounds/$roundId.slips.tsx"
+    },
+    "/timers/$eventId/popout": {
+      "filePath": "timers/$eventId.popout.tsx"
     }
   }
 }

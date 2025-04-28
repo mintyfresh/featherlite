@@ -129,6 +129,26 @@ ipcMain.on('show-match-slips', (_, roundId: string) => {
   }
 })
 
+ipcMain.on('show-timers', (_, eventId: string) => {
+  const timersWindow = new BrowserWindow({
+    autoHideMenuBar: true,
+    icon: join(process.env.VITE_PUBLIC!, 'icon.png'),
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: PRELOAD_PATH,
+    },
+  })
+
+  if (VITE_DEV_SERVER_URL) {
+    timersWindow.loadURL(`${VITE_DEV_SERVER_URL}#/timers/${eventId}/popout`)
+  } else {
+    timersWindow.loadFile(join(process.env.DIST!, 'index.html'), {
+      hash: `/timers/${eventId}/popout`,
+    })
+  }
+})
+
 app.on('ready', () => {
   extractSoundAssets()
 })

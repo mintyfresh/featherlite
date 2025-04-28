@@ -7,4 +7,7 @@ contextBridge.exposeInMainWorld('electron', {
   showMatchSlips(roundId) {
     ipcRenderer.send('show-match-slips', roundId)
   },
+  showTimers(eventId) {
+    ipcRenderer.send('show-timers', eventId)
+  },
 })

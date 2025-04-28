@@ -8,9 +8,10 @@ import TimerControls from './TimerControls'
 export interface TimerListItemProps {
   timer: Timer
   muted?: boolean
+  readOnly?: boolean
 }
 
-export default function TimerListItem({ timer, muted }: TimerListItemProps) {
+export default function TimerListItem({ timer, muted, readOnly }: TimerListItemProps) {
   const { phase, hours, minutes, seconds, pause, unpause, skipToNextPhase, reset, destroy } = useTimer(timer, { muted })
 
   return (
@@ -25,17 +26,28 @@ export default function TimerListItem({ timer, muted }: TimerListItemProps) {
       <TextInput
         defaultValue={timer.label}
         onBlur={(event) => timerUpdate(timer.id, { label: event.currentTarget.value })}
-        styles={{ input: { textAlign: 'center', borderTop: 'none', borderLeft: 'none', borderRight: 'none' } }}
+        styles={{
+          input: {
+            textAlign: 'center',
+            borderTop: 'none',
+            borderLeft: 'none',
+            borderRight: 'none',
+            borderBottom: readOnly ? 'none' : undefined,
+          },
+        }}
         radius="none"
+        readOnly={readOnly}
       />
-      <TimerControls
-        timer={timer}
-        onReset={reset}
-        onPause={pause}
-        onUnpause={unpause}
-        onSkipToNextPhase={skipToNextPhase}
-        onDestroy={destroy}
-      />
+      {!readOnly && (
+        <TimerControls
+          timer={timer}
+          onReset={reset}
+          onPause={pause}
+          onUnpause={unpause}
+          onSkipToNextPhase={skipToNextPhase}
+          onDestroy={destroy}
+        />
+      )}
     </Flex>
   )
 }

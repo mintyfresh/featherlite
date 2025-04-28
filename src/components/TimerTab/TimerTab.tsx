@@ -44,26 +44,47 @@ export default function TimerTab({ event, focused }: TimerTabProps) {
 
   return (
     <Stack gap="md">
-      <Group>
-        <Select
-          placeholder="Select a preset"
-          data={timerPresets.map((preset) => preset.label)}
-          defaultValue={timerPresets[0].label}
-          value={selectedPreset}
-          onChange={setSelectedPreset}
-        />
-        <Button onClick={handleCreateTimer} disabled={!selectedPreset}>
-          Start Timer
+      <Group justify="space-between">
+        <Group>
+          <Select
+            placeholder="Select a preset"
+            data={timerPresets.map((preset) => preset.label)}
+            defaultValue={timerPresets[0].label}
+            value={selectedPreset}
+            onChange={setSelectedPreset}
+          />
+          <Button onClick={handleCreateTimer} disabled={!selectedPreset}>
+            Start Timer
+          </Button>
+        </Group>
+        <Button
+          variant="outline"
+          onClick={() => {
+            if (typeof window.electron !== 'undefined') {
+              window.electron.showTimers(event.id)
+            } else {
+              window.open(
+                `/#/timers/${event.id}/popout`,
+                'Timer Popout',
+                'popup,titlebar=no,toolbar=no,menubar=no,directories=no,location=no,status=no'
+              )
+            }
+          }}
+        >
+          Popout
         </Button>
       </Group>
-
-      {timers?.length === 0 && (
+      {timers?.length ? (
+        <Stack gap="xl">
+          {timers?.map((timer) => <TimerListItem key={timer.id} timer={timer} muted={!focused} />)}
+        </Stack>
+      ) : (
         <Paper withBorder p="lg" shadow="sm">
-          <Text>No timers have been created for round {currentRound.number}</Text>
+          <Text c="dimmed" size="sm">
+            No timers have been created for round {currentRound.number}
+          </Text>
         </Paper>
       )}
-
-      <Stack gap="xl">{timers?.map((timer) => <TimerListItem key={timer.id} timer={timer} muted={!focused} />)}</Stack>
     </Stack>
   )
 }
