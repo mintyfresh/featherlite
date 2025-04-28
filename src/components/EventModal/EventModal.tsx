@@ -21,7 +21,7 @@ export default function EventModal({ event, opened, onClose, onSubmit }: EventMo
     if (!opened) {
       setErrors(null)
     }
-  }, [opened])
+  }, [opened, setErrors])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

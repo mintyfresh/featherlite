@@ -6,6 +6,7 @@ import { Round } from '../../db'
 import eventPlayers from '../../db/event/event-players'
 import roundMatches from '../../db/round/round-matches'
 import roundUpdate from '../../db/round/round-update'
+import useCallbacksRef from '../../hooks/use-callbacks-ref'
 import useFormErrors from '../../hooks/use-form-errors'
 import FormBaseErrors from '../FormBaseErrors/FormBaseErrors'
 
@@ -78,6 +79,8 @@ export default function RoundModal({ round, opened, onClose, onUpdate }: RoundMo
     })
   }, [])
 
+  const callbacks = useCallbacksRef(onUpdate)
+
   const onSubmit = useCallback(
     async (pairings: [string, string | null][]) => {
       if (isOverwritingResult && !confirm('Are you sure you want to overwrite the existing results?')) {
@@ -85,6 +88,7 @@ export default function RoundModal({ round, opened, onClose, onUpdate }: RoundMo
       }
 
       setLoading(true)
+      const [onUpdate] = callbacks.current
 
       try {
         await roundUpdate(round, { matches: pairings.map((pairing) => ({ playerIds: pairing })) })
@@ -95,7 +99,7 @@ export default function RoundModal({ round, opened, onClose, onUpdate }: RoundMo
         setLoading(false)
       }
     },
-    [isOverwritingResult]
+    [round, isOverwritingResult, setErrors, callbacks]
   )
 
   if (!matches || !players) {

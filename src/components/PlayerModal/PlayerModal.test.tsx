@@ -90,8 +90,8 @@ describe('PlayerModal', () => {
     fireEvent.change(screen.getByLabelText('Name', { exact: false }), { target: { value: '' } })
     fireEvent.submit(screen.getByTestId('player-modal-form'))
     await waitFor(() => {
-      expect(screen.getByText("name can't be blank")).toBeInTheDocument()
-      expect(screen.getByText('General error')).toBeInTheDocument()
+      expect(screen.getByText("Name can't be blank.")).toBeInTheDocument()
+      expect(screen.getByText('General error.')).toBeInTheDocument()
       expect(onSubmit).not.toHaveBeenCalled()
       expect(onClose).not.toHaveBeenCalled()
     })

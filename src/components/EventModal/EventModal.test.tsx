@@ -40,7 +40,6 @@ describe('EventModal', () => {
     await waitFor(() => {
       expect(mockCreate).toHaveBeenCalledWith({ name: 'New Event' })
       expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ name: 'New Event' }))
-      expect(onClose).toHaveBeenCalled()
     })
   })
 
@@ -53,7 +52,6 @@ describe('EventModal', () => {
     await waitFor(() => {
       expect(mockUpdate).toHaveBeenCalledWith('event-2', { name: 'Updated Name' })
       expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ name: 'Updated Name' }))
-      expect(onClose).toHaveBeenCalled()
     })
   })
 

@@ -29,7 +29,7 @@ export default function PlayerModal({ eventId, player, opened, onClose, onSubmit
     if (!opened) {
       setErrors(null)
     }
-  }, [opened])
+  }, [opened, setErrors])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
