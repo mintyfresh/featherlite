@@ -21,11 +21,15 @@ export class RecordInvalidError extends DatabaseError {
     public readonly id: string | null,
     public readonly errors: [string | null, string][]
   ) {
-    super(`${record} with is invalid`)
+    super(`${record} invalid: ${fullMessages(errors).join(', ')}`)
     this.name = 'RecordInvalidError'
   }
 
   get fullMessages(): string[] {
-    return this.errors.map(([key, message]) => (key ? `${key} ${message}` : message))
+    return fullMessages(this.errors)
   }
+}
+
+function fullMessages(errors: [string | null, string][]): string[] {
+  return errors.map(([key, message]) => (key ? `${key} ${message}` : message))
 }

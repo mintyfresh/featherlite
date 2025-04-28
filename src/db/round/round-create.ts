@@ -1,7 +1,7 @@
-import { db, Event, Match, Round } from '../../db'
+import { db, Event, Round } from '../../db'
+import { RecordInvalidError } from '../errors'
 import eventGet from '../event/event-get'
-import matchValidate from '../match/match-validate'
-import playerUpdateStats from '../player/player-update-stats'
+import matchCreate from '../match/match-create'
 
 export type MatchCreateInput = {
   playerIds: [string, string | null]
@@ -11,16 +11,20 @@ export type RoundCreateInput = {
   matches: MatchCreateInput[]
 }
 
-export default async function roundCreate(event: Event | string, round: RoundCreateInput) {
+export default async function roundCreate(event: Event | string, input: RoundCreateInput) {
   return await db.transaction('rw', db.events, db.rounds, db.matches, db.players, async () => {
     if (typeof event === 'string') {
       event = await eventGet(event)
     }
 
-    // Technically, creating a round with just a single player will immediately complete the round
-    const isComplete = round.matches.length === 1 && round.matches[0].playerIds[1] === null
+    if (input.matches.length === 0) {
+      throw new RecordInvalidError('Round', null, [[null, 'At least one pairing is required']])
+    }
 
-    const result: Round = {
+    // Technically, creating a round with just a single player will immediately complete the round
+    const isComplete = input.matches.length === 1 && input.matches[0].playerIds[1] === null
+
+    const round: Round = {
       id: crypto.randomUUID(),
       eventId: event.id,
       number: (event.currentRound ?? 0) + 1,
@@ -28,34 +32,22 @@ export default async function roundCreate(event: Event | string, round: RoundCre
       updatedAt: new Date(),
     }
 
-    await db.rounds.add(result)
+    // Sort the matches so the BYE is always last
+    const matches = [...input.matches].sort(
+      (a: MatchCreateInput, b: MatchCreateInput) =>
+        (a.playerIds[1] === null ? 1 : 0) - (b.playerIds[1] === null ? 1 : 0)
+    )
+
+    await Promise.all(
+      matches.map((match, index) => matchCreate({ roundId: round.id, table: index + 1, playerIds: match.playerIds }))
+    )
+
+    await db.rounds.add(round)
     await db.events.update(event.id, {
-      currentRound: result.number,
+      currentRound: round.number,
       updatedAt: new Date(),
     })
 
-    round.matches.forEach(async ({ playerIds }, index) => {
-      const isBye = !playerIds[1]
-      const winnerId = isBye ? playerIds[0] : null
-
-      const matchResult: Match = {
-        id: crypto.randomUUID(),
-        roundId: result.id,
-        table: index + 1,
-        playerIds,
-        winnerId,
-        isDraw: false,
-      }
-
-      await matchValidate(matchResult)
-      await db.matches.add(matchResult)
-
-      // If this was a BYE, immediately update the winner's stats
-      if (winnerId) {
-        await playerUpdateStats(winnerId)
-      }
-    })
-
-    return result
+    return round
   })
 }

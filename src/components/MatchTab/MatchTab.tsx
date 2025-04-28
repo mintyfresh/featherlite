@@ -8,7 +8,7 @@ import { db, Event } from '../../db'
 import eventCurrentRound from '../../db/event/event-current-round'
 import roundCreate from '../../db/round/round-create'
 import generateSwissPairings, { isPythonContextLoaded, preloadPythonContext } from '../../utils/swiss'
-import RoundsList from '../RoundList/RoundsList'
+import RoundList from '../RoundList/RoundList'
 
 export interface MatchTabProps {
   event: Event
@@ -85,7 +85,7 @@ export default function MatchTab({ event }: MatchTabProps) {
       </Group>
 
       {rounds.length > 0 ? (
-        <RoundsList view={view} event={event} rounds={rounds} players={players} />
+        <RoundList view={view} event={event} rounds={rounds} players={players} />
       ) : (
         <Paper withBorder p="lg" shadow="sm">
           <Text>Click start tournament to create the first round</Text>
