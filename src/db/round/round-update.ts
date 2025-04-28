@@ -1,5 +1,5 @@
 import { db, Round } from '../../db'
-import { RecordInvalidError } from '../errors'
+import { OperationNotPermittedError } from '../errors'
 import matchCreate from '../match/match-create'
 import matchDelete from '../match/match-delete'
 import { MatchCreateInput } from './round-create'
@@ -17,7 +17,7 @@ export default async function roundUpdate(round: Round | string, input: RoundUpd
     }
 
     if (!(await roundIsUpdatable(round))) {
-      throw new RecordInvalidError('Round', round.id, [[null, 'Cannot update a completed round']])
+      throw new OperationNotPermittedError('Round', round.id, 'Cannot update a completed round')
     }
 
     // If the round has only one match and it's a BYE, it's complete
@@ -26,7 +26,6 @@ export default async function roundUpdate(round: Round | string, input: RoundUpd
     const result: Round = {
       ...round,
       isComplete,
-      updatedAt: new Date(),
     }
 
     // Remove all existing matches

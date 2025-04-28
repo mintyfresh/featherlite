@@ -6,7 +6,7 @@ import * as playerUpdateModule from '../../db/player/player-update'
 import { buildPlayer } from '../../test/db/player-factory'
 import { renderWithMantineProvider } from '../../test/test-utils'
 import PlayerModal from './PlayerModal'
-import { RecordInvalidError } from '../../db/errors'
+import { RecordValidationError } from '../../db/errors'
 import { Player } from '../../db'
 
 jest.mock('../../db/player/player-create')
@@ -81,7 +81,7 @@ describe('PlayerModal', () => {
   })
 
   it('shows error message on error', async () => {
-    const error = new RecordInvalidError('Player', null, [
+    const error = new RecordValidationError('Player', null, [
       ['name', "can't be blank"],
       [null, 'General error'],
     ])

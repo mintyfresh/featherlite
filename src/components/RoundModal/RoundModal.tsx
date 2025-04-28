@@ -3,10 +3,11 @@ import { IconAlertCircle } from '@tabler/icons-react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Round } from '../../db'
-import { DatabaseError } from '../../db/errors'
 import eventPlayers from '../../db/event/event-players'
 import roundMatches from '../../db/round/round-matches'
 import roundUpdate from '../../db/round/round-update'
+import useFormErrors from '../../hooks/use-form-errors'
+import FormBaseErrors from '../FormBaseErrors/FormBaseErrors'
 
 export interface RoundModalProps {
   round: Round
@@ -16,10 +17,11 @@ export interface RoundModalProps {
 }
 
 export default function RoundModal({ round, opened, onClose, onUpdate }: RoundModalProps) {
-  const [error, setError] = useState<DatabaseError | null>(null)
   const matches = useLiveQuery(() => roundMatches(round), [round])
   const players = useLiveQuery(() => eventPlayers(round.eventId, { sortBy: 'name' }), [round.eventId])
 
+  const [errors, setErrors] = useFormErrors()
+  const [loading, setLoading] = useState(false)
   const [pairings, setPairings] = useState<[string, string | null][]>([])
 
   const isOverwritingResult = useMemo(
@@ -82,15 +84,15 @@ export default function RoundModal({ round, opened, onClose, onUpdate }: RoundMo
         return
       }
 
+      setLoading(true)
+
       try {
         await roundUpdate(round, { matches: pairings.map((pairing) => ({ playerIds: pairing })) })
         onUpdate()
       } catch (error) {
-        if (error instanceof DatabaseError) {
-          setError(error)
-        } else {
-          throw error
-        }
+        setErrors(error)
+      } finally {
+        setLoading(false)
       }
     },
     [isOverwritingResult]
@@ -117,20 +119,18 @@ export default function RoundModal({ round, opened, onClose, onUpdate }: RoundMo
               data={options}
               value={pairing[0]}
               onChange={(value) => onSelectPlayer(index, 0, value)}
+              disabled={loading}
             />
             <Select
               label={index === 0 ? 'Player 2' : undefined}
               data={options}
               value={pairing[1] ?? 'BYE'}
               onChange={(value) => onSelectPlayer(index, 1, value)}
+              disabled={loading}
             />
           </Group>
         ))}
-        {error && (
-          <Alert color="red" icon={<IconAlertCircle />} title="Error">
-            {error.message}
-          </Alert>
-        )}
+        <FormBaseErrors errors={errors} />
         {isOverwritingResult && (
           <Alert
             color="yellow"
@@ -141,7 +141,9 @@ export default function RoundModal({ round, opened, onClose, onUpdate }: RoundMo
           </Alert>
         )}
         <Group justify="flex-end">
-          <Button type="submit">Save</Button>
+          <Button type="submit" loading={loading}>
+            Save
+          </Button>
         </Group>
       </Stack>
     </Modal>

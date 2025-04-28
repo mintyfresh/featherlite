@@ -27,7 +27,6 @@ export default async function matchUpdate(match: Match | string, input: MatchUpd
     const round = await roundGet(match.roundId)
     await db.rounds.update(round.id, {
       isComplete: await allMatchesComplete(round),
-      updatedAt: new Date(),
     })
 
     return result

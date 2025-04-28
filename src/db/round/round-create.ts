@@ -1,5 +1,5 @@
 import { db, Event, Round } from '../../db'
-import { RecordInvalidError } from '../errors'
+import { OperationNotPermittedError } from '../errors'
 import eventGet from '../event/event-get'
 import matchCreate from '../match/match-create'
 
@@ -18,7 +18,7 @@ export default async function roundCreate(event: Event | string, input: RoundCre
     }
 
     if (input.matches.length === 0) {
-      throw new RecordInvalidError('Round', null, [[null, 'At least one pairing is required']])
+      throw new OperationNotPermittedError('Round', null, 'Cannot create a round with no pairings')
     }
 
     // Technically, creating a round with just a single player will immediately complete the round
@@ -29,7 +29,6 @@ export default async function roundCreate(event: Event | string, input: RoundCre
       eventId: event.id,
       number: (event.currentRound ?? 0) + 1,
       isComplete,
-      updatedAt: new Date(),
     }
 
     // Sort the matches so the BYE is always last
@@ -45,7 +44,6 @@ export default async function roundCreate(event: Event | string, input: RoundCre
     await db.rounds.add(round)
     await db.events.update(event.id, {
       currentRound: round.number,
-      updatedAt: new Date(),
     })
 
     return round

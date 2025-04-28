@@ -1,11 +1,11 @@
-import { Alert, Button, Checkbox, Modal, Stack, Text, TextInput } from '@mantine/core'
+import { Button, Checkbox, Modal, Stack, TextInput } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
-import { IconAlertCircle } from '@tabler/icons-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Player } from '../../db'
 import playerCreate from '../../db/player/player-create'
 import playerUpdate from '../../db/player/player-update'
 import useFormErrors from '../../hooks/use-form-errors'
+import FormBaseErrors from '../FormBaseErrors/FormBaseErrors'
 
 export interface PlayerModalProps {
   eventId: string
@@ -24,6 +24,12 @@ export default function PlayerModal({ eventId, player, opened, onClose, onSubmit
     key: 'createAnotherPlayer',
     defaultValue: false,
   })
+
+  useEffect(() => {
+    if (!opened) {
+      setErrors(null)
+    }
+  }, [opened])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -81,13 +87,21 @@ export default function PlayerModal({ eventId, player, opened, onClose, onSubmit
           data-autofocus
           disabled={loading && !createAnotherPlayer}
         />
-        <Checkbox label="Paid" name="paid" defaultChecked={player?.paid ?? true} value="true" disabled={loading} />
+        <Checkbox
+          label="Paid"
+          name="paid"
+          defaultChecked={player?.paid ?? true}
+          value="true"
+          disabled={loading}
+          error={errors.get('paid')}
+        />
         <Checkbox
           label="Dropped"
           name="dropped"
           defaultChecked={player?.dropped ?? false}
           value="true"
           disabled={loading}
+          error={errors.get('dropped')}
         />
         {!player?.id && (
           <Checkbox
@@ -98,13 +112,7 @@ export default function PlayerModal({ eventId, player, opened, onClose, onSubmit
             disabled={loading}
           />
         )}
-        {errors.any(null) && (
-          <Alert color="red" icon={<IconAlertCircle />}>
-            {errors.get(null)!.map((message) => (
-              <Text key={message}>{message}</Text>
-            ))}
-          </Alert>
-        )}
+        <FormBaseErrors errors={errors} except={['name', 'paid', 'dropped']} />
         <Button type="submit" loading={loading}>
           {player?.id ? 'Update' : 'Create'}
         </Button>

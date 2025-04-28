@@ -1,5 +1,5 @@
 import { ActionIcon, Badge, Group, Table, Text } from '@mantine/core'
-import { useMemo } from 'react'
+import { IconPencil } from '@tabler/icons-react'
 import { Player } from '../../db'
 
 export interface PlayerTableProps {
@@ -8,25 +8,6 @@ export interface PlayerTableProps {
 }
 
 export default function PlayerTable({ players, onPlayerEdit }: PlayerTableProps) {
-  const sortedPlayers = useMemo(() => {
-    // If no games have been played, sort by name
-    const preGameState = players.every((player) => player.score === 0)
-
-    if (preGameState) {
-      return players.sort((player1, player2) => {
-        return player1.name.localeCompare(player2.name)
-      })
-    }
-
-    return players.sort((player1, player2) => {
-      if (player1.score !== player2.score) {
-        return player2.score - player1.score
-      } else {
-        return player2.opponentWinRate - player1.opponentWinRate
-      }
-    })
-  }, [players])
-
   return (
     <>
       <Table striped>
@@ -42,7 +23,7 @@ export default function PlayerTable({ players, onPlayerEdit }: PlayerTableProps)
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {sortedPlayers.map((player) => (
+          {players.map((player) => (
             <Table.Tr key={player.id}>
               <Table.Td>
                 <Group gap="xs">
@@ -58,7 +39,7 @@ export default function PlayerTable({ players, onPlayerEdit }: PlayerTableProps)
               <Table.Td>{(player.opponentWinRate * 100).toFixed(2)}%</Table.Td>
               <Table.Td ta="end">
                 <ActionIcon variant="subtle" onClick={() => onPlayerEdit(player)}>
-                  ✎
+                  <IconPencil size={14} />
                 </ActionIcon>
               </Table.Td>
             </Table.Tr>

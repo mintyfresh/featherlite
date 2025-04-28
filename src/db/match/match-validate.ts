@@ -1,5 +1,5 @@
 import { Match } from '../../db'
-import { RecordInvalidError } from '../errors'
+import { RecordValidationError } from '../errors'
 
 export default async function matchValidate(match: Match) {
   const errors: [string | null, string][] = []
@@ -29,7 +29,7 @@ export default async function matchValidate(match: Match) {
   }
 
   if (errors.length > 0) {
-    throw new RecordInvalidError('Match', match.id, errors)
+    throw new RecordValidationError('Match', match.id, errors)
   }
 
   return match

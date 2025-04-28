@@ -1,5 +1,5 @@
 import { db, Player } from '../../db'
-import { RecordInvalidError } from '../errors'
+import { RecordValidationError } from '../errors'
 
 export default async function playerValidate(player: Player) {
   const errors: [string | null, string][] = []
@@ -21,7 +21,7 @@ export default async function playerValidate(player: Player) {
   }
 
   if (errors.length > 0) {
-    throw new RecordInvalidError('Player', player.id, errors)
+    throw new RecordValidationError('Player', player.id, errors)
   }
 
   return player

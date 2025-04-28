@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react'
-import { DatabaseError, RecordInvalidError } from '../db/errors'
+import { DatabaseError, RecordValidationError } from '../db/errors'
 
 export abstract class FormErrors {
-  abstract any(key: string | null): boolean
-  abstract get(key: string | null): string[] | null
+  abstract any(key: (string | null)[] | string | null): boolean
+  abstract get(key: (string | null)[] | string | null): string[] | null
+  abstract except(key: (string | null)[] | string | null): string[] | null
 }
 
 class NullFormErrors extends FormErrors {
@@ -14,6 +15,10 @@ class NullFormErrors extends FormErrors {
   override get(): string[] | null {
     return null
   }
+
+  override except(): string[] | null {
+    return null
+  }
 }
 
 class MappedFormErrors extends FormErrors {
@@ -21,12 +26,30 @@ class MappedFormErrors extends FormErrors {
     super()
   }
 
-  override any(key: string | null): boolean {
+  override any(key: (string | null)[] | string | null): boolean {
+    if (Array.isArray(key)) {
+      return key.some((k) => this.any(k))
+    }
+
     return (this.errors.get(key)?.length ?? 0) > 0
   }
 
-  override get(key: string | null): string[] | null {
+  override get(key: (string | null)[] | string | null): string[] | null {
+    if (Array.isArray(key)) {
+      return key.flatMap((k) => this.get(k) ?? [])
+    }
+
     return this.errors.get(key) ?? null
+  }
+
+  override except(key: (string | null)[] | string | null): string[] | null {
+    if (!Array.isArray(key)) {
+      key = [key]
+    }
+
+    return Array.from(this.errors.entries())
+      .filter(([k]) => !key.includes(k))
+      .flatMap(([, v]) => v)
   }
 }
 
@@ -37,11 +60,15 @@ export default function useFormErrors() {
 
   const setErrors = useCallback(
     (error: DatabaseError | Error | unknown) => {
-      if (error instanceof RecordInvalidError) {
+      if (error instanceof RecordValidationError) {
         const errors = new Map<string | null, string[]>()
 
         error.errors.forEach(([key, message]) => {
-          const fullMessage = key ? `${key} ${message}` : message
+          let fullMessage = (key ? `${key} ${message}` : message).replace(/^[a-z]/, (c) => c.toUpperCase())
+
+          if (!fullMessage.endsWith('.')) {
+            fullMessage += '.'
+          }
 
           if (errors.has(key)) {
             errors.get(key)!.push(fullMessage)

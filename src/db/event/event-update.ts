@@ -12,7 +12,6 @@ export default async function eventUpdate(event: Event | string, input: EventUpd
   const result: Event = {
     ...event,
     ...input,
-    updatedAt: new Date(),
   }
 
   await eventValidate(result)

@@ -7,7 +7,6 @@ export function buildRound(overrides: Partial<Round> = {}): Round {
     eventId: crypto.randomUUID(),
     number: 1,
     isComplete: false,
-    updatedAt: new Date(),
     ...overrides,
   }
 }

@@ -1,5 +1,4 @@
 import { db, Player } from '../../db'
-import eventTouch from '../event/event-touch'
 import playerGet from './player-get'
 import playerValidate from './player-validate'
 
@@ -17,7 +16,6 @@ export default async function playerUpdate(player: Player | string, input: Playe
 
   await playerValidate(result)
   await db.players.update(player.id, result)
-  await eventTouch(player.eventId)
 
   return result
 }

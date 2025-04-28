@@ -10,12 +10,23 @@ export class RecordNotFoundError extends DatabaseError {
     public readonly record: string,
     public readonly id: string
   ) {
-    super(`${record} with id ${id} not found`)
+    super(`${record} with ID "${id}" not found`)
     this.name = 'RecordNotFoundError'
   }
 }
 
-export class RecordInvalidError extends DatabaseError {
+export class OperationNotPermittedError extends DatabaseError {
+  constructor(
+    public readonly record: string,
+    public readonly id: string | null,
+    message: string
+  ) {
+    super(message)
+    this.name = 'OperationNotPermittedError'
+  }
+}
+
+export class RecordValidationError extends DatabaseError {
   constructor(
     public readonly record: string,
     public readonly id: string | null,

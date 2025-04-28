@@ -6,7 +6,7 @@ export interface Event {
   playersCount: number
   currentRound: number | null
   createdAt: Date
-  updatedAt: Date
+  deletedAt: Date | null
 }
 
 export interface Player {
@@ -27,7 +27,6 @@ export interface Round {
   eventId: string
   number: number
   isComplete: boolean
-  updatedAt: Date
 }
 
 export interface Match {

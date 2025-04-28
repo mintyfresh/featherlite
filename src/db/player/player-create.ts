@@ -26,7 +26,6 @@ export default async function playerCreate(event: Event | string, input: PlayerC
     await db.events.update(event.id, {
       ...event,
       playersCount: event.playersCount + 1,
-      updatedAt: new Date(),
     })
 
     return result

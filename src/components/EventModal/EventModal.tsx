@@ -1,20 +1,27 @@
-import { Button, Modal, Stack, Text, TextInput } from '@mantine/core'
-import { useState } from 'react'
+import { Button, Modal, Stack, TextInput } from '@mantine/core'
+import { useEffect, useState } from 'react'
 import { Event } from '../../db'
-import { DatabaseError } from '../../db/errors'
 import eventCreate from '../../db/event/event-create'
 import eventUpdate from '../../db/event/event-update'
+import useFormErrors from '../../hooks/use-form-errors'
+import FormBaseErrors from '../FormBaseErrors/FormBaseErrors'
 
 export interface EventModalProps {
   event?: Event | null
   opened: boolean
   onClose(): void
-  onSubmit?(event: Event): void
+  onSubmit(event: Event): void
 }
 
 export default function EventModal({ event, opened, onClose, onSubmit }: EventModalProps) {
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<DatabaseError | null>(null)
+  const [errors, setErrors] = useFormErrors()
+
+  useEffect(() => {
+    if (!opened) {
+      setErrors(null)
+    }
+  }, [opened])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -24,7 +31,7 @@ export default function EventModal({ event, opened, onClose, onSubmit }: EventMo
     const name = formData.get('name') as string
 
     setLoading(true)
-    setError(null)
+    setErrors(null)
 
     try {
       let result: Event
@@ -35,14 +42,9 @@ export default function EventModal({ event, opened, onClose, onSubmit }: EventMo
         result = await eventCreate({ name })
       }
 
-      onSubmit?.(result)
-      onClose()
+      onSubmit(result)
     } catch (error) {
-      if (error instanceof DatabaseError) {
-        setError(error)
-      } else {
-        console.error(error)
-      }
+      setErrors(error)
     } finally {
       setLoading(false)
     }
@@ -56,12 +58,13 @@ export default function EventModal({ event, opened, onClose, onSubmit }: EventMo
           name="name"
           placeholder={`e.g. Adventure ${new Date().getFullYear()}`}
           defaultValue={event?.name}
+          error={errors.get('name')}
           required
           disabled={loading}
           autoComplete="off"
           data-autofocus
         />
-        {error?.message && <Text c="red">{error.message}</Text>}
+        <FormBaseErrors errors={errors} except={['name']} />
         <Button type="submit" loading={loading}>
           {event ? 'Update' : 'Create'}
         </Button>

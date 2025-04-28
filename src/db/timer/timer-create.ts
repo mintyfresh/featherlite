@@ -1,6 +1,6 @@
 import { db, Round, Timer } from '../../db'
 import roundGet from '../round/round-get'
-import { RecordInvalidError } from '../errors'
+import { OperationNotPermittedError } from '../errors'
 
 export interface TimerCreateInput {
   matchId: string | null
@@ -22,13 +22,13 @@ export default async function timerCreate(round: Round | string, input: TimerCre
     }
 
     if (input.phases.length < 1) {
-      throw new RecordInvalidError('Timer', null, [['phases', 'At least one phase is required']])
+      throw new OperationNotPermittedError('Timer', null, 'Cannot create a timer with no phases')
     }
 
     const duration = input.phases.reduce((acc, phase) => acc + phase.duration, 0)
 
     if (duration <= 0) {
-      throw new RecordInvalidError('Timer', null, [['duration', 'Duration must be greater than 0']])
+      throw new OperationNotPermittedError('Timer', null, 'Cannot create a timer with a duration of 0')
     }
 
     const expiresAt = new Date(Date.now() + duration)

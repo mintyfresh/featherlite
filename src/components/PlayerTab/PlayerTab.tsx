@@ -1,9 +1,10 @@
 import { Button, Group, Loader, Paper, Text } from '@mantine/core'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
-import { db, Event, Player } from '../../db'
-import PlayersTable from '../PlayerTable/PlayerTable'
+import { Event, Player } from '../../db'
+import eventPlayers from '../../db/event/event-players'
 import PlayerModal from '../PlayerModal/PlayerModal'
+import PlayersTable from '../PlayerTable/PlayerTable'
 
 export interface PlayerTabProps {
   event: Event
@@ -14,10 +15,7 @@ export default function PlayerTab({ event }: PlayerTabProps) {
   const [modalOpened, setModalOpened] = useState(false)
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null)
 
-  const players = useLiveQuery(
-    async () => db.players.where({ eventId: event.id }).toArray(),
-    [event.id, event.updatedAt]
-  )
+  const players = useLiveQuery(() => eventPlayers(event), [event])
 
   if (!players) {
     return <Loader />
