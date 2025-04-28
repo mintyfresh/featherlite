@@ -30,7 +30,8 @@ export default function RoundModal({ round, opened, onClose, onUpdate }: RoundMo
   const options = useMemo(
     () => [
       ...(players?.map((player) => ({ value: player.id, label: player.name })) ?? []),
-      { value: 'BYE', label: 'BYE' },
+      // Add a BYE if there is an odd number of players
+      ...(players?.length && players.length % 2 === 1 ? [{ value: 'BYE', label: 'BYE' }] : []),
     ],
     [players]
   )
