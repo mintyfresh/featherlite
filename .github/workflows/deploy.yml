@@ -32,8 +32,13 @@ jobs:
 
       - name: Upload files to R2
         run: |
-          npx wrangler r2 object put featherlite-static --file dist/ --recursive
+          find dist -type f | while read filepath; do
+            key=${filepath#dist/}
+            echo "Uploading $filepath to $R2_BUCKET_NAME/$key"
+            npx wrangler r2 object put "$R2_BUCKET_NAME/$key" --file "$filepath"
+          done
         env:
+          R2_BUCKET_NAME: featherlite-static
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
       - name: Deploy Worker
