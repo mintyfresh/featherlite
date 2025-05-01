@@ -3,6 +3,7 @@ import { notifications } from '@mantine/notifications'
 import { useCallback, useState } from 'react'
 import { Event } from '../../db'
 import eventExportBulk from '../../db/event/event-export-bulk'
+import { IconFileExport } from '@tabler/icons-react'
 
 export interface EventExportBulkMenuItemProps extends Omit<MenuItemProps, 'onClick' | 'disabled'> {
   events: Event[]
@@ -37,7 +38,12 @@ export default function EventExportBulkMenuItem({ events, ...props }: EventExpor
   )
 
   return (
-    <MenuItem onClick={() => exportEvents(events)} disabled={exporting} {...props}>
+    <MenuItem
+      onClick={() => exportEvents(events)}
+      disabled={exporting}
+      leftSection={<IconFileExport size={16} />}
+      {...props}
+    >
       Export Events
     </MenuItem>
   )
