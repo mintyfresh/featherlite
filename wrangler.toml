@@ -1,0 +1,9 @@
+name = "featherlite"
+compatibility_date = "2024-04-30"
+
+[vars]
+# optional: environment variables
+
+[[r2_buckets]]
+binding = "FEATHERLITE_STATIC"
+bucket_name = "featherlite-static"
