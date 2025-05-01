@@ -25,6 +25,7 @@ export default defineConfig(({ mode }) => {
   const isElectron = mode === 'electron'
 
   return {
+    base: process.env.GITHUB_ACTIONS ? '/featherlite/' : '/',
     plugins: [
       TanStackRouterVite({ target: 'react' }),
       react(),
