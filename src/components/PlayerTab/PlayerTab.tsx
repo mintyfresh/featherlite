@@ -1,4 +1,4 @@
-import { Button, Group, Loader, Paper, Text } from '@mantine/core'
+import { Button, Group, Loader, Paper, ScrollArea, Text } from '@mantine/core'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
 import { Event, Player } from '../../db'
@@ -30,13 +30,15 @@ export default function PlayerTab({ event }: PlayerTabProps) {
       </Group>
 
       {players.length > 0 ? (
-        <PlayersTable
-          players={players}
-          onPlayerEdit={(player) => {
-            setEditingPlayer(player)
-            setModalOpened(true)
-          }}
-        />
+        <ScrollArea w="100%">
+          <PlayersTable
+            players={players}
+            onPlayerEdit={(player) => {
+              setEditingPlayer(player)
+              setModalOpened(true)
+            }}
+          />
+        </ScrollArea>
       ) : (
         <Paper withBorder p="lg" shadow="sm">
           <Text>No players have been added yet</Text>

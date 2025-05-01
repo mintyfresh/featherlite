@@ -1,4 +1,4 @@
-import { Button, Group, Loader, Paper, Text } from '@mantine/core'
+import { Button, Group, Loader, Paper, ScrollArea, Text } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
 import { notifications } from '@mantine/notifications'
 import { IconCheck } from '@tabler/icons-react'
@@ -74,7 +74,7 @@ export default function MatchTab({ event }: MatchTabProps) {
 
   return (
     <>
-      <Group justify="end" mb="md">
+      <Group justify="end" mb="md" w="100%">
         <Button variant="outline" onClick={() => setView(view === 'list' ? 'grid' : 'list')}>
           {view === 'list' ? 'Grid View' : 'List View'}
         </Button>
@@ -85,7 +85,9 @@ export default function MatchTab({ event }: MatchTabProps) {
       </Group>
 
       {rounds.length > 0 ? (
-        <RoundList view={view} event={event} rounds={rounds} players={players} />
+        <ScrollArea w="100%">
+          <RoundList view={view} event={event} rounds={rounds} players={players} />
+        </ScrollArea>
       ) : (
         <Paper withBorder p="lg" shadow="sm">
           <Text>Click start tournament to create the first round</Text>
