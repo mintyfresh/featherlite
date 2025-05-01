@@ -22,7 +22,9 @@ export default async function playerUpdateStats(
     const result = await Promise.all(scoredPlayers.map(calculateOpponentWinRate))
 
     // Step 3: Calculate and update opponent-win-rate for all other players
-    const otherPlayers = await db.players.where('eventId').equals(players[0]!.eventId)
+    const otherPlayers = await db.players
+      .where('eventId')
+      .equals(players[0]!.eventId)
       .filter((player) => !result.includes(player))
       .toArray()
     await Promise.all(otherPlayers.map(calculateOpponentWinRate))
@@ -93,7 +95,8 @@ async function updatePlayerScore(player: Player) {
 async function calculateOpponentWinRate(player: Player): Promise<Player> {
   const matches = await db.matches.where('playerIds').equals(player.id).toArray()
 
-  const opponentIds = matches.flatMap((match) => match.playerIds)
+  const opponentIds = matches
+    .flatMap((match) => match.playerIds)
     .filter((id) => id !== player.id) // filter out the player themselves
     .filter((id): id is string => id !== null) // filter out BYEs
 

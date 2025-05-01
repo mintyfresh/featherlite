@@ -4,7 +4,7 @@ import { notifications } from '@mantine/notifications'
 import eventImportBulk from '../../db/event/event-import-bulk'
 import { useState } from 'react'
 
-export interface EventImportBulkMenuItemProps extends Omit<MenuItemProps, 'onClick' | 'disabled'> {}
+export type EventImportBulkMenuItemProps = Omit<MenuItemProps, 'onClick' | 'disabled'>
 
 export default function EventImportBulkMenuItem({ ...props }: EventImportBulkMenuItemProps) {
   const [loading, setLoading] = useState(false)
