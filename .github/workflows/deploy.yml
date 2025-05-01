@@ -37,19 +37,18 @@ jobs:
       - name: Configure rclone
         run: |
           mkdir -p ~/.config/rclone
-          echo "[featherlite-static]
+          echo "[r2]
           type = s3
           provider = Cloudflare
-          env_auth = true
+          env_auth = false
+          access_key_id = ${{ secrets.R2_ACCESS_KEY_ID }}
+          secret_access_key = ${{ secrets.RS_SECRET_ACCESS_KEY }}
           endpoint = https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
           " > ~/.config/rclone/rclone.conf
 
       - name: Upload files to R2
         run: |
-          rclone sync dist/ featherlite-static:
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          rclone sync dist/ r2:featherlite-static
 
       - name: Deploy Worker
         run: |
