@@ -70,6 +70,10 @@ async function calculateOpponentWinRate(opponentIds: Set<string>): Promise<numbe
       // Calculate the number of matches played by the opponent
       const matches = opponent.wins + opponent.draws + opponent.losses
 
+      if (matches === 0) {
+        return acc
+      }
+
       // Calculate the win rate of the opponent
       return acc + opponent.wins / matches
     }, 0) / opponents.length
