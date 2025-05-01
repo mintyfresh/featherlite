@@ -1,6 +1,10 @@
 name = "featherlite"
 compatibility_date = "2024-04-30"
 
+routes = [
+  { pattern = "feather.minty.horse", custom_domain = true },
+]
+
 [vars]
 # optional: environment variables
 
