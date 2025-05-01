@@ -1,41 +1,74 @@
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(request, env) {
+    // Only GET and HEAD requests are allowed
+    if (request.method !== 'GET' && request.method !== 'HEAD') {
+      return new Response(null, { status: 405 })
+    }
+
     const url = new URL(request.url)
     let key = url.pathname.slice(1)
 
-    // Default to index.html for root or missing files
-    if (key === '') key = 'index.html'
+    if (key === '') {
+      if (request.method === 'HEAD') {
+        return new Response(null, { status: 400 })
+      }
+
+      // Default to index.html for root or missing files
+      key = 'index.html'
+    }
 
     try {
-      const object = await env.FEATHERLITE_STATIC.get(key)
-      if (!object) throw new Error('Not found')
-
-      return new Response(object.body, {
-        headers: {
-          'Content-Type': getMimeType(key),
-          'Cache-Control': 'public, max-age=3600',
-        },
-      })
-    } catch {
+      return await serveObject(env, key, request)
+    } catch (error) {
+      console.error('Failed to serve object:', key, 'error:', error)
       // SPA fallback
-      const index = await env.FEATHERLITE_STATIC.get('index.html')
-      return new Response(index.body, {
-        headers: { 'Content-Type': 'text/html' },
-      })
+      return await serveObject(env, 'index.html', request)
     }
   },
 }
 
-// Basic mime type handler
-function getMimeType(path) {
-  if (path.endsWith('.js')) return 'application/javascript'
-  if (path.endsWith('.css')) return 'text/css'
-  if (path.endsWith('.html')) return 'text/html'
-  if (path.endsWith('.json')) return 'application/json'
-  if (path.endsWith('.png')) return 'image/png'
-  if (path.endsWith('.jpg') || path.endsWith('.jpeg')) return 'image/jpeg'
-  if (path.endsWith('.wav')) return 'audio/wav'
-  if (path.endsWith('.mp3')) return 'audio/mpeg'
-  if (path.endsWith('.ttf')) return 'font/ttf'
-  return 'application/octet-stream'
+async function serveObject(env: any, key: string, request: Request) {
+  const object = await env.FEATHERLITE_STATIC.get(key, {
+    range: request.headers,
+    onlyIf: request.headers,
+  })
+
+  if (!object) {
+    return objectNotFound(key)
+  }
+
+  const headers = new Headers()
+  object.writeHttpMetadata(headers)
+  headers.set('ETag', object.httpEtag)
+
+  if (object.range) {
+    const start = object.range.offset
+    const end = object.range.end ?? object.size - 1
+    const size = object.size
+
+    headers.set('Content-Range', `bytes ${start}-${end}/${size}`)
+  }
+
+  const status = object.body
+    ? (object.headers.get('range') !== null ? 206 : 200)
+    : 304
+
+  return new Response(object.body, {
+    headers,
+    status,
+  })
+}
+
+function objectNotFound(objectName: string) {
+  return new Response(`<html>
+    <head>
+      <title>R2 Object Not Found</title>
+    </head>
+    <body>
+      <h1>Object ${objectName} not found</h1>
+    </body>
+  </html>`, {
+    status: 404,
+    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+  })
 }
