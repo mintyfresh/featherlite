@@ -4,6 +4,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { format } from 'date-fns'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
+import EventListToolsMenu from '../components/EventListToolsMenu/EventListToolsMenu'
 import EventModal from '../components/EventModal/EventModal'
 import { Event } from '../db'
 import eventDelete from '../db/event/event-delete'
@@ -36,6 +37,7 @@ export default function EventsListPage() {
       <Group justify="space-between" mb="md">
         <Title>Events</Title>
         <Group>
+          <EventListToolsMenu events={events} />
           {deleted === 'without' ? (
             <Button variant="outline" color="gray" onClick={() => setDeleted('only')}>
               Show Deleted
