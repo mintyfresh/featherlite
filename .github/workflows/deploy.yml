@@ -44,6 +44,7 @@ jobs:
           access_key_id = ${{ secrets.R2_ACCESS_KEY_ID }}
           secret_access_key = ${{ secrets.RS_SECRET_ACCESS_KEY }}
           endpoint = https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
+          acl = private
           " > ~/.config/rclone/rclone.conf
 
       - name: Upload files to R2
