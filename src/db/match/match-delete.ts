@@ -19,11 +19,7 @@ export default async function matchDelete(match: Match | string) {
     }
 
     await db.matches.delete(match.id)
-    await playerUpdateStats(match.playerIds[0])
-
-    if (match.playerIds[1]) {
-      await playerUpdateStats(match.playerIds[1])
-    }
+    await playerUpdateStats(match.playerIds)
 
     return true
   })
