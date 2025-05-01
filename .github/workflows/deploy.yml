@@ -30,16 +30,26 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Install rclone
+        run: |
+          curl https://rclone.org/install.sh | sudo bash
+
+      - name: Configure rclone
+        run: |
+          mkdir -p ~/.config/rclone
+          echo "[featherlite-static]
+          type = s3
+          provider = Cloudflare
+          env_auth = true
+          endpoint = https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
+          " > ~/.config/rclone/rclone.conf
+
       - name: Upload files to R2
         run: |
-          find dist -type f | while read filepath; do
-            key=${filepath#dist/}
-            echo "Uploading $filepath to $R2_BUCKET_NAME/$key"
-            npx wrangler r2 object put "$R2_BUCKET_NAME/$key" --file "$filepath"
-          done
+          rclone sync dist/ featherlite-static:
         env:
-          R2_BUCKET_NAME: featherlite-static
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
       - name: Deploy Worker
         run: |
