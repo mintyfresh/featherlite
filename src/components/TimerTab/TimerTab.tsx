@@ -1,6 +1,6 @@
 import { Button, Group, Paper, Select, Stack, Text } from '@mantine/core'
+import { useLocalStorage } from '@mantine/hooks'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { useState } from 'react'
 import { Event } from '../../db'
 import eventCurrentRound from '../../db/event/event-current-round'
 import roundTimers from '../../db/round/round-timers'
@@ -14,7 +14,10 @@ interface TimerTabProps {
 }
 
 export default function TimerTab({ event, focused }: TimerTabProps) {
-  const [selectedPreset, setSelectedPreset] = useState<string | null>(null)
+  const [selectedPreset, setSelectedPreset] = useLocalStorage<string | null>({
+    key: 'timer-preset',
+    defaultValue: null,
+  })
 
   // Get current round
   const currentRound = useLiveQuery(async () => eventCurrentRound(event), [event])

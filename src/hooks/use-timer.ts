@@ -1,6 +1,7 @@
 import { usePrevious } from '@mantine/hooks'
 import { useCallback, useEffect, useState } from 'react'
 import { Timer, TimerPhase } from '../db'
+import { RecordNotFoundError } from '../db/errors'
 import timerCurrentPhase from '../db/timer/timer-current-phase'
 import timerDelete from '../db/timer/timer-delete'
 import timerPause from '../db/timer/timer-pause'
@@ -28,15 +29,25 @@ export default function useTimer(timer: Timer | null | undefined, { muted = fals
 
   useEffect(() => {
     if (timer?.id) {
-      const interval = setInterval(() => {
-        timerCurrentPhase(timer.id).then(setPhase)
-        timerTimeRemainingInCurrentPhase(timer.id).then((timeRemaining) => {
+      const interval = setInterval(async () => {
+        try {
+          const currentPhase = await timerCurrentPhase(timer.id)
+          const timeRemaining = await timerTimeRemainingInCurrentPhase(timer.id)
           const [hours, minutes, seconds] = extractComponentsFromDuration(timeRemaining)
 
+          setPhase(currentPhase)
           setHours(hours)
           setMinutes(minutes)
           setSeconds(seconds)
-        })
+        } catch (error) {
+          if (error instanceof RecordNotFoundError) {
+            // The timer was deleted, so we should stop polling
+            console.log(`Timer ${timer.id} deleted, stopping polling`)
+            clearInterval(interval)
+          } else {
+            throw error
+          }
+        }
       }, POLLING_INTERVAL)
 
       return () => clearInterval(interval)
