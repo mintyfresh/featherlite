@@ -15,7 +15,7 @@ export default function PlayerTab({ event }: PlayerTabProps) {
   const [modalOpened, setModalOpened] = useState(false)
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null)
 
-  const players = useLiveQuery(() => eventPlayers(event), [event])
+  const players = useLiveQuery(() => eventPlayers(event, { includeDropped: true }), [event])
 
   if (!players) {
     return <Loader />
