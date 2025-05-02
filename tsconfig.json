@@ -1,9 +1,5 @@
 {
-  "compilerOptions": {
-    "paths": {
-      "#pyodide": ["./deps/pyodide"]
-    }
-  },
+  "compilerOptions": {},
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

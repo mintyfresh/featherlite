@@ -1,13 +1,11 @@
 import { Button, Group, Loader, Paper, ScrollArea, Text } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
-import { notifications } from '@mantine/notifications'
-import { IconCheck } from '@tabler/icons-react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useCallback, useState } from 'react'
 import { db, Event } from '../../db'
 import eventCurrentRound from '../../db/event/event-current-round'
 import roundCreate from '../../db/round/round-create'
-import generateSwissPairings, { isPythonContextLoaded, preloadPythonContext } from '../../utils/swiss'
+import generateSwissPairings from '../../utils/swiss'
 import RoundList from '../RoundList/RoundList'
 
 export interface MatchTabProps {
@@ -35,28 +33,6 @@ export default function MatchTab({ event }: MatchTabProps) {
     setLoading(true)
 
     try {
-      if (!isPythonContextLoaded()) {
-        const id = notifications.show({
-          title: 'Loading Python runtime',
-          message: 'The Python runtime is being loaded to generate pairings',
-          loading: true,
-          autoClose: false,
-          withCloseButton: false,
-        })
-
-        await preloadPythonContext()
-
-        notifications.update({
-          id,
-          color: 'green',
-          title: 'Python runtime loaded',
-          message: 'Players can now be paired',
-          icon: <IconCheck size={18} />,
-          loading: false,
-          autoClose: 3000,
-        })
-      }
-
       const pairings = await generateSwissPairings(event)
       const matches = pairings.map((playerIds) => ({ playerIds }))
 

@@ -5,21 +5,6 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'
 import electron from 'vite-plugin-electron'
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 
-const PYODIDE_EXCLUDE = ['!**/*.{md,html}', '!**/*.d.ts', '!**/node_modules']
-
-function viteStaticCopyPyodide() {
-  const pyodideDir = join(__dirname, 'deps', 'pyodide')
-
-  return viteStaticCopy({
-    targets: [
-      {
-        src: [join(pyodideDir, '*')].concat(PYODIDE_EXCLUDE),
-        dest: 'assets',
-      },
-    ],
-  })
-}
-
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const isElectron = mode === 'electron'
@@ -28,7 +13,6 @@ export default defineConfig(({ mode }) => {
     plugins: [
       TanStackRouterVite({ target: 'react' }),
       react(),
-      viteStaticCopyPyodide(),
       ...(isElectron
         ? [
             electron({

@@ -2,17 +2,9 @@ import combinations from 'combinations'
 import { db, Event, Player } from '../db'
 import eventGet from '../db/event/event-get'
 import playerGet from '../db/player/player-get'
-import type { PyodideInterface } from '#pyodide'
+import maxWeightedMatching from './max-weighted-matching'
 
 type Pairing = [string, string | null]
-
-export function isPythonContextLoaded() {
-  return pythonContextLoaded
-}
-
-export async function preloadPythonContext() {
-  await getPythonContext()
-}
 
 export default async function generateSwissPairings(event: Event | string): Promise<Pairing[]> {
   event = typeof event === 'string' ? await eventGet(event) : event
@@ -22,31 +14,9 @@ export default async function generateSwissPairings(event: Event | string): Prom
     .equals(event.id)
     .filter((player) => !player.dropped)
     .toArray()
+
   const edges = await generateWeightedEdges(players)
-
-  const instance = await getPythonContext()
-  instance.globals.set('edges', edges)
-
-  const result: [string, string][] = (
-    await instance.runPythonAsync(`
-    import networkx as nx
-
-    g = nx.Graph()
-    g.add_weighted_edges_from(edges)
-
-    paired = set()
-    pairings = nx.max_weight_matching(g, True)
-    result = []
-
-    for p1, p2 in pairings:
-      if p1 not in paired and p2 not in paired:
-        paired.add(p1)
-        paired.add(p2)
-        result.append([p1, p2])
-
-    result
-  `)
-  ).toJs()
+  const result = maxWeightedMatching(edges)
 
   const pairings = result.map((pairing: [string, string]): [string, string | null] => {
     if (pairing[0] === 'BYE') {
@@ -61,27 +31,7 @@ export default async function generateSwissPairings(event: Event | string): Prom
   return sortPairingsByRankings(pairings)
 }
 
-let pythonContextLoaded = false
-let pythonContext: Promise<PyodideInterface> | null = null
-
-async function getPythonContext() {
-  if (!pythonContext) {
-    const pyodide = await import(/* @vite-ignore */ '#pyodide')
-    pythonContext = pyodide.loadPyodide({ packages: ['micropip'] })
-
-    const instance = await pythonContext
-    await instance.runPythonAsync(`
-      import micropip
-      await micropip.install("networkx")
-    `)
-
-    pythonContextLoaded = true
-  }
-
-  return pythonContext
-}
-
-async function generateWeightedEdges(players: Player[]) {
+async function generateWeightedEdges(players: Player[]): Promise<[string, string, number][]> {
   const result: [string, string, number][] = []
   const items = (players.length % 2 === 0 ? players : [...players, null]).map((player) => player?.id ?? null)
 

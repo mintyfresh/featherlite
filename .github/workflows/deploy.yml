@@ -21,12 +21,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Download Pyodide
-        run: npm run pyodide:download
-
-      - name: Extract Pyodide
-        run: npm run pyodide:extract
-
       - name: Build project
         run: npm run build
 
