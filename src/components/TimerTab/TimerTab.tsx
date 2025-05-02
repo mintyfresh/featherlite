@@ -37,7 +37,9 @@ export default function TimerTab({ event, focused }: TimerTabProps) {
   if (!currentRound) {
     return (
       <Paper withBorder p="lg" shadow="sm">
-        <Text>Timers cannot be started until pairings have been assigned</Text>
+        <Text c="dimmed" size="sm">
+          Timers cannot be started until pairings have been assigned
+        </Text>
       </Paper>
     )
   }

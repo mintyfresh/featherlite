@@ -41,7 +41,9 @@ export default function PlayerTab({ event }: PlayerTabProps) {
         </ScrollArea>
       ) : (
         <Paper withBorder p="lg" shadow="sm">
-          <Text>No players have been added yet</Text>
+          <Text c="dimmed" size="sm">
+            No players have been added yet
+          </Text>
         </Paper>
       )}
 

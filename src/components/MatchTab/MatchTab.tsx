@@ -2,9 +2,11 @@ import { Button, Group, Loader, Paper, ScrollArea, Text } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useCallback, useState } from 'react'
-import { db, Event } from '../../db'
+import { Event } from '../../db'
 import eventCurrentRound from '../../db/event/event-current-round'
+import eventPlayers from '../../db/event/event-players'
 import roundCreate from '../../db/round/round-create'
+import roundList from '../../db/round/round-list'
 import generateSwissPairings from '../../utils/swiss'
 import RoundList from '../RoundList/RoundList'
 
@@ -20,14 +22,9 @@ export default function MatchTab({ event }: MatchTabProps) {
     defaultValue: 'list',
   })
 
-  const players = useLiveQuery(async () => db.players.where({ eventId: event.id }).toArray(), [event.id])
-
-  const rounds = useLiveQuery(
-    async () => (await db.rounds.where({ eventId: event.id }).sortBy('number')).reverse(),
-    [event.id]
-  )
-
-  const currentRound = useLiveQuery(async () => eventCurrentRound(event), [event])
+  const players = useLiveQuery(() => eventPlayers(event), [event])
+  const rounds = useLiveQuery(() => roundList(event), [event])
+  const currentRound = useLiveQuery(() => eventCurrentRound(event), [event])
 
   const startNextRound = useCallback(async () => {
     setLoading(true)
@@ -55,7 +52,7 @@ export default function MatchTab({ event }: MatchTabProps) {
           {view === 'list' ? 'Grid View' : 'List View'}
         </Button>
 
-        <Button onClick={() => startNextRound()} loading={loading} disabled={!roundComplete}>
+        <Button onClick={() => startNextRound()} loading={loading} disabled={!roundComplete || players.length === 0}>
           {event.currentRound === null ? 'Start Tournament' : `Start Round ${event.currentRound + 1}`}
         </Button>
       </Group>
@@ -66,7 +63,11 @@ export default function MatchTab({ event }: MatchTabProps) {
         </ScrollArea>
       ) : (
         <Paper withBorder p="lg" shadow="sm">
-          <Text>Click start tournament to create the first round</Text>
+          <Text c="dimmed" size="sm">
+            {players.length === 0
+              ? 'You need to add at least one player to start the tournament'
+              : 'Click start tournament to create the first round'}
+          </Text>
         </Paper>
       )}
     </>
