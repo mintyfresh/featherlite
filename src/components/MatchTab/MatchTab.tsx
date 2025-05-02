@@ -22,7 +22,7 @@ export default function MatchTab({ event }: MatchTabProps) {
     defaultValue: 'list',
   })
 
-  const players = useLiveQuery(() => eventPlayers(event), [event])
+  const players = useLiveQuery(() => eventPlayers(event, { includeDropped: true }), [event])
   const rounds = useLiveQuery(() => roundList(event), [event])
   const currentRound = useLiveQuery(() => eventCurrentRound(event), [event])
 
