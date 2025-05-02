@@ -2,17 +2,11 @@
 
 Lightweight swiss tournament software for MLPCCG, runs in electron or the browser.
 
-Uses pyodide and networkx for swiss pairing in the browser/electron.
-
 ## Setup
 
 Install NPM dependencies
 
     npm ci
-
-Download and unpack pyodide
-
-    npm run pyodide:download && npm run pyodide:extract
 
 ## Running in the browser
 
