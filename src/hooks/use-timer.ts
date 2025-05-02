@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { usePrevious } from '@mantine/hooks'
+import { useCallback, useEffect, useState } from 'react'
 import { Timer, TimerPhase } from '../db'
 import timerCurrentPhase from '../db/timer/timer-current-phase'
 import timerDelete from '../db/timer/timer-delete'
@@ -8,7 +9,7 @@ import timerSkipToNextPhase from '../db/timer/timer-skip-to-next-phase'
 import timerTimeRemainingInCurrentPhase from '../db/timer/timer-time-remaining-in-current-phase'
 import timerUnpause from '../db/timer/timer-unpause'
 import { extractComponentsFromDuration } from '../utils/timer-helpers'
-import { usePrevious } from '@mantine/hooks'
+import usePlayAudio from './use-play-audio'
 
 const POLLING_INTERVAL = 100 // millis
 
@@ -19,6 +20,7 @@ export interface UseTimerOptions {
 export default function useTimer(timer: Timer | null | undefined, { muted = false }: UseTimerOptions = {}) {
   const [phase, setPhase] = useState<TimerPhase | null>(null)
   const previousPhase = usePrevious(phase)
+  const playAudio = usePlayAudio(previousPhase?.audioClip ?? null)
 
   const [hours, setHours] = useState(0)
   const [minutes, setMinutes] = useState(0)
@@ -41,15 +43,6 @@ export default function useTimer(timer: Timer | null | undefined, { muted = fals
     }
   }, [timer?.id, timer?.pausedAt, timer?.expiresAt])
 
-  // If using browser audio, preload the audio file to avoid a delay
-  const audio = useMemo(
-    () =>
-      typeof window.electron === 'undefined' && previousPhase?.audioClip
-        ? new Audio(`/${previousPhase.audioClip}`)
-        : null,
-    [previousPhase?.audioClip]
-  )
-
   // Play a sound when the timer reaches the end of the phase
   useEffect(() => {
     let isSubsequentPhase = false
@@ -61,13 +54,9 @@ export default function useTimer(timer: Timer | null | undefined, { muted = fals
     }
 
     if (isSubsequentPhase && previousPhase?.audioClip && !muted) {
-      if (typeof window.electron !== 'undefined') {
-        window.electron.playSound(previousPhase.audioClip)
-      } else {
-        audio?.play()
-      }
+      playAudio()
     }
-  }, [phase, previousPhase, previousPhase?.audioClip, audio, muted])
+  }, [phase, previousPhase, previousPhase?.audioClip, muted, playAudio])
 
   const pause = useCallback(() => timer?.id && timerPause(timer.id), [timer?.id])
   const unpause = useCallback(() => timer?.id && timerUnpause(timer.id), [timer?.id])

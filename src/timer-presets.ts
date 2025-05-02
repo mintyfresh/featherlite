@@ -70,3 +70,9 @@ export const timerPresets: Omit<TimerCreateInput, 'matchId'>[] = [
     ],
   },
 ]
+
+export const audioClips = new Set(
+  timerPresets
+    .flatMap((preset) => preset.phases.map((phase) => phase.audioClip))
+    .filter((clip): clip is string => clip !== null)
+)
