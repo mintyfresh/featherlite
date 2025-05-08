@@ -1,4 +1,17 @@
-import { ActionIcon, Anchor, Box, Button, Card, Container, Group, Loader, Paper, Stack, Text, Title } from '@mantine/core'
+import {
+  ActionIcon,
+  Anchor,
+  Box,
+  Button,
+  Card,
+  Container,
+  Group,
+  Loader,
+  Paper,
+  Stack,
+  Text,
+  Title,
+} from '@mantine/core'
 import { IconPencil, IconRestore, IconTrash } from '@tabler/icons-react'
 import { createFileRoute } from '@tanstack/react-router'
 import { format } from 'date-fns'
@@ -128,7 +141,8 @@ export default function EventsListPage() {
       <Box mt="auto" py="xl">
         <Stack gap="0.25rem">
           <Text size="sm" c="dimmed" ta="center">
-            Copyright &copy; 2025 <Anchor href="https://github.com/mintyfresh">Minty Fresh</Anchor> &mdash; All ponies are cute.
+            Copyright &copy; 2025 <Anchor href="https://github.com/mintyfresh">Minty Fresh</Anchor> &mdash; All ponies
+            are cute.
           </Text>
           <Text size="sm" c="dimmed" ta="center">
             Made with ❤️ in snowy 🇨🇦
