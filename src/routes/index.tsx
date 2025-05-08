@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Button, Card, Container, Group, Loader, Paper, Stack, Text, Title } from '@mantine/core'
+import { ActionIcon, Anchor, Box, Button, Card, Container, Group, Loader, Paper, Stack, Text, Title } from '@mantine/core'
 import { IconPencil, IconRestore, IconTrash } from '@tabler/icons-react'
 import { createFileRoute } from '@tanstack/react-router'
 import { format } from 'date-fns'
@@ -33,8 +33,8 @@ export default function EventsListPage() {
   }
 
   return (
-    <Container size="md" py="xl">
-      <Group justify="space-between" mb="md">
+    <Container size="md" mih="100%" style={{ display: 'flex', flexDirection: 'column' }}>
+      <Group justify="space-between" mt="xl" mb="md">
         <Title>Events</Title>
         <Group>
           <EventListToolsMenu events={events} />
@@ -124,6 +124,17 @@ export default function EventsListPage() {
           </Card>
         ))}
       </Stack>
+
+      <Box mt="auto" py="xl">
+        <Stack gap="0.25rem">
+          <Text size="sm" c="dimmed" ta="center">
+            Copyright &copy; 2025 <Anchor href="https://github.com/mintyfresh">Minty Fresh</Anchor> &mdash; All ponies are cute.
+          </Text>
+          <Text size="sm" c="dimmed" ta="center">
+            Made with ❤️ in snowy 🇨🇦
+          </Text>
+        </Stack>
+      </Box>
 
       <EventModal
         event={editingEvent}

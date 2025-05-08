@@ -10,6 +10,11 @@ export default defineConfig(({ mode }) => {
   const isElectron = mode === 'electron'
 
   return {
+    resolve: {
+      alias: {
+        '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
+      },
+    },
     plugins: [
       TanStackRouterVite({ target: 'react' }),
       react(),
