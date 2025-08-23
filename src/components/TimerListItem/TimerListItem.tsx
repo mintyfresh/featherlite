@@ -12,7 +12,9 @@ export interface TimerListItemProps {
 }
 
 export default function TimerListItem({ timer, muted, readOnly }: TimerListItemProps) {
-  const { phase, hours, minutes, seconds, pause, unpause, skipToNextPhase, reset, clone, destroy } = useTimer(timer, { muted })
+  const { phase, hours, minutes, seconds, pause, unpause, skipToNextPhase, reset, clone, destroy } = useTimer(timer, {
+    muted,
+  })
 
   return (
     <Flex ta="center" align="center" direction="column" gap="md" data-testid={`timer-list-item-${timer.id}`}>

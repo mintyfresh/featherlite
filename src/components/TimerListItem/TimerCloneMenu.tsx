@@ -22,10 +22,14 @@ export default function TimerCloneMenu({ timer, onCloneTimer }: TimerCloneMenuPr
   const [matchId, setMatchId] = useState<string | null>(null)
 
   const matches = useLiveQuery(() => roundMatches(timer.roundId), [timer.roundId])
-  const options = useMemo(() => matches?.map((match) => ({
-    label: `Table ${match.table}`,
-    value: match.id,
-  })) ?? [], [matches])
+  const options = useMemo(
+    () =>
+      matches?.map((match) => ({
+        label: `Table ${match.table}`,
+        value: match.id,
+      })) ?? [],
+    [matches]
+  )
 
   const handleCloneTimer = async (offset: number) => {
     await onCloneTimer({ matchId, offset })
@@ -34,20 +38,10 @@ export default function TimerCloneMenu({ timer, onCloneTimer }: TimerCloneMenuPr
 
   return (
     <>
-      <Select
-        data={options}
-        placeholder="Select a table"
-        value={matchId}
-        onChange={setMatchId}
-      />
+      <Select data={options} placeholder="Select a table" value={matchId} onChange={setMatchId} />
       <Group gap="xs" justify="center">
         {DURATION_OPTIONS.map((option) => (
-          <ActionIcon
-            key={option.label}
-            variant="outline"
-            color="gray"
-            onClick={() => handleCloneTimer(option.value)}
-          >
+          <ActionIcon key={option.label} variant="outline" color="gray" onClick={() => handleCloneTimer(option.value)}>
             <Text size="xs">{option.label}</Text>
           </ActionIcon>
         ))}

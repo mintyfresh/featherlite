@@ -16,7 +16,12 @@ describe('TimerControls', () => {
     createdAt: new Date(),
   }
 
-  let onClone: jest.Mock, onReset: jest.Mock, onPause: jest.Mock, onUnpause: jest.Mock, onSkipToNextPhase: jest.Mock, onDestroy: jest.Mock
+  let onClone: jest.Mock,
+    onReset: jest.Mock,
+    onPause: jest.Mock,
+    onUnpause: jest.Mock,
+    onSkipToNextPhase: jest.Mock,
+    onDestroy: jest.Mock
   let confirmSpy: jest.SpyInstance
 
   beforeEach(() => {
@@ -194,7 +199,7 @@ describe('TimerControls', () => {
       <TimerControls
         timer={baseTimer}
         onClone={onClone}
-            onReset={onReset}
+        onReset={onReset}
         onPause={onPause}
         onUnpause={onUnpause}
         onSkipToNextPhase={onSkipToNextPhase}
