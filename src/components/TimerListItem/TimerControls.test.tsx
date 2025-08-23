@@ -16,10 +16,11 @@ describe('TimerControls', () => {
     createdAt: new Date(),
   }
 
-  let onReset: jest.Mock, onPause: jest.Mock, onUnpause: jest.Mock, onSkipToNextPhase: jest.Mock, onDestroy: jest.Mock
+  let onClone: jest.Mock, onReset: jest.Mock, onPause: jest.Mock, onUnpause: jest.Mock, onSkipToNextPhase: jest.Mock, onDestroy: jest.Mock
   let confirmSpy: jest.SpyInstance
 
   beforeEach(() => {
+    onClone = jest.fn()
     onReset = jest.fn()
     onPause = jest.fn()
     onUnpause = jest.fn()
@@ -37,6 +38,7 @@ describe('TimerControls', () => {
     renderWithMantineProvider(
       <TimerControls
         timer={baseTimer}
+        onClone={onClone}
         onReset={onReset}
         onPause={onPause}
         onUnpause={onUnpause}
@@ -55,6 +57,7 @@ describe('TimerControls', () => {
     renderWithMantineProvider(
       <TimerControls
         timer={{ ...baseTimer, pausedAt: null }}
+        onClone={onClone}
         onReset={onReset}
         onPause={onPause}
         onUnpause={onUnpause}
@@ -71,6 +74,7 @@ describe('TimerControls', () => {
     renderWithMantineProvider(
       <TimerControls
         timer={{ ...baseTimer, pausedAt: new Date() }}
+        onClone={onClone}
         onReset={onReset}
         onPause={onPause}
         onUnpause={onUnpause}
@@ -87,6 +91,7 @@ describe('TimerControls', () => {
     renderWithMantineProvider(
       <TimerControls
         timer={baseTimer}
+        onClone={onClone}
         onReset={onReset}
         onPause={onPause}
         onUnpause={onUnpause}
@@ -104,6 +109,7 @@ describe('TimerControls', () => {
     renderWithMantineProvider(
       <TimerControls
         timer={baseTimer}
+        onClone={onClone}
         onReset={onReset}
         onPause={onPause}
         onUnpause={onUnpause}
@@ -119,6 +125,7 @@ describe('TimerControls', () => {
     renderWithMantineProvider(
       <TimerControls
         timer={{ ...baseTimer, pausedAt: null }}
+        onClone={onClone}
         onReset={onReset}
         onPause={onPause}
         onUnpause={onUnpause}
@@ -134,6 +141,7 @@ describe('TimerControls', () => {
     renderWithMantineProvider(
       <TimerControls
         timer={{ ...baseTimer, pausedAt: new Date() }}
+        onClone={onClone}
         onReset={onReset}
         onPause={onPause}
         onUnpause={onUnpause}
@@ -150,6 +158,7 @@ describe('TimerControls', () => {
     renderWithMantineProvider(
       <TimerControls
         timer={baseTimer}
+        onClone={onClone}
         onReset={onReset}
         onPause={onPause}
         onUnpause={onUnpause}
@@ -167,6 +176,7 @@ describe('TimerControls', () => {
     renderWithMantineProvider(
       <TimerControls
         timer={baseTimer}
+        onClone={onClone}
         onReset={onReset}
         onPause={onPause}
         onUnpause={onUnpause}
@@ -183,7 +193,8 @@ describe('TimerControls', () => {
     renderWithMantineProvider(
       <TimerControls
         timer={baseTimer}
-        onReset={onReset}
+        onClone={onClone}
+            onReset={onReset}
         onPause={onPause}
         onUnpause={onUnpause}
         onSkipToNextPhase={onSkipToNextPhase}
@@ -200,6 +211,7 @@ describe('TimerControls', () => {
     renderWithMantineProvider(
       <TimerControls
         timer={baseTimer}
+        onClone={onClone}
         onReset={onReset}
         onPause={onPause}
         onUnpause={onUnpause}

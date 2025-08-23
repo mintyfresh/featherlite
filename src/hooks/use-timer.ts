@@ -11,6 +11,7 @@ import timerTimeRemainingInCurrentPhase from '../db/timer/timer-time-remaining-i
 import timerUnpause from '../db/timer/timer-unpause'
 import { extractComponentsFromDuration } from '../utils/timer-helpers'
 import usePlayAudio from './use-play-audio'
+import timerClone, { TimerCloneInput } from '../db/timer/timer-clone'
 
 const POLLING_INTERVAL = 100 // millis
 
@@ -73,6 +74,7 @@ export default function useTimer(timer: Timer | null | undefined, { muted = fals
   const unpause = useCallback(() => timer?.id && timerUnpause(timer.id), [timer?.id])
   const skipToNextPhase = useCallback(() => timer?.id && timerSkipToNextPhase(timer.id), [timer?.id])
   const reset = useCallback(() => timer?.id && timerReset(timer.id), [timer?.id])
+  const clone = useCallback((input: TimerCloneInput) => timer?.id && timerClone(timer.id, input), [timer?.id])
   const destroy = useCallback(() => timer?.id && timerDelete(timer.id), [timer?.id])
 
   return {
@@ -84,6 +86,7 @@ export default function useTimer(timer: Timer | null | undefined, { muted = fals
     unpause,
     skipToNextPhase,
     reset,
+    clone,
     destroy,
   } as const
 }
