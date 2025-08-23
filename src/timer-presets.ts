@@ -6,6 +6,29 @@ const HOUR = 60 * MINUTE
 
 export const timerPresets: Omit<TimerCreateInput, 'matchId'>[] = [
   {
+    label: '35 Minute Game',
+    phases: [
+      {
+        name: 'Setup',
+        duration: 3 * MINUTE,
+        colour: 0xffc107,
+        audioClip: 'begin.wav',
+      },
+      {
+        name: 'Time Remaining',
+        duration: 35 * MINUTE,
+        colour: 0x198754,
+        audioClip: 'over.wav',
+      },
+      {
+        name: 'Soft Time',
+        duration: 5 * MINUTE,
+        colour: 0xdc3545,
+        audioClip: 'time.wav',
+      },
+    ],
+  },
+  {
     label: '45 Minute Game',
     phases: [
       {
